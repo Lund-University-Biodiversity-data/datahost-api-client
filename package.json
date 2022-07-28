@@ -6,7 +6,7 @@
     "lu_api_documentation_template": "github:Lund-University-Biodiversity-data/datahost-api-client-nodejs",
     "tablefilter": "^0.7.2"
   },
-  "name": "datahost-api-client-test",
+  "name": "datahost-api-client",
   "type": "module",
   "version": "1.0.0",
   "main": "index.js",
