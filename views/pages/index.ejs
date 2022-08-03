@@ -8,11 +8,14 @@
 <header>
   <%- include('../partials/header'); %>
 
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="tablefilter/dist/tablefilter/tablefilter.js"></script>
+
   <script>
 
     $(document).ready(function () {
+
 
       // check if the element exists
       if ($('#resultTable').length > 0) {
@@ -71,16 +74,23 @@
     <div class="">
       <h2>[TEST FORM] Datahost LU API</h2>
       <form action="/" method="POST">
+
         <h3>Taxon</h3>
         <div class="form-group mb-3">
           <label>Taxon ids (dyntaxa-id, values separated by ;)</label>
           <input type="text" class="form-control" placeholder="100062;102933" name="inputTaxon" value="<%= inputTaxon %>">
         </div>
+
         <h3>Area</h3>
         <div class="form-group mb-3">
-          <label>Area</label>
-          <input type="text" class="form-control" placeholder="Last name" name="inputArea" value="<%= inputArea %>">
+          <label>Län</label>
+          <select name="inputCounty" class="form-control" multiple="multiple">
+              <% for (var i = 0; i < tableCounty.length; i++) { %>
+                <option value="<%= tableCounty[i] %>"  <%= (inputCounty.includes(tableCounty[i]) ? "selected" : "") %>><%= tableCounty[i] %></option>
+              <% } %>
+          </select>
         </div>
+
         <h3>Dates</h3>
         <div class="form-group mb-3">
           <label>Start Date</label>
@@ -97,7 +107,9 @@
             <option value="BetweenStartDateAndEndDate" <%= (inputDatumType=="BetweenStartDateAndEndDate" ? "selected" : "") %>>BetweenStartDateAndEndDate</option>
           </select>
         </div>
+
         <div class="d-grid mt-3">
+
         <button type="submit" class="btn btn-danger">Submit</button>
         </div>
       </form>

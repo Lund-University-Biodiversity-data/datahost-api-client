@@ -63,6 +63,7 @@ const express = pkgExpress;
 import pkgBP from 'body-parser';
 const parseUrl = pkgBP;
 
+
 //import TableFilter from 'tablefilter';
 
 //const express = require('express'); //Import the express dependency
@@ -75,11 +76,13 @@ app.set('view engine', 'ejs');
 //var inputTaxon = "100062;102933";
 var inputTaxon = "100062";
 var inputArea = "";
+var inputCounty = ["None selected"];
 var inputStartDate = "1998-05-14";
 var inputEndDate = "1999-05-14";
 var inputDatumType = "BetweenStartDateAndEndDate";
 
 const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDate", "Occurrences"];
+const tableCounty = ['None selected', 'Stockholms län', 'Västerbottens län', 'Norrbottens län', 'Uppsala län', 'Södermanlands län', 'Östergötlands län', 'Jönköpings län', 'Kronobergs län', 'Kalmar län', 'Gotlands län', 'Blekinge län', 'Skåne län', 'Hallands län', 'Västra Götalands län', 'Värmlands län', 'Örebro län', 'Västmanlands län', 'Dalarnas län', 'Gävleborgs län', 'Västernorrlands län', 'Jämtlands län'];
 
 // get /
 //Idiomatic expression in express to route and respond to a client request
@@ -98,7 +101,9 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
 
 
   res.render('pages/index', {
+    tableCounty: tableCounty, 
     inputTaxon: inputTaxon,
+    inputCounty: inputCounty,
     inputArea: inputArea,
     inputStartDate: inputStartDate,
     inputEndDate: inputEndDate,
@@ -141,6 +146,38 @@ app.post('/', encodeUrl, (req, res) => {
     inputTaxon = req.body.inputTaxon;
   }
 
+  if (typeof req.body.inputCounty !== 'undefined' && req.body.inputCounty!="") {
+
+
+    let countyNames= [];
+
+    // several items selected
+    if (req.body.inputCounty instanceof Array) {
+      countyNames = req.body.inputCounty;
+    }
+    // only one item
+    else {
+      if (req.body.inputCounty != "None selected")
+        countyNames.push(req.body.inputCounty);
+    }
+
+    if (countyNames.length>=1) {
+
+      dataInput.area = {
+        county : []
+      };
+      countyNames.forEach((element) => {
+        if (element!="None selected")
+          dataInput.area.county.push(element.trim());
+      });
+
+    }
+
+
+
+    inputCounty = req.body.inputCounty;
+  }
+
   if ( (typeof req.body.inputStartDate !== 'undefined' && req.body.inputStartDate !="")
    || (typeof req.body.inputEndDate !== 'undefined' && req.body.inputEndDate !="")) {
 
@@ -154,9 +191,6 @@ app.post('/', encodeUrl, (req, res) => {
       inputEndDate=req.body.inputEndDate;
     }
 
-    console.log("StartDate:"+inputStartDate);
-    console.log("EndDate:"+inputEndDate);
-
     dataInput.datum={
       "startDate": inputStartDate,
       "endDate": inputEndDate,
@@ -165,11 +199,9 @@ app.post('/', encodeUrl, (req, res) => {
   }
 
   const dataInputLength = Object.getOwnPropertyNames(dataInput);
-  console.log(dataInputLength.length); // 1
 
-
-    console.log("dataInput array :");
-    var_dump(dataInput);
+  console.log("dataInput array :");
+  var_dump(dataInput);
 
   // CALL THE API
 
@@ -189,7 +221,9 @@ app.post('/', encodeUrl, (req, res) => {
         console.error(error);
 
         res.render('pages/index', {
+          tableCounty: tableCounty, 
           inputTaxon: inputTaxon,
+          inputCounty: inputCounty,
           inputArea: inputArea,
           inputStartDate: inputStartDate,
           inputEndDate: inputEndDate,
@@ -234,7 +268,9 @@ app.post('/', encodeUrl, (req, res) => {
         });
 
         res.render('pages/index', {
+          tableCounty: tableCounty, 
           inputTaxon: inputTaxon,
+          inputCounty: inputCounty,
           inputArea: inputArea,
           inputStartDate: inputStartDate,
           inputEndDate: inputEndDate,
