@@ -75,6 +75,16 @@
       <h2>[TEST FORM] Datahost LU API</h2>
       <form action="/" method="POST">
 
+        <h3>Object</h3>
+        <div class="form-group mb-3">
+          <label>Pick an object</label>
+          <select name="inputObject" class="form-control" >
+            <option value="Event" <%= (inputObject=="Event" ? "selected" : "") %>>Events</option>
+            <option value="Dataset" <%= (inputObject=="Dataset" ? "selected" : "") %>>Datasets</option>
+            <option value="Occurrence" <%= (inputObject=="Occurrence" ? "selected" : "") %>>Occurrences</option>
+          </select>
+        </div>
+
         <h3>Taxon</h3>
         <div class="form-group mb-3">
           <label>Taxon ids (dyntaxa-id, values separated by ;)</label>

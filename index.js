@@ -73,8 +73,8 @@ const port = 8080;                  //Save the port number where your server wil
 
 app.set('view engine', 'ejs');
 
-//var inputTaxon = "100062;102933";
-var inputTaxon = "100062";
+var inputObject = "Event";
+var inputTaxon = "100062;102933";
 var inputArea = "";
 var inputCounty = ["None selected"];
 var inputStartDate = "1998-05-14";
@@ -82,6 +82,9 @@ var inputEndDate = "1999-05-14";
 var inputDatumType = "BetweenStartDateAndEndDate";
 
 const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDate", "Occurrences"];
+const datasetColumnsTable = ["identifier", "title", "startDate", "endDate", "events"];
+const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "quantity", "unit", "event"];
+
 const tableCounty = ['None selected', 'Stockholms län', 'Västerbottens län', 'Norrbottens län', 'Uppsala län', 'Södermanlands län', 'Östergötlands län', 'Jönköpings län', 'Kronobergs län', 'Kalmar län', 'Gotlands län', 'Blekinge län', 'Skåne län', 'Hallands län', 'Västra Götalands län', 'Värmlands län', 'Örebro län', 'Västmanlands län', 'Dalarnas län', 'Gävleborgs län', 'Västernorrlands län', 'Jämtlands län'];
 
 // get /
@@ -102,6 +105,7 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
 
   res.render('pages/index', {
     tableCounty: tableCounty, 
+    inputObject: inputObject,
     inputTaxon: inputTaxon,
     inputCounty: inputCounty,
     inputArea: inputArea,
@@ -128,7 +132,6 @@ app.post('/', encodeUrl, (req, res) => {
   console.log('Form request:', req.body);
 
   const dataInput = {};
-
 
   // CREATE THE dataInput based on the form
   if (typeof req.body.inputTaxon !== 'undefined' && req.body.inputTaxon!="") {
@@ -174,7 +177,6 @@ app.post('/', encodeUrl, (req, res) => {
     }
 
 
-
     inputCounty = req.body.inputCounty;
   }
 
@@ -207,21 +209,62 @@ app.post('/', encodeUrl, (req, res) => {
 
   if (dataInputLength.length>=1) {
 
-    let apiInstance = new LuApiDocumentationTemplate.EventApi();
+    inputObject = req.body.inputObject;
 
+    let apiInstance, opts, getResultsBySearch;
 
-    let opts = { 
-      'body': LuApiDocumentationTemplate.EventsFilter.constructFromObject(dataInput), // EventsFilter | Filter used to limit the search.
-      'skip': 0, // Number | Start index
-      'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
-    };
+    switch(inputObject) {
+      case "Dataset":
+        apiInstance = new LuApiDocumentationTemplate.DatasetApi();
 
-    apiInstance.getEventsBySearch(opts, (error, data, response) => {
+        opts = { 
+          'body': LuApiDocumentationTemplate.DatasetFilter.constructFromObject(dataInput),
+          'skip': 0, // Number | Start index
+          'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
+        };
+
+        getResultsBySearch="getDatasetsBySearch";
+        break;
+
+      case "Occurrence":
+        apiInstance = new LuApiDocumentationTemplate.OccurrenceApi();
+
+        opts = { 
+          'body': LuApiDocumentationTemplate.OccurrenceFilter.constructFromObject(dataInput),
+          'skip': 0, // Number | Start index
+          'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
+        };
+
+        getResultsBySearch="getOccurrencesBySearch";
+
+        break;
+
+      case "Event":
+      default:
+        apiInstance = new LuApiDocumentationTemplate.EventApi();
+
+        opts = { 
+          'body': LuApiDocumentationTemplate.EventsFilter.constructFromObject(dataInput), // EventsFilter | Filter used to limit the search.
+          'skip': 0, // Number | Start index
+          'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
+        };
+
+        getResultsBySearch="getEventsBySearch";
+
+        break;
+    }
+
+    
+
+    //apiInstance.getEventsBySearch(opts, (error, data, response) => {
+    // dynamic method name called
+    apiInstance[getResultsBySearch](opts, (error, data, response) => {
       if (error) {
         console.error(error);
 
         res.render('pages/index', {
           tableCounty: tableCounty, 
+          inputObject: inputObject,
           inputTaxon: inputTaxon,
           inputCounty: inputCounty,
           inputArea: inputArea,
@@ -242,8 +285,22 @@ app.post('/', encodeUrl, (req, res) => {
         Object.keys(data[0]).forEach(key => {
           //console.log(key, data[key]);
           // add only thr columns to be displayed
-          if (eventColumnsTable.includes(key)) {
+          if (inputObject=="Event" && eventColumnsTable.includes(key)) {
             tableColumns.push(key);
+          }
+          else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
+            tableColumns.push(key);
+          }
+          else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
+
+            if (key=="taxon") {
+              tableColumns.push("taxon");
+              tableColumns.push("Dyntaxa ID");
+              tableColumns.push("Scientific Name");
+            }
+            else {
+              tableColumns.push(key);
+            }
           }
         });
 
@@ -253,8 +310,8 @@ app.post('/', encodeUrl, (req, res) => {
           const row = [];
           Object.entries(elt[1]).forEach(entry => {
             const [key, value] = entry;
-  
-            if (eventColumnsTable.includes(key)) {
+
+            if (inputObject=="Event" && eventColumnsTable.includes(key)) {
 
               if (key=="Occurrences") {
                 row["Occurences"]=value.length;
@@ -263,12 +320,35 @@ app.post('/', encodeUrl, (req, res) => {
                 row[key]=value;
               }
             }
+            else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
+
+              if (key=="events") {
+                row["events"]=value.length;
+              }
+              else {
+                row[key]=value;
+              }
+            }
+            else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
+
+              if (key=="taxon") {
+                row["Dyntaxa ID"]=value.dyntaxaId;
+                row["Scientific Name"]=value.scientificName;
+              }
+              else {
+                row[key]=value;
+              }
+
+              row[key]=value;
+        
+            }
           });
           tableData.push(row);
         });
 
         res.render('pages/index', {
           tableCounty: tableCounty, 
+          inputObject: inputObject,
           inputTaxon: inputTaxon,
           inputCounty: inputCounty,
           inputArea: inputArea,
