@@ -30,26 +30,28 @@
 
     $(document).ready(function () {
 
-      var map = L.map('map', {drawControl: true}).setView([55.7026, 13.1922], 13);
+      var map = L.map('map').setView([62.47204526039855, 16.149376718556645], 4);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
           attribution: '© OpenStreetMap'
       }).addTo(map);
       // FeatureGroup is to store editable layers
-      var drawnItems = new L.FeatureGroup();
-      map.addLayer(drawnItems);
-      /*var drawControl = new L.Control.Draw({
-        edit: {
-             featureGroup: drawnItems
+      //var drawnItems = new L.FeatureGroup();
+      //map.addLayer(drawnItems);
+      var drawControl = new L.Control.Draw({
+         draw: {
+             polygon: false,
+             marker: false,
+             polyline: false,
+             circle: false
          }
       });
-      map.addControl(drawControl);*/
+      map.addControl(drawControl);
+
 
       if ($("#inputArea").val()!="") {
         var bounds= <%- JSON.stringify(inputArea) %>;
         console.log(bounds);
-        /*var bounds = [[53.912257, 27.581640], [53.902257, 27.561640]];
-        console.log(bounds);*/
 
         var rect = L.rectangle(bounds, {color: 'blue', weight: 1}).on('click', function (e) {
             // There event is event object
@@ -61,7 +63,8 @@
         }).addTo(map);
 
       }
-      
+
+      // event when object drawn on the map
       map.on('draw:created', function (e) {
         var type = e.layerType,
             layer = e.layer;
@@ -69,18 +72,9 @@
         if (type === 'marker') {
             // Do marker specific actions
         }
-console.log(type);
-        if (type === 'rectangle' || type === 'polygon') {
-          /*layer.on('mouseover', function() {
-                 
-          });*/
-          /*
-          var coord = layer.getLatLngs();
-          var resp = coord.map(function(point) {
-            return [point.lat, point.lng];
-          });
 
-console.log(resp);*/
+        if (type === 'rectangle' || type === 'polygon') {
+          //layer.on('mouseover', function() {   });
 
           $('#inputArea').val(layer.getLatLngs());
         }
