@@ -8,13 +8,87 @@
 <header>
   <%- include('../partials/header'); %>
 
+  <style>
+    #map { height: 360px; }
+  </style>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="tablefilter/dist/tablefilter/tablefilter.js"></script>
 
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+     integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+     crossorigin=""/>
+  <!-- Make sure you put this AFTER Leaflet's CSS -->
+  <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+   integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+   crossorigin=""></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
+
   <script>
 
     $(document).ready(function () {
+
+      var map = L.map('map', {drawControl: true}).setView([55.7026, 13.1922], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap'
+      }).addTo(map);
+      // FeatureGroup is to store editable layers
+      var drawnItems = new L.FeatureGroup();
+      map.addLayer(drawnItems);
+      /*var drawControl = new L.Control.Draw({
+        edit: {
+             featureGroup: drawnItems
+         }
+      });
+      map.addControl(drawControl);*/
+
+      if ($("#inputArea").val()!="") {
+        var bounds= <%- JSON.stringify(inputArea) %>;
+        console.log(bounds);
+        /*var bounds = [[53.912257, 27.581640], [53.902257, 27.561640]];
+        console.log(bounds);*/
+
+        var rect = L.rectangle(bounds, {color: 'blue', weight: 1}).on('click', function (e) {
+            // There event is event object
+            // there e.type === 'click'
+            // there e.lanlng === L.LatLng on map
+            // there e.target.getLatLngs() - your rectangle coordinates
+            // but e.target !== rect
+            console.info(e);
+        }).addTo(map);
+
+      }
+      
+      map.on('draw:created', function (e) {
+        var type = e.layerType,
+            layer = e.layer;
+
+        if (type === 'marker') {
+            // Do marker specific actions
+        }
+console.log(type);
+        if (type === 'rectangle' || type === 'polygon') {
+          /*layer.on('mouseover', function() {
+                 
+          });*/
+          /*
+          var coord = layer.getLatLngs();
+          var resp = coord.map(function(point) {
+            return [point.lat, point.lng];
+          });
+
+console.log(resp);*/
+
+          $('#inputArea').val(layer.getLatLngs());
+        }
+
+        // Do whatever else you need to. (save to db, add to map etc)
+        map.addLayer(layer);
+      });
+
 
 
       // check if the element exists
@@ -68,6 +142,13 @@
 </header>
 
 <main>
+
+  <div>
+    <%= inputArea[0] %>
+    <%= inputArea[1] %>
+    <%= inputArea[2] %>
+  </div>
+
   <div class="">
     <h1>Browse LU data</h1>
 
@@ -99,6 +180,12 @@
                 <option value="<%= tableCounty[i] %>"  <%= (inputCounty.includes(tableCounty[i]) ? "selected" : "") %>><%= tableCounty[i] %></option>
               <% } %>
           </select>
+        </div>
+
+        <div id="map"></div>
+        <div class="form-group mb-3">
+          <label>Bounding box</label>
+          <input type="text" class="form-control" name="inputArea" id="inputArea" value="<%= inputArea %>" readOnly=true>
         </div>
 
         <h3>Dates</h3>

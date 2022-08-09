@@ -56,7 +56,6 @@ apiInstance.getEventsBySearch(opts, (error, data, response) => {
 console.log("FIN POST TEST");
 */
 
-
 import pkgExpress from 'express';
 const express = pkgExpress;
 
@@ -119,7 +118,6 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
 
 });
 
-
 // get /about
 app.get('/about', function(req, res) {
   res.render('pages/about');
@@ -151,7 +149,6 @@ app.post('/', encodeUrl, (req, res) => {
 
   if (typeof req.body.inputCounty !== 'undefined' && req.body.inputCounty!="") {
 
-
     let countyNames= [];
 
     // several items selected
@@ -176,9 +173,74 @@ app.post('/', encodeUrl, (req, res) => {
 
     }
 
-
     inputCounty = req.body.inputCounty;
   }
+
+console.log("AREA : "+req.body.inputArea);
+  if (typeof req.body.inputArea !== 'undefined' && req.body.inputArea!="") {
+
+    var coordinates = req.body.inputArea;
+    console.log("coordinates avant "+coordinates);
+
+    coordinates = coordinates.replace(new RegExp('LatLng\\(', 'g'), "");
+    coordinates = coordinates.replace(new RegExp('\\),', 'g'), "#");
+    coordinates = coordinates.replace(new RegExp('\\)', 'g'), "");
+    coordinates = coordinates.replace(new RegExp('\\, ', 'g'), ",");
+
+
+    console.log("coordinates apres "+coordinates);
+
+    const coordArrSplit = coordinates.split("#");
+
+    if (coordArrSplit.length>1 ) {
+      const coordArr=[];
+      coordArrSplit.forEach(elt => {
+
+       var point=elt.split(",");
+
+       coordArr.push([
+          parseFloat(point[0]), parseFloat(point[1])
+        ]);
+      });
+
+      if (typeof dataInput.area !== 'undefined' ){
+        dataInput.area.area ={
+          geographicArea: {
+            featureLP: {
+              geometry: {
+                type:"Polygon",
+                coordinates: coordArr
+              }
+            }
+          }
+        };
+      }
+      else {
+        dataInput.area = {
+          area: {
+            geographicArea: {
+              featureLP: {
+                geometry: {
+                  type:"Polygon",
+                  coordinates: coordArr
+                }
+              }
+            }
+          } 
+        };
+      }
+
+      console.log(dataInput.area);
+
+      inputArea = coordArr;
+    }
+    else {
+      console.log("Error, only "+coordArrSplit.length+" points in the bounding box");
+      inputArea="";
+    }
+
+  }
+
 
   if ( (typeof req.body.inputStartDate !== 'undefined' && req.body.inputStartDate !="")
    || (typeof req.body.inputEndDate !== 'undefined' && req.body.inputEndDate !="")) {
@@ -282,69 +344,76 @@ app.post('/', encodeUrl, (req, res) => {
         const tableColumns =[];
         const tableData =[];
 
-        Object.keys(data[0]).forEach(key => {
-          //console.log(key, data[key]);
-          // add only thr columns to be displayed
-          if (inputObject=="Event" && eventColumnsTable.includes(key)) {
-            tableColumns.push(key);
-          }
-          else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
-            tableColumns.push(key);
-          }
-          else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
+        console.log(data.length+" result(s)");
 
-            if (key=="taxon") {
-              tableColumns.push("taxon");
-              tableColumns.push("Dyntaxa ID");
-              tableColumns.push("Scientific Name");
-            }
-            else {
+        if(data.length>0) {
+
+          Object.keys(data[0]).forEach(key => {
+            //console.log(key, data[key]);
+            // add only thr columns to be displayed
+            if (inputObject=="Event" && eventColumnsTable.includes(key)) {
               tableColumns.push(key);
             }
-          }
-        });
-
-        var_dump(tableColumns);
-
-        Object.entries(data).forEach(elt => {
-          const row = [];
-          Object.entries(elt[1]).forEach(entry => {
-            const [key, value] = entry;
-
-            if (inputObject=="Event" && eventColumnsTable.includes(key)) {
-
-              if (key=="Occurrences") {
-                row["Occurences"]=value.length;
-              }
-              else {
-                row[key]=value;
-              }
-            }
             else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
-
-              if (key=="events") {
-                row["events"]=value.length;
-              }
-              else {
-                row[key]=value;
-              }
+              tableColumns.push(key);
             }
             else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
 
               if (key=="taxon") {
-                row["Dyntaxa ID"]=value.dyntaxaId;
-                row["Scientific Name"]=value.scientificName;
+                tableColumns.push("taxon");
+                tableColumns.push("Dyntaxa ID");
+                tableColumns.push("Scientific Name");
               }
               else {
-                row[key]=value;
+                tableColumns.push(key);
               }
-
-              row[key]=value;
-        
             }
           });
-          tableData.push(row);
-        });
+
+          var_dump(tableColumns);
+
+          Object.entries(data).forEach(elt => {
+            const row = [];
+            Object.entries(elt[1]).forEach(entry => {
+              const [key, value] = entry;
+
+              if (inputObject=="Event" && eventColumnsTable.includes(key)) {
+
+                if (key=="Occurrences") {
+                  row["Occurences"]=value.length;
+                }
+                else {
+                  row[key]=value;
+                }
+              }
+              else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
+
+                if (key=="events") {
+                  row["events"]=value.length;
+                }
+                else {
+                  row[key]=value;
+                }
+              }
+              else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
+
+                if (key=="taxon") {
+                  row["Dyntaxa ID"]=value.dyntaxaId;
+                  row["Scientific Name"]=value.scientificName;
+                }
+                else {
+                  row[key]=value;
+                }
+
+                row[key]=value;
+          
+              }
+            });
+            tableData.push(row);
+          });
+
+        }
+        
 
         res.render('pages/index', {
           tableCounty: tableCounty, 
