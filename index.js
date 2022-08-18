@@ -62,7 +62,6 @@ const express = pkgExpress;
 import pkgBP from 'body-parser';
 const parseUrl = pkgBP;
 
-
 //import TableFilter from 'tablefilter';
 
 //const express = require('express'); //Import the express dependency
@@ -84,8 +83,12 @@ const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDa
 const datasetColumnsTable = ["identifier", "title", "startDate", "endDate", "events"];
 const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "quantity", "unit", "event"];
 
-const tableCounty = ['None selected', 'Stockholms län', 'Västerbottens län', 'Norrbottens län', 'Uppsala län', 'Södermanlands län', 'Östergötlands län', 'Jönköpings län', 'Kronobergs län', 'Kalmar län', 'Gotlands län', 'Blekinge län', 'Skåne län', 'Hallands län', 'Västra Götalands län', 'Värmlands län', 'Örebro län', 'Västmanlands län', 'Dalarnas län', 'Gävleborgs län', 'Västernorrlands län', 'Jämtlands län'];
+const tableCounty = [/*'None selected', */'Stockholms län', 'Västerbottens län', 'Norrbottens län', 'Uppsala län', 'Södermanlands län', 'Östergötlands län', 'Jönköpings län', 'Kronobergs län', 'Kalmar län', 'Gotlands län', 'Blekinge län', 'Skåne län', 'Hallands län', 'Västra Götalands län', 'Värmlands län', 'Örebro län', 'Västmanlands län', 'Dalarnas län', 'Gävleborgs län', 'Västernorrlands län', 'Jämtlands län'];
 
+let tableTaxon = {
+  100062: "100062 - Gavia arctica - Storlom",
+  102933: "102933 - Anas platyrhynchos - Gräsand"
+}
 // get /
 //Idiomatic expression in express to route and respond to a client request
 app.get('/', (req, res) => {        //get requests to the root ("/") will route here
@@ -104,6 +107,7 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
 
   res.render('pages/index', {
     tableCounty: tableCounty, 
+    tableTaxon: tableTaxon,
     inputObject: inputObject,
     inputTaxon: inputTaxon,
     inputCounty: inputCounty,
@@ -134,6 +138,32 @@ app.post('/', encodeUrl, (req, res) => {
   // CREATE THE dataInput based on the form
   if (typeof req.body.inputTaxon !== 'undefined' && req.body.inputTaxon!="") {
 
+    let taxonIds= [];
+
+    // several items selected
+    if (req.body.inputTaxon instanceof Array) {
+      taxonIds = req.body.inputTaxon;
+    }
+    // only one item
+    else {
+      if (req.body.inputTaxon != "None selected")
+        taxonIds.push(req.body.inputTaxon);
+    }
+
+    if (taxonIds.length>=1) {
+      dataInput.taxon = {
+        ids : []
+      };
+      taxonIds.forEach((element) => {
+        if (element!="None selected")
+          dataInput.taxon.ids.push(parseInt(element.trim()));
+      });
+    }
+
+    inputTaxon = req.body.inputTaxon;
+
+
+    /*
     dataInput.taxon = {
       ids : []
     };
@@ -145,6 +175,7 @@ app.post('/', encodeUrl, (req, res) => {
     });
 
     inputTaxon = req.body.inputTaxon;
+    */
   }
 
   if (typeof req.body.inputCounty !== 'undefined' && req.body.inputCounty!="") {
@@ -326,6 +357,7 @@ console.log("AREA : "+req.body.inputArea);
 
         res.render('pages/index', {
           tableCounty: tableCounty, 
+          tableTaxon: tableTaxon,
           inputObject: inputObject,
           inputTaxon: inputTaxon,
           inputCounty: inputCounty,
@@ -416,7 +448,8 @@ console.log("AREA : "+req.body.inputArea);
         
 
         res.render('pages/index', {
-          tableCounty: tableCounty, 
+          tableCounty: tableCounty,
+          tableTaxon: tableTaxon, 
           inputObject: inputObject,
           inputTaxon: inputTaxon,
           inputCounty: inputCounty,
