@@ -246,8 +246,9 @@ $(function () {
   </div>
 
   <% if (isData) { %>
+    <br>
     <div class="divTable">
-      <h1><%= tableData.length %> result(s)</h1>
+      <h3><%= tableData.length %> result(s) - Table display limited to <%= maxResults %> results.</h3>
 
       <table id="resultTable">
         <thead>

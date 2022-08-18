@@ -71,6 +71,8 @@ const port = 8080;                  //Save the port number where your server wil
 
 app.set('view engine', 'ejs');
 
+var maxResults = 1000;
+
 var inputObject = "Event";
 var inputTaxon = "100062;102933";
 var inputArea = "";
@@ -106,6 +108,7 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
 
 
   res.render('pages/index', {
+    maxResults: maxResults,
     tableCounty: tableCounty, 
     tableTaxon: tableTaxon,
     inputObject: inputObject,
@@ -207,7 +210,6 @@ app.post('/', encodeUrl, (req, res) => {
     inputCounty = req.body.inputCounty;
   }
 
-console.log("AREA : "+req.body.inputArea);
   if (typeof req.body.inputArea !== 'undefined' && req.body.inputArea!="") {
 
     var coordinates = req.body.inputArea;
@@ -356,6 +358,7 @@ console.log("AREA : "+req.body.inputArea);
         console.error(error);
 
         res.render('pages/index', {
+          maxResults: maxResults,
           tableCounty: tableCounty, 
           tableTaxon: tableTaxon,
           inputObject: inputObject,
@@ -379,6 +382,12 @@ console.log("AREA : "+req.body.inputArea);
         console.log(data.length+" result(s)");
 
         if(data.length>0) {
+
+          // get maximum XXX elements
+          if(data.length>maxResults) {
+            console.log("Cut data results to "+maxResults);
+            data = data.slice(0, maxResults);
+          }
 
           Object.keys(data[0]).forEach(key => {
             //console.log(key, data[key]);
@@ -448,6 +457,7 @@ console.log("AREA : "+req.body.inputArea);
         
 
         res.render('pages/index', {
+          maxResults: maxResults,
           tableCounty: tableCounty,
           tableTaxon: tableTaxon, 
           inputObject: inputObject,
