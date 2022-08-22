@@ -55,6 +55,8 @@ apiInstance.getEventsBySearch(opts, (error, data, response) => {
 
 console.log("FIN POST TEST");
 */
+import pkgFs from 'fs';
+const fs = pkgFs;
 
 import pkgExpress from 'express';
 const express = pkgExpress;
@@ -87,10 +89,34 @@ const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "qua
 
 const tableCounty = [/*'None selected', */'Stockholms län', 'Västerbottens län', 'Norrbottens län', 'Uppsala län', 'Södermanlands län', 'Östergötlands län', 'Jönköpings län', 'Kronobergs län', 'Kalmar län', 'Gotlands län', 'Blekinge län', 'Skåne län', 'Hallands län', 'Västra Götalands län', 'Värmlands län', 'Örebro län', 'Västmanlands län', 'Dalarnas län', 'Gävleborgs län', 'Västernorrlands län', 'Jämtlands län'];
 
-let tableTaxon = {
-  100062: "100062 - Gavia arctica - Storlom",
-  102933: "102933 - Anas platyrhynchos - Gräsand"
-}
+const tableTaxon=[];
+// feeding the taxon array from json file
+let rawdataSpecies = fs.readFileSync('public/speciesFile/species.json');
+let speciesList = JSON.parse(rawdataSpecies);
+Object.entries(speciesList).forEach(([key, val]) => {
+  var obj={
+    id: val.dyntaxaId,
+    data: val.dyntaxaId + " - " + val.scientificName + " - " + val.swedishName
+  };
+  //obj[val.lsid]=val.lsid + val.scientificName + val.swedishName;
+
+  tableTaxon.push(obj);
+
+});
+
+/*
+let tableTaxon = [{
+  100062: "100062 - Gavia arctica - Storlom"},
+  {102933: "102933 - Anas platyrhynchos - Gräsand"
+}];
+
+const tableTaxon = [];
+tableTaxon.push({"id":100062,"data":"100062 - Gavia arctica - Storlom"});
+tableTaxon.push({"id":102933,"data":"102933 - Anas platyrhynchos - Gräsand"});
+*/
+console.log(tableTaxon);
+console.log(tableTaxon.length+ " element(s) in tableTaxon");
+
 // get /
 //Idiomatic expression in express to route and respond to a client request
 app.get('/', (req, res) => {        //get requests to the root ("/") will route here
@@ -98,14 +124,6 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
     //res.sendFile('index.html', {root: __dirname});      //server responds by sending the index.html file to the client's browser
                                                         //the .sendFile method needs the absolute path to the file, see: https://expressjs.com/en/4x/api.html#res.sendFile 
     //res.sendFile('mainForm.html', {root: __dirname});      //server responds by sending the index.html file to the client's browser
-  
-  var mascots = [
-    { name: 'Sammy', organization: "DigitalOcean", birth_year: 2012},
-    { name: 'Tux', organization: "Linux", birth_year: 1996},
-    { name: 'Moby Dock', organization: "Docker", birth_year: 2013}
-  ];
-  var tagline = "No programming concept is complete without a cute animal mascot.";
-
 
   res.render('pages/index', {
     maxResults: maxResults,

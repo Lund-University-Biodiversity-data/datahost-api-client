@@ -54,7 +54,7 @@
 
 
 $(function () {
-  $('select').selectpicker();
+  $('.selectpicker').selectpicker();
 });
 
 
@@ -190,22 +190,11 @@ $(function () {
           </select>
         </div>
 
-        <h3>Taxon</h3>
-
-        <div class="form-group mb-3">
-          <select name="inputTaxon" class="form-control selectpicker" multiple title="Choose one of the following..." data-live-search="true">
-            <% Object.keys(tableTaxon).forEach(function(key) { %>
-              <option data-tokens="<%= tableTaxon[key] %>" value="<%= key %>"    <%= (inputTaxon.includes(key) ? "selected" : "") %>><%= tableTaxon[key] %></option>
-
-            <% }); %>    
-          </select>
-
-        </div>
 
         <h3>Area</h3>
         <div class="form-group mb-3">
           <label>Län</label>
-          <select name="inputCounty" class="form-control"  multiple title="Choose one of the following...">
+          <select name="inputCounty" class="form-control selectpicker"  multiple title="Choose one of the following...">
               <% for (var i = 0; i < tableCounty.length; i++) { %>
                 <option value="<%= tableCounty[i] %>"  <%= (inputCounty.includes(tableCounty[i]) ? "selected" : "") %>><%= tableCounty[i] %></option>
               <% } %>
@@ -218,6 +207,19 @@ $(function () {
           <input type="text" class="form-control" name="inputArea" id="inputArea" value="<%= inputArea %>" readOnly=true>
         </div>
 
+        <h3>Taxon</h3>
+
+        <div class="form-group mb-3">
+          <select name="inputTaxon" class="form-control selectpicker" multiple title="Choose one of the following..." data-live-search="true">
+
+            <% Object.entries(tableTaxon).forEach(function([key, val]) { %>
+                <option value="<%= tableTaxon[key].id %>"  <%= (inputTaxon.includes(tableTaxon[key].id) ? "selected" : "") %>><%- tableTaxon[key].data %></option>
+            <% }); %>    
+          </select>
+
+        </div>
+
+        
         <h3>Dates</h3>
         <div class="form-group mb-3">
           <label>Start Date</label>
