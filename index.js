@@ -1,4 +1,7 @@
 
+import configData  from './config/config.js';
+const config = configData;
+
 import pkgVD from 'var_dump';
 const var_dump = pkgVD;
 
@@ -70,13 +73,14 @@ const parseUrl = pkgBP;
 const app = express();              //Instantiate an express app, the main work horse of this server
 const port = 8080;                  //Save the port number where your server will be listening
 
+const speciesFilePath= config.speciesFilePath;;
 
 app.set('view engine', 'ejs');
 
 var maxResults = 1000;
 
 var inputObject = "Event";
-var inputTaxon = "100062;102933";
+var inputTaxon = "";
 var inputArea = "";
 var inputCounty = ["None selected"];
 var inputStartDate = "1998-05-14";
@@ -91,7 +95,7 @@ const tableCounty = [/*'None selected', */'Stockholms län', 'Västerbottens lä
 
 const tableTaxon=[];
 // feeding the taxon array from json file
-let rawdataSpecies = fs.readFileSync('public/speciesFile/species.json');
+let rawdataSpecies = fs.readFileSync(speciesFilePath);
 let speciesList = JSON.parse(rawdataSpecies);
 Object.entries(speciesList).forEach(([key, val]) => {
   var obj={
@@ -114,7 +118,7 @@ const tableTaxon = [];
 tableTaxon.push({"id":100062,"data":"100062 - Gavia arctica - Storlom"});
 tableTaxon.push({"id":102933,"data":"102933 - Anas platyrhynchos - Gräsand"});
 */
-console.log(tableTaxon);
+//console.log(tableTaxon);
 console.log(tableTaxon.length+ " element(s) in tableTaxon");
 
 // get /

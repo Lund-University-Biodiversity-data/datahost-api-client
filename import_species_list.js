@@ -1,15 +1,22 @@
 
+import configData  from './config/config.js';
+const config = configData;
+
 import pkgHttps from 'https';
 const https = pkgHttps;
 
 import pkgFs from 'fs';
 const fs = pkgFs;
 
+const speciesFilePath= config.speciesFilePath;
 
 const speciesArr=[];
-let urlAPI='https://lists.biodiversitydata.se/ws/speciesListItems/dr627?includeKVP=true';
+let urlAPIListsALA=config.urlAPIListsALABirds;
 
-https.get(urlAPI,(res) => {
+const SLUAPIkey = config.SLUAPIkey;
+
+
+https.get(urlAPIListsALA,(res) => {
     let body = "";
 
     res.on("data", (chunk) => {
@@ -59,9 +66,9 @@ https.get(urlAPI,(res) => {
             if (speciesArr.length>0) {
 
               let jsonForFile = JSON.stringify(speciesArr);
-              fs.writeFile('public/speciesFile/species.json', jsonForFile, function (err) {
+              fs.writeFile(speciesFilePath, jsonForFile, function (err) {
                 if (err) return console.log(err);
-                console.log('Hello World > helloworld.txt');
+                console.log('Files created : '+speciesFilePath);
               });
             }
 
