@@ -19,6 +19,9 @@ var urlAPISLUgetTaxa=config.urlAPISLUgetTaxa;
 
 const SLUAPIkey = config.SLUAPIkey;
 
+var timeStart, timeStop;
+
+timeStart=new Date().getTime() / 1000;
 
 async function testAsync (url) {
   return 1;
@@ -46,21 +49,21 @@ async function getDyntaxaAPIparentsId (url) {
           Object.entries(json).forEach(([parentKey, parentVal]) => {
             
             //console.log("parentKey:"+parentKey);
-            //console.log("parentVal:"+parentVal);
+            //console.log("parentVal:");
+            //console.log(parentVal);
             Object.entries(parentVal).forEach(([taxKey, taxVal]) => {
-
-              if(config.dyntaxaIdAves == taxVal) {
-                //console.log("Aves trouvé => stop");
-                avesFound=true;
-              }
 
               if (taxVal!=0 && !avesFound && !speciesArr.includes(taxVal) && !speciesSupp.includes(taxVal)) {
                 speciesSupp.push(taxVal);
                 //console.log("elt added : "+taxVal);
               }
-              else {
-                //console.log("no need "+taxVal);
+
+              if(!avesFound && config.dyntaxaIdAves == taxVal) {
+                //console.log("Aves trouvé => stop");
+                avesFound=true;
+                return;
               }
+
             });
             //console.log(speciesArr);
           });
@@ -163,6 +166,10 @@ https.get(urlAPIListsALA,(res) => {
 
             if (kvpVal.key=="dyntaxa_id") {
               dyntaxaId=kvpVal.value;
+
+              if (dyntaxaId=="NULL") {
+                console.log("WARNING : dyntaxaId is NULL for "+data.id+"/"+data.name);
+              }
             }
             else if (kvpVal.key=="arthela") {
               swedishName=kvpVal.value;
@@ -185,60 +192,76 @@ https.get(urlAPIListsALA,(res) => {
 
         });
 
+
         console.log(speciesArr.length+" element(s) in speciesArr");
+
+        timeStop=new Date().getTime() / 1000;
+        console.log(Math.round(timeStop-timeStart)+" second(s) to exectue until now.")
+
         if (speciesArr.length>0) {
 
-          if (speciesArr.length>0) {
-            console.log("get dependecies for "+speciesArr.length+ " species");
+          console.log("get dependencies for "+speciesArr.length+ " species");
 
+          // async to make sure that the for Loop awaits all the results before doing more
+          const asyncedLoopForGetTaxa = async _ => {
+            for (const onespecies of speciesSupp) {
+              var urlSLU=urlAPISLUgetTaxa.replace("{taxonId}", onespecies);
+              let rtApi = await getDyntaxaAPIgetTaxa(urlSLU);
+              //let rtApi = await testAsync(urlSLU);
+              //console.log("rt GetTaxa after await : "+rtApi); 
+            //});
+            }
+            console.log(speciesArr.length+" element(s) now in speciesArr");
 
-            // async to make sure that the for Loop awaits all the results before doing more
-            const asyncedLoopForGetTaxa = async _ => {
-              for (const onespecies of speciesSupp) {
-                var urlSLU=urlAPISLUgetTaxa.replace("{taxonId}", onespecies);
-                let rtApi = await getDyntaxaAPIgetTaxa(urlSLU);
-                //let rtApi = await testAsync(urlSLU);
-                //console.log("rt GetTaxa after await : "+rtApi); 
-              //});
-              }
-              console.log(speciesArr.length+" element(s) now in speciesArr");
+            timeStop=new Date().getTime() / 1000;
+            console.log(Math.round(timeStop-timeStart)+" second(s) to exectue until now.")
 
-              if (speciesArr.length>0) {
-                writeFileSpecies();
-              }
+            if (speciesArr.length>0) {
+              writeFileSpecies();
             }
 
-
-            // async to make sure that the for Loop awaits all the results before doing more
-            const asyncedLoopForParentsId = async _ => {
-              //speciesArr.forEach(async function(onespecies) {
-              for (const onespecies of speciesArr) {
-                var urlSLU=urlAPISLUparentsId.replace("{taxonId}", onespecies.dyntaxaId);
-                let rtApi = await getDyntaxaAPIparentsId(urlSLU);
-                //let rtApi = await testAsync(urlSLU);
-                //console.log("rt after await : "+rtApi); 
-              //});
-              }
-              console.log(speciesSupp.length+" element(s) to add as higher hierarchical groups");
-              // loop among the species to add to the list
-
-              //console.log("avant asyncedLoopForGetTaxa"+speciesSupp.length);
-              asyncedLoopForGetTaxa();
-              //console.log("apres asyncedLoopForGetTaxa");
-            }
-
-
-            //console.log("avant asyncedLoopForParentsId");
-            let rt=asyncedLoopForParentsId();
-            //console.log("apres asyncedLoopForParentsId");
-
-            // add one row for eachelemnt in speciesSupp
-
-
-
-
+            timeStop=new Date().getTime() / 1000;
+            console.log(Math.round(timeStop-timeStart)+" second(s) to exectue until now.")
 
           }
+
+
+          // async to make sure that the for Loop awaits all the results before doing more
+          const asyncedLoopForParentsId = async _ => {
+            //speciesArr.forEach(async function(onespecies) {
+            for (const onespecies of speciesArr) {
+              if (onespecies.dyntaxaId !== null && onespecies.dyntaxaId !== "NULL" && onespecies.dyntaxaId !="" ) {
+                var urlSLU=urlAPISLUparentsId.replace("{taxonId}", onespecies.dyntaxaId);
+                let rtApi = await getDyntaxaAPIparentsId(urlSLU);
+              }
+              else {
+                console.log("WARNING : no dyntaxaId for :");
+                console.log(onespecies);
+              }
+              //let rtApi = await testAsync(urlSLU);
+              //console.log("rt after await : "+rtApi); 
+            //});
+            }
+            console.log(speciesSupp.length+" element(s) to add as higher hierarchical groups");
+            // loop among the species to add to the list
+            console.log(speciesSupp);
+            //console.log("avant asyncedLoopForGetTaxa"+speciesSupp.length);
+            asyncedLoopForGetTaxa();
+            //console.log("apres asyncedLoopForGetTaxa");
+
+
+            timeStop=new Date().getTime() / 1000;
+            console.log(Math.round(timeStop-timeStart)+" second(s) to exectue until now.")
+          }
+
+
+          //console.log("avant asyncedLoopForParentsId");
+          let rt=asyncedLoopForParentsId();
+          //console.log("apres asyncedLoopForParentsId");
+
+          // add one row for eachelemnt in speciesSupp
+
+
         }
 
 
@@ -252,3 +275,7 @@ https.get(urlAPIListsALA,(res) => {
 }).on("error", (error) => {
     console.error(error.message);
 });
+
+
+timeStop=new Date().getTime() / 1000;
+console.log(Math.round(timeStop-timeStart)+" second(s) to exectue until now.")
