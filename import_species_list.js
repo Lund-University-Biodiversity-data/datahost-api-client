@@ -9,9 +9,11 @@ import pkgFs from 'fs';
 const fs = pkgFs;
 
 const speciesFilePath= config.speciesFilePath;
+const speciesHierarchyFilePath= config.speciesHierarchyFilePath;
 
 const speciesArr=[]; // final list with species
 const speciesSupp=[]; // species added based on the hierarchical dependecies
+const speciesHierarchy={}; // species with hierarchies relations AS OBJECT and not array
 
 const urlAPIListsALA=config.urlAPIListsALABirds;
 var urlAPISLUparentsId=config.urlAPISLUparentsId;
@@ -28,7 +30,9 @@ async function testAsync (url) {
 }
 
 // function that get the parent dyntaxaIds of a dyntaxaAPI and update the global array speciesSupp
-async function getDyntaxaAPIparentsId (url) {
+async function getDyntaxaAPIparentsId (dyntaxaId) {
+
+  var url=urlAPISLUparentsId.replace("{taxonId}", dyntaxaId);
 
   return new Promise((resolve) => {
 
@@ -53,16 +57,29 @@ async function getDyntaxaAPIparentsId (url) {
             //console.log(parentVal);
             Object.entries(parentVal).forEach(([taxKey, taxVal]) => {
 
-              if (taxVal!=0 && !avesFound && !speciesArr.includes(taxVal) && !speciesSupp.includes(taxVal)) {
-                speciesSupp.push(taxVal);
-                //console.log("elt added : "+taxVal);
+              // do not add until finding the "bird/aves"
+              if(!avesFound && config.dyntaxaIdAves == taxVal) {
+                console.log("Aves trouvé => let's go");
+                avesFound=true;
               }
 
-              if(!avesFound && config.dyntaxaIdAves == taxVal) {
-                //console.log("Aves trouvé => stop");
-                avesFound=true;
-                return;
+              // adding the element to the list of species to add in the end
+              if (taxVal!=0 && avesFound && !speciesArr.includes(taxVal) && !speciesSupp.includes(taxVal)) {
+                speciesSupp.push(taxVal);
+                console.log("elt added : "+taxVal);
               }
+
+              // adding the hierarchy
+              if (taxVal!=0 && avesFound) {
+                if (speciesHierarchy[taxVal] === undefined) {
+                  speciesHierarchy[taxVal]=[];
+                }
+                if (!speciesHierarchy[taxVal].includes(dyntaxaId)) {
+                  speciesHierarchy[taxVal].push(dyntaxaId);
+                  console.log("elt added to speciesHierarchy : "+dyntaxaId+" in speciesHierrarchy de "+taxVal);
+                }
+              }    
+
 
             });
             //console.log(speciesArr);
@@ -91,6 +108,13 @@ function writeFileSpecies() {
     if (err) return console.log(err);
     console.log('File created : '+speciesFilePath);
   });
+
+  let jsonHierForFile = JSON.stringify(speciesHierarchy);
+  fs.writeFile(speciesHierarchyFilePath, jsonHierForFile, function (err) {
+    if (err) return console.log(err);
+    console.log('File created : '+speciesHierarchyFilePath);
+  });
+
 }
 
 // function that get the taxon details for a dyntaxaAPI and update the global array speciesArr
@@ -231,8 +255,7 @@ https.get(urlAPIListsALA,(res) => {
             //speciesArr.forEach(async function(onespecies) {
             for (const onespecies of speciesArr) {
               if (onespecies.dyntaxaId !== null && onespecies.dyntaxaId !== "NULL" && onespecies.dyntaxaId !="" ) {
-                var urlSLU=urlAPISLUparentsId.replace("{taxonId}", onespecies.dyntaxaId);
-                let rtApi = await getDyntaxaAPIparentsId(urlSLU);
+                let rtApi = await getDyntaxaAPIparentsId(onespecies.dyntaxaId);
               }
               else {
                 console.log("WARNING : no dyntaxaId for :");
@@ -245,6 +268,14 @@ https.get(urlAPIListsALA,(res) => {
             console.log(speciesSupp.length+" element(s) to add as higher hierarchical groups");
             // loop among the species to add to the list
             console.log(speciesSupp);
+
+            console.log(Object.keys(speciesHierarchy).length+" element(s) with childIds (speciesHierarchy)");
+
+            // should be the same number
+            if (speciesSupp.length!=Object.keys(speciesHierarchy).length) {
+              console.log("ERROR : speciesSupp and speciesHierarchy should have the same number of elements.");
+              console.log(speciesHierarchy);
+            }
             //console.log("avant asyncedLoopForGetTaxa"+speciesSupp.length);
             asyncedLoopForGetTaxa();
             //console.log("apres asyncedLoopForGetTaxa");

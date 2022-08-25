@@ -74,6 +74,7 @@ const app = express();              //Instantiate an express app, the main work 
 const port = 8080;                  //Save the port number where your server will be listening
 
 const speciesFilePath= config.speciesFilePath;;
+const speciesHierarchyFilePath = config.speciesHierarchyFilePath;
 
 app.set('view engine', 'ejs');
 
@@ -94,6 +95,8 @@ const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "qua
 const tableCounty = [/*'None selected', */'Stockholms län', 'Västerbottens län', 'Norrbottens län', 'Uppsala län', 'Södermanlands län', 'Östergötlands län', 'Jönköpings län', 'Kronobergs län', 'Kalmar län', 'Gotlands län', 'Blekinge län', 'Skåne län', 'Hallands län', 'Västra Götalands län', 'Värmlands län', 'Örebro län', 'Västmanlands län', 'Dalarnas län', 'Gävleborgs län', 'Västernorrlands län', 'Jämtlands län'];
 
 const tableTaxon=[];
+const tableTaxonHierarchy={};
+
 // feeding the taxon array from json file
 let rawdataSpecies = fs.readFileSync(speciesFilePath);
 let speciesList = JSON.parse(rawdataSpecies);
@@ -105,21 +108,16 @@ Object.entries(speciesList).forEach(([key, val]) => {
   //obj[val.lsid]=val.lsid + val.scientificName + val.swedishName;
 
   tableTaxon.push(obj);
-
 });
-
-/*
-let tableTaxon = [{
-  100062: "100062 - Gavia arctica - Storlom"},
-  {102933: "102933 - Anas platyrhynchos - Gräsand"
-}];
-
-const tableTaxon = [];
-tableTaxon.push({"id":100062,"data":"100062 - Gavia arctica - Storlom"});
-tableTaxon.push({"id":102933,"data":"102933 - Anas platyrhynchos - Gräsand"});
-*/
-//console.log(tableTaxon);
 console.log(tableTaxon.length+ " element(s) in tableTaxon");
+
+
+let rawdataSpeciesHierarchy = fs.readFileSync(speciesHierarchyFilePath);
+let speciesHierarchyList = JSON.parse(rawdataSpeciesHierarchy);
+Object.entries(speciesHierarchyList).forEach(([key, val]) => {
+  tableTaxonHierarchy[key]=val;
+});
+console.log(Object.keys(tableTaxonHierarchy).length+ " element(s) in tableTaxonHierarchy");
 
 // get /
 //Idiomatic expression in express to route and respond to a client request
@@ -180,8 +178,22 @@ app.post('/', encodeUrl, (req, res) => {
         ids : []
       };
       taxonIds.forEach((element) => {
-        if (element!="None selected")
+        if (element!="None selected") {
+          // check if this dyntaxaId has childdrenIds to add
+          if (tableTaxonHierarchy[parseInt(element.trim())] !== undefined) {
+            console.log(element+ " has children ! => "+tableTaxonHierarchy[parseInt(element.trim())].length);
+            tableTaxonHierarchy[parseInt(element.trim())].forEach((child) => {
+              if (!dataInput.taxon.ids.includes(parseInt(child.trim()))) {
+                dataInput.taxon.ids.push(parseInt(child.trim()));
+              }
+              else {
+                console.log("child "+child+" already in "+dataInput.taxon.ids);
+              }
+            });
+
+          }
           dataInput.taxon.ids.push(parseInt(element.trim()));
+        }
       });
     }
 
