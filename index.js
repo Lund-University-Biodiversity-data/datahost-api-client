@@ -101,9 +101,16 @@ const tableTaxonHierarchy={};
 let rawdataSpecies = fs.readFileSync(speciesFilePath);
 let speciesList = JSON.parse(rawdataSpecies);
 Object.entries(speciesList).forEach(([key, val]) => {
+
+  var dataChain=val.dyntaxaId + " - " + val.scientificName;
+
+  if (val.swedishName != null && val.swedishName!="null") {
+    dataChain= dataChain + " - " + val.swedishName;
+  }
+
   var obj={
     id: val.dyntaxaId,
-    data: val.dyntaxaId + " - " + val.scientificName + " - " + val.swedishName
+    data: dataChain
   };
   //obj[val.lsid]=val.lsid + val.scientificName + val.swedishName;
 

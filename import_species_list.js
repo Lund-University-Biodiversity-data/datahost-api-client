@@ -59,14 +59,14 @@ async function getDyntaxaAPIparentsId (dyntaxaId) {
 
               // do not add until finding the "bird/aves"
               if(!avesFound && config.dyntaxaIdAves == taxVal) {
-                console.log("Aves trouvé => let's go");
+                //console.log("Aves trouvé => let's go");
                 avesFound=true;
               }
 
               // adding the element to the list of species to add in the end
               if (taxVal!=0 && avesFound && !speciesArr.includes(taxVal) && !speciesSupp.includes(taxVal)) {
                 speciesSupp.push(taxVal);
-                console.log("elt added : "+taxVal);
+                //console.log("elt added : "+taxVal);
               }
 
               // adding the hierarchy
@@ -76,7 +76,7 @@ async function getDyntaxaAPIparentsId (dyntaxaId) {
                 }
                 if (!speciesHierarchy[taxVal].includes(dyntaxaId)) {
                   speciesHierarchy[taxVal].push(dyntaxaId);
-                  console.log("elt added to speciesHierarchy : "+dyntaxaId+" in speciesHierrarchy de "+taxVal);
+                  //console.log("elt added to speciesHierarchy : "+dyntaxaId+" in speciesHierrarchy de "+taxVal);
                 }
               }    
 
@@ -220,7 +220,7 @@ https.get(urlAPIListsALA,(res) => {
         console.log(speciesArr.length+" element(s) in speciesArr");
 
         timeStop=new Date().getTime() / 1000;
-        console.log(Math.round(timeStop-timeStart)+" second(s) to exectue until now.")
+        console.log(Math.round(timeStop-timeStart)+" second(s) to execute until now.")
 
         if (speciesArr.length>0) {
 
@@ -238,14 +238,14 @@ https.get(urlAPIListsALA,(res) => {
             console.log(speciesArr.length+" element(s) now in speciesArr");
 
             timeStop=new Date().getTime() / 1000;
-            console.log(Math.round(timeStop-timeStart)+" second(s) to exectue until now.")
+            console.log(Math.round(timeStop-timeStart)+" second(s) to execute until now.")
 
             if (speciesArr.length>0) {
               writeFileSpecies();
             }
 
             timeStop=new Date().getTime() / 1000;
-            console.log(Math.round(timeStop-timeStart)+" second(s) to exectue until now.")
+            console.log(Math.round(timeStop-timeStart)+" second(s) to execute until now.")
 
           }
 
@@ -282,7 +282,7 @@ https.get(urlAPIListsALA,(res) => {
 
 
             timeStop=new Date().getTime() / 1000;
-            console.log(Math.round(timeStop-timeStart)+" second(s) to exectue until now.")
+            console.log(Math.round(timeStop-timeStart)+" second(s) to execute until now.")
           }
 
 
@@ -309,4 +309,4 @@ https.get(urlAPIListsALA,(res) => {
 
 
 timeStop=new Date().getTime() / 1000;
-console.log(Math.round(timeStop-timeStart)+" second(s) to exectue until now.")
+console.log(Math.round(timeStop-timeStart)+" second(s) to execute until now.")
