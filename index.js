@@ -1,63 +1,17 @@
 
-import configData  from './config/config.js';
-const config = configData;
+import configImp  from './config/config.js';
+const config = configImp;
 
 import pkgVD from 'var_dump';
 const var_dump = pkgVD;
+
+import pkgHttp from 'http';
+const http = pkgHttp;
 
 //var LuApiDocumentationTemplate = require('lu_api_documentation_template');
 import pkgLU from 'lu_api_documentation_template';
 const LuApiDocumentationTemplate = pkgLU;
 
-/*
-console.log("GET TEST");
-
-var api = new LuApiDocumentationTemplate.EventApi()
-var id = "SFTstd:19960602:75"; // {String} ID of the event to get
-
-var callback = function(error, data, response) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API GET called successfully. Returned data: ' + data);
-    var_dump(data);
-  }
-};
-api.getEventsByID(id, callback);
-
-console.log("FIN GET TEST");
-*/
-
-/*
-console.log("POST TEST");
-
-
-const dataInput = {
-    taxon : {
-        ids : [100062]
-    }
-};
-
-var_dump(dataInput);
-
-let apiInstance = new LuApiDocumentationTemplate.EventApi();
-let opts = { 
-  'body': LuApiDocumentationTemplate.EventsFilter.constructFromObject(dataInput), // EventsFilter | Filter used to limit the search.
-  'skip': 0, // Number | Start index
-  'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
-};
-
-apiInstance.getEventsBySearch(opts, (error, data, response) => {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API POST called successfully. Returned data: ' + data);
-    var_dump(data);
-  }
-});
-
-console.log("FIN POST TEST");
-*/
 import pkgFs from 'fs';
 const fs = pkgFs;
 
@@ -67,20 +21,26 @@ const express = pkgExpress;
 import pkgBP from 'body-parser';
 const parseUrl = pkgBP;
 
+import pkgOCSV from 'objects-to-csv';
+const ObjectsToCsv = pkgOCSV;
+
 //import TableFilter from 'tablefilter';
 
 //const express = require('express'); //Import the express dependency
 const app = express();              //Instantiate an express app, the main work horse of this server
 const port = 8080;                  //Save the port number where your server will be listening
 
-const speciesFilePath= config.speciesFilePath;;
-const speciesHierarchyFilePath = config.speciesHierarchyFilePath;
+//const speciesFilePath= config.speciesFilePath;;
+//const speciesHierarchyFilePath = config.speciesHierarchyFilePath;
+const speciesListUrl= config.speciesListUrl;;
+const speciesHierarchyUrl = config.speciesHierarchyUrl;
 
 app.set('view engine', 'ejs');
 
 var maxResults = 1000;
 
 var inputObject = "Event";
+var inputSourceSubmit = "submit";
 var inputTaxon = "";
 var inputArea = "";
 var inputCounty = ["None selected"];
@@ -92,39 +52,12 @@ const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDa
 const datasetColumnsTable = ["identifier", "title", "startDate", "endDate", "events"];
 const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "quantity", "unit", "event"];
 
-const tableCounty = [/*'None selected', */'Stockholms län', 'Västerbottens län', 'Norrbottens län', 'Uppsala län', 'Södermanlands län', 'Östergötlands län', 'Jönköpings län', 'Kronobergs län', 'Kalmar län', 'Gotlands län', 'Blekinge län', 'Skåne län', 'Hallands län', 'Västra Götalands län', 'Värmlands län', 'Örebro län', 'Västmanlands län', 'Dalarnas län', 'Gävleborgs län', 'Västernorrlands län', 'Jämtlands län'];
-
 const tableTaxon=[];
 const tableTaxonHierarchy={};
 
-// feeding the taxon array from json file
-let rawdataSpecies = fs.readFileSync(speciesFilePath);
-let speciesList = JSON.parse(rawdataSpecies);
-Object.entries(speciesList).forEach(([key, val]) => {
+const tableCounty = [/*'None selected', */'Stockholms län', 'Västerbottens län', 'Norrbottens län', 'Uppsala län', 'Södermanlands län', 'Östergötlands län', 'Jönköpings län', 'Kronobergs län', 'Kalmar län', 'Gotlands län', 'Blekinge län', 'Skåne län', 'Hallands län', 'Västra Götalands län', 'Värmlands län', 'Örebro län', 'Västmanlands län', 'Dalarnas län', 'Gävleborgs län', 'Västernorrlands län', 'Jämtlands län'];
+tableCounty.sort(); // alphaebetical sort
 
-  var dataChain=val.dyntaxaId + " - " + val.scientificName;
-
-  if (val.swedishName != null && val.swedishName!="null") {
-    dataChain= dataChain + " - " + val.swedishName;
-  }
-
-  var obj={
-    id: val.dyntaxaId,
-    data: dataChain
-  };
-  //obj[val.lsid]=val.lsid + val.scientificName + val.swedishName;
-
-  tableTaxon.push(obj);
-});
-console.log(tableTaxon.length+ " element(s) in tableTaxon");
-
-
-let rawdataSpeciesHierarchy = fs.readFileSync(speciesHierarchyFilePath);
-let speciesHierarchyList = JSON.parse(rawdataSpeciesHierarchy);
-Object.entries(speciesHierarchyList).forEach(([key, val]) => {
-  tableTaxonHierarchy[key]=val;
-});
-console.log(Object.keys(tableTaxonHierarchy).length+ " element(s) in tableTaxonHierarchy");
 
 // get /
 //Idiomatic expression in express to route and respond to a client request
@@ -139,6 +72,7 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
     tableCounty: tableCounty, 
     tableTaxon: tableTaxon,
     inputObject: inputObject,
+    inputSourceSubmit: inputSourceSubmit,
     inputTaxon: inputTaxon,
     inputCounty: inputCounty,
     inputArea: inputArea,
@@ -403,6 +337,7 @@ app.post('/', encodeUrl, (req, res) => {
           tableCounty: tableCounty, 
           tableTaxon: tableTaxon,
           inputObject: inputObject,
+          inputSourceSubmit: inputSourceSubmit,
           inputTaxon: inputTaxon,
           inputCounty: inputCounty,
           inputArea: inputArea,
@@ -416,6 +351,12 @@ app.post('/', encodeUrl, (req, res) => {
         //console.log('API POST called successfully. Returned data: ' + data);
         console.log('API POST called successfully');
         //var_dump(data);
+
+        inputSourceSubmit = req.body.inputSourceSubmit;
+        
+        if (inputSourceSubmit=="download") {
+          var csvPath="downloads/test.csv";
+        }
 
         const tableColumns =[];
         const tableData =[];
@@ -492,16 +433,33 @@ app.post('/', encodeUrl, (req, res) => {
               }
             });
             tableData.push(row);
+
           });
 
-        }
-        
+
+          if (inputSourceSubmit=="download") {
+
+            (async () => {
+              const csv = new ObjectsToCsv(data);
+             
+              // Save to file:
+              await csv.toDisk(csvPath);
+             
+              // Return the CSV file as string:
+              //console.log(await csv.toString());
+              console.log("Data saved in "+csvPath);
+            })();
+
+          } 
+
+        }     
 
         res.render('pages/index', {
           maxResults: maxResults,
           tableCounty: tableCounty,
           tableTaxon: tableTaxon, 
           inputObject: inputObject,
+          inputSourceSubmit: inputSourceSubmit,
           inputTaxon: inputTaxon,
           inputCounty: inputCounty,
           inputArea: inputArea,
@@ -517,17 +475,8 @@ app.post('/', encodeUrl, (req, res) => {
 
   }
 
-
-
-
-
   //res.sendStatus(200)
 })
-
-
-app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
-    console.log(`Now listening on port ${port} => http://localhost:${port}`); 
-});
 
 
 
@@ -537,8 +486,134 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// start only when species List is ready
+function startApp () {
 
-app.use(express.static(__dirname + '/public'));
-app.use(express.static(__dirname + '/node_modules'));
-app.use(express.static(__dirname + '/node_modules/tablefilter/dist'));
+  app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
+      console.log(`Now listening on port ${port} => http://localhost:${port}`); 
+  });
 
+
+  app.use(express.static(__dirname + '/public'));
+  app.use(express.static(__dirname + '/node_modules'));
+  app.use(express.static(__dirname + '/node_modules/tablefilter/dist'));
+
+
+}
+
+console.log("species list URL : "+speciesListUrl);
+
+
+function getHierarchySpeciesList () {
+
+  console.log("getHierarchySpeciesList");
+
+  http.get(speciesHierarchyUrl,(res) => {
+    let body = "";
+
+    res.on("data", (chunk) => {
+        body += chunk;
+    });
+
+    res.on("end", () => {
+      try {
+        
+        let speciesHierarchy = JSON.parse(body);
+
+        Object.entries(speciesHierarchy).forEach(([key, val]) => {
+          tableTaxonHierarchy[key]=val;
+          console.log(val);
+        });
+
+
+        console.log(Object.keys(tableTaxonHierarchy).length+ " element(s) in tableTaxonHierarchy");
+        //resolve(1);
+
+        startApp();
+
+      } catch (error) {
+          console.error("ERROR : "+error.message);
+          return null;
+      };
+    });
+  }).on("error", (error) => {
+      console.error("ERROR : "+error.message);
+      return null;
+  });
+}
+
+
+
+http.get(speciesListUrl,(res) => {
+  let body = "";
+
+  res.on("data", (chunk) => {
+      body += chunk;
+  });
+
+  res.on("end", () => {
+    try {
+      
+      let speciesList = JSON.parse(body);
+
+      Object.entries(speciesList).forEach(([key, val]) => {
+
+        var dataChain=val.dyntaxaId + " - " + val.scientificName;
+
+        if (val.swedishName != null && val.swedishName!="null") {
+          dataChain= dataChain + " - " + val.swedishName;
+        }
+
+        var obj={
+          id: val.dyntaxaId,
+          data: dataChain
+        };
+        //console.log(obj);
+
+        tableTaxon.push(obj);
+      });
+
+      console.log(tableTaxon.length+ " element(s) in tableTaxon");
+      //resolve(1);
+
+      getHierarchySpeciesList();
+
+    } catch (error) {
+        console.error("ERROR : "+error.message);
+        return null;
+    };
+  });
+}).on("error", (error) => {
+    console.error("ERROR : "+error.message);
+    return null;
+});
+
+/*
+// feeding the taxon array from json file
+let rawdataSpecies = fs.readFileSync(speciesFilePath);
+let speciesList = JSON.parse(rawdataSpecies);
+Object.entries(speciesList).forEach(([key, val]) => {
+
+  var dataChain=val.dyntaxaId + " - " + val.scientificName;
+
+  if (val.swedishName != null && val.swedishName!="null") {
+    dataChain= dataChain + " - " + val.swedishName;
+  }
+
+  var obj={
+    id: val.dyntaxaId,
+    data: dataChain
+  };
+  //obj[val.lsid]=val.lsid + val.scientificName + val.swedishName;
+
+  tableTaxon.push(obj);
+});
+console.log(tableTaxon.length+ " element(s) in tableTaxon");
+*/
+/*
+let rawdataSpeciesHierarchy = fs.readFileSync(speciesHierarchyFilePath);
+let speciesHierarchyList = JSON.parse(rawdataSpeciesHierarchy);
+Object.entries(speciesHierarchyList).forEach(([key, val]) => {
+  tableTaxonHierarchy[key]=val;
+});
+*/

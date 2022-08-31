@@ -36,14 +36,10 @@ node --es-module-specifier-resolution=node index.js
 npm install var_dump --save-dev
 npm install body-parser
 // for templating
-npm instlal ejs 
+npm install ejs 
 
 
 npm install tablefilter
 
+npm install objects-to-csv
 
-
-
-***** species *****
-npm install https
-npm install fs
