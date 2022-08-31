@@ -506,7 +506,7 @@ console.log("species list URL : "+speciesListUrl);
 
 function getHierarchySpeciesList () {
 
-  console.log("getHierarchySpeciesList");
+  //console.log("getHierarchySpeciesList");
 
   http.get(speciesHierarchyUrl,(res) => {
     let body = "";
@@ -522,7 +522,7 @@ function getHierarchySpeciesList () {
 
         Object.entries(speciesHierarchy).forEach(([key, val]) => {
           tableTaxonHierarchy[key]=val;
-          console.log(val);
+          //console.log(val);
         });
 
 
