@@ -15,6 +15,10 @@ npm start
 
 
 
+pm2 --name datahost-api-server start npm -- start
+
+
+
 *** DEV ***
 
 npm init
