@@ -30,10 +30,7 @@ const ObjectsToCsv = pkgOCSV;
 const app = express();              //Instantiate an express app, the main work horse of this server
 const port = 8080;                  //Save the port number where your server will be listening
 
-//const speciesFilePath= config.speciesFilePath;;
-//const speciesHierarchyFilePath = config.speciesHierarchyFilePath;
-const speciesListUrl= config.speciesListUrl;;
-const speciesHierarchyUrl = config.speciesHierarchyUrl;
+const speciesListUrl= config.speciesListUrl;
 
 app.set('view engine', 'ejs');
 
@@ -53,7 +50,6 @@ const datasetColumnsTable = ["identifier", "title", "startDate", "endDate", "eve
 const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "quantity", "unit", "event"];
 
 const tableTaxon=[];
-const tableTaxonHierarchy={};
 
 const tableCounty = [/*'None selected', */'Stockholms län', 'Västerbottens län', 'Norrbottens län', 'Uppsala län', 'Södermanlands län', 'Östergötlands län', 'Jönköpings län', 'Kronobergs län', 'Kalmar län', 'Gotlands län', 'Blekinge län', 'Skåne län', 'Hallands län', 'Västra Götalands län', 'Värmlands län', 'Örebro län', 'Västmanlands län', 'Dalarnas län', 'Gävleborgs län', 'Västernorrlands län', 'Jämtlands län'];
 tableCounty.sort(); // alphaebetical sort
@@ -118,21 +114,11 @@ app.post('/', encodeUrl, (req, res) => {
       dataInput.taxon = {
         ids : []
       };
+
       taxonIds.forEach((element) => {
         if (element!="None selected") {
-          // check if this dyntaxaId has childdrenIds to add
-          if (tableTaxonHierarchy[parseInt(element.trim())] !== undefined) {
-            console.log(element+ " has children ! => "+tableTaxonHierarchy[parseInt(element.trim())].length);
-            tableTaxonHierarchy[parseInt(element.trim())].forEach((child) => {
-              if (!dataInput.taxon.ids.includes(parseInt(child.trim()))) {
-                dataInput.taxon.ids.push(parseInt(child.trim()));
-              }
-              else {
-                console.log("child "+child+" already in "+dataInput.taxon.ids);
-              }
-            });
 
-          }
+          // the taxon hierarchy is managed from the server side 
           dataInput.taxon.ids.push(parseInt(element.trim()));
         }
       });
@@ -140,20 +126,6 @@ app.post('/', encodeUrl, (req, res) => {
 
     inputTaxon = req.body.inputTaxon;
 
-
-    /*
-    dataInput.taxon = {
-      ids : []
-    };
-
-    const dyntaxaIds = req.body.inputTaxon.split(";");
-
-    dyntaxaIds.forEach((element) => {
-      dataInput.taxon.ids.push(parseInt(element.trim()));
-    });
-
-    inputTaxon = req.body.inputTaxon;
-    */
   }
 
   if (typeof req.body.inputCounty !== 'undefined' && req.body.inputCounty!="") {
@@ -361,7 +333,8 @@ app.post('/', encodeUrl, (req, res) => {
         const tableColumns =[];
         const tableData =[];
 
-        console.log(data.length+" result(s)");
+        var totalResults = data.length;
+        console.log(totalResults+" result(s)");
 
         if(data.length>0) {
 
@@ -393,7 +366,7 @@ app.post('/', encodeUrl, (req, res) => {
             }
           });
 
-          var_dump(tableColumns);
+          //var_dump(tableColumns);
 
           Object.entries(data).forEach(elt => {
             const row = [];
@@ -468,7 +441,8 @@ app.post('/', encodeUrl, (req, res) => {
           inputDatumType: inputDatumType,
           isData: true,
           tableColumns: tableColumns,
-          tableData: tableData
+          tableData: tableData,
+          totalResults: totalResults
         });
       }
     });
@@ -493,55 +467,13 @@ function startApp () {
       console.log(`Now listening on port ${port} => http://localhost:${port}`); 
   });
 
-
   app.use(express.static(__dirname + '/public'));
   app.use(express.static(__dirname + '/node_modules'));
   app.use(express.static(__dirname + '/node_modules/tablefilter/dist'));
 
-
 }
 
 console.log("species list URL : "+speciesListUrl);
-
-
-function getHierarchySpeciesList () {
-
-  //console.log("getHierarchySpeciesList");
-
-  http.get(speciesHierarchyUrl,(res) => {
-    let body = "";
-
-    res.on("data", (chunk) => {
-        body += chunk;
-    });
-
-    res.on("end", () => {
-      try {
-        
-        let speciesHierarchy = JSON.parse(body);
-
-        Object.entries(speciesHierarchy).forEach(([key, val]) => {
-          tableTaxonHierarchy[key]=val;
-          //console.log(val);
-        });
-
-
-        console.log(Object.keys(tableTaxonHierarchy).length+ " element(s) in tableTaxonHierarchy");
-        //resolve(1);
-
-        startApp();
-
-      } catch (error) {
-          console.error("ERROR : "+error.message);
-          return null;
-      };
-    });
-  }).on("error", (error) => {
-      console.error("ERROR : "+error.message);
-      return null;
-  });
-}
-
 
 
 http.get(speciesListUrl,(res) => {
@@ -576,7 +508,7 @@ http.get(speciesListUrl,(res) => {
       console.log(tableTaxon.length+ " element(s) in tableTaxon");
       //resolve(1);
 
-      getHierarchySpeciesList();
+      startApp();
 
     } catch (error) {
         console.error("ERROR : "+error.message);
@@ -587,33 +519,3 @@ http.get(speciesListUrl,(res) => {
     console.error("ERROR : "+error.message);
     return null;
 });
-
-/*
-// feeding the taxon array from json file
-let rawdataSpecies = fs.readFileSync(speciesFilePath);
-let speciesList = JSON.parse(rawdataSpecies);
-Object.entries(speciesList).forEach(([key, val]) => {
-
-  var dataChain=val.dyntaxaId + " - " + val.scientificName;
-
-  if (val.swedishName != null && val.swedishName!="null") {
-    dataChain= dataChain + " - " + val.swedishName;
-  }
-
-  var obj={
-    id: val.dyntaxaId,
-    data: dataChain
-  };
-  //obj[val.lsid]=val.lsid + val.scientificName + val.swedishName;
-
-  tableTaxon.push(obj);
-});
-console.log(tableTaxon.length+ " element(s) in tableTaxon");
-*/
-/*
-let rawdataSpeciesHierarchy = fs.readFileSync(speciesHierarchyFilePath);
-let speciesHierarchyList = JSON.parse(rawdataSpeciesHierarchy);
-Object.entries(speciesHierarchyList).forEach(([key, val]) => {
-  tableTaxonHierarchy[key]=val;
-});
-*/

@@ -258,8 +258,10 @@
   <% if (isData) { %>
     <br>
     <div class="divTable">
-      <h3><%= tableData.length %> result(s) - Table display limited to <%= maxResults %> results.</h3>
-
+      <h3><%= tableData.length %> result(s)</h3>
+      <% if (totalResults != tableData.length ) { %>
+      <p><%- totalResults %> result(s) obtained but table display limited to <%= maxResults %> results.</p>
+      <% } %>
       <table id="resultTable">
         <thead>
             <tr>
