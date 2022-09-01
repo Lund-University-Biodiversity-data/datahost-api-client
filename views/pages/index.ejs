@@ -51,6 +51,28 @@
 
     $(document).ready(function () {
 
+      $('input[name="radioTaxon"]').on('click', function() {
+        if ($(this).attr('id')!="radioTaxonAll") {
+          //$("#divTaxonList").css("display", "none");
+
+          $('select[name=inputTaxon]').val('').selectpicker('deselectAll');
+
+          switch ($(this).attr('id')) {
+            case "radioTaxonBirds":
+              
+              $('select[name=inputTaxon]').val(4000104).selectpicker("refresh");;
+              break;
+            case "radioTaxonKrak":
+              $('select[name=inputTaxon]').val(2002118).selectpicker("refresh");;
+              break;
+          }
+          
+        }
+        else {
+          //$("#divTaxonList").css("display", "inline");
+        }
+      });
+
 
       $(function () {
         $('.selectpicker').selectpicker();
@@ -213,7 +235,40 @@
         <h3>Taxon</h3>
 
         <div class="form-group mb-3">
-          <select name="inputTaxon" class="form-control selectpicker" multiple title="Choose one of the following..." data-live-search="true">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonAll" value="taxonAll">
+            <label class="form-check-label" for="radioTaxonAll">All list</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonBirds" value="taxonBirds">
+            <label class="form-check-label" for="radioTaxonBirds">Birds</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonKrak" value="taxonKrak">
+            <label class="form-check-label" for="radioTaxonKrak">Kråkfåglar</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonClear" value="taxonClear">
+            <label class="form-check-label" for="radioTaxonClear">Clear selection</label>
+          </div>
+          <!--
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonButterflies" value="taxonButterflies">
+            <label class="form-check-label" for="radioTaxonButterflies">Butterflies</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonOwls" value="taxonOwls">
+            <label class="form-check-label" for="radioTaxonOwls">Owls</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonMammals" value="taxonMammals">
+            <label class="form-check-label" for="radioTaxonMammals">Mammals</label>
+          </div>
+        -->
+        </div>
+
+        <div class="form-group mb-3" id="divTaxonList">
+          <select id="inputTaxon" name="inputTaxon" class="form-control selectpicker" multiple title="Choose one of the following..." data-live-search="true">
 
             <% Object.entries(tableTaxon).forEach(function([key, val]) { %>
                 <option value="<%= tableTaxon[key].id %>"  <%= (inputTaxon.includes(tableTaxon[key].id) ? "selected" : "") %>><%- tableTaxon[key].data %></option>
