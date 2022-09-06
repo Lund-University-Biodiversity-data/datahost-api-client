@@ -41,8 +41,8 @@ var inputSourceSubmit = "submit";
 var inputTaxon = "";
 var inputArea = "";
 var inputCounty = ["None selected"];
-var inputStartDate = "1998-05-14";
-var inputEndDate = "1999-05-14";
+var inputStartDate = "2019-10-01";
+var inputEndDate = "2019-10-15";
 var inputDatumType = "BetweenStartDateAndEndDate";
 
 const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDate", "Occurrences"];
@@ -54,6 +54,7 @@ const tableTaxon=[];
 const tableCounty = [/*'None selected', */'Stockholms län', 'Västerbottens län', 'Norrbottens län', 'Uppsala län', 'Södermanlands län', 'Östergötlands län', 'Jönköpings län', 'Kronobergs län', 'Kalmar län', 'Gotlands län', 'Blekinge län', 'Skåne län', 'Hallands län', 'Västra Götalands län', 'Värmlands län', 'Örebro län', 'Västmanlands län', 'Dalarnas län', 'Gävleborgs län', 'Västernorrlands län', 'Jämtlands län'];
 tableCounty.sort(); // alphaebetical sort
 
+var downloadFile = "";
 
 // get /
 //Idiomatic expression in express to route and respond to a client request
@@ -228,18 +229,22 @@ app.post('/', encodeUrl, (req, res) => {
     var inputStartDate="";
     var inputEndDate="";
 
-    if (typeof req.body.inputStartDate !== 'undefined') {
+    dataInput.datum={};
+
+    if (typeof req.body.inputStartDate !== 'undefined' && req.body.inputStartDate !="") {
       inputStartDate=req.body.inputStartDate;
+      dataInput.datum["startDate"] = inputStartDate;
     }
-    if (typeof req.body.inputEndDate !== 'undefined') {
+    if (typeof req.body.inputEndDate !== 'undefined' && req.body.inputEndDate !="") {
       inputEndDate=req.body.inputEndDate;
+      dataInput.datum["endDate"] = inputEndDate;
     }
 
-    dataInput.datum={
-      "startDate": inputStartDate,
-      "endDate": inputEndDate,
-      "datumFilterType":inputDatumType
-    };
+    dataInput.datum["datumFilterType"] = inputDatumType;
+
+    //console.log("datum filter : ");
+    //console.log(dataInput.datum);
+
   }
 
   const dataInputLength = Object.getOwnPropertyNames(dataInput);
@@ -327,7 +332,11 @@ app.post('/', encodeUrl, (req, res) => {
         inputSourceSubmit = req.body.inputSourceSubmit;
         
         if (inputSourceSubmit=="download") {
-          var csvPath="downloads/test.csv";
+          let ts = Date.now();
+          let date_ob = new Date(ts);
+          
+          var filenameCsv="data_"+inputObject+"_"+date_ob.getFullYear()+(("0" + (date_ob.getMonth() + 1)).slice(-2))+(("0" + date_ob.getDate()).slice(-2))+"_"+date_ob.getHours()+date_ob.getMinutes()+date_ob.getSeconds()+".csv";
+          var csvPath=config.downloadFolderUrl+filenameCsv;
         }
 
         const tableColumns =[];
@@ -338,14 +347,18 @@ app.post('/', encodeUrl, (req, res) => {
 
         if(data.length>0) {
 
+          let dataCut;
+
           // get maximum XXX elements
           if(data.length>maxResults) {
             console.log("Cut data results to "+maxResults);
-            data = data.slice(0, maxResults);
+            dataCut = data.slice(0, maxResults);
           }
-
-          Object.keys(data[0]).forEach(key => {
-            //console.log(key, data[key]);
+          else {
+            dataCut = data;
+          }
+          Object.keys(dataCut[0]).forEach(key => {
+            //console.log(key, dataCut[key]);
             // add only thr columns to be displayed
             if (inputObject=="Event" && eventColumnsTable.includes(key)) {
               tableColumns.push(key);
@@ -368,7 +381,7 @@ app.post('/', encodeUrl, (req, res) => {
 
           //var_dump(tableColumns);
 
-          Object.entries(data).forEach(elt => {
+          Object.entries(dataCut).forEach(elt => {
             const row = [];
             Object.entries(elt[1]).forEach(entry => {
               const [key, value] = entry;
@@ -413,37 +426,136 @@ app.post('/', encodeUrl, (req, res) => {
           if (inputSourceSubmit=="download") {
 
             (async () => {
-              const csv = new ObjectsToCsv(data);
+
+//console.log(data);
+
+//console.log(flat(data));
+
+              const finalDataToCsv=[];
+
+              Object.entries(data).forEach(elt => {
+                //console.log(elt);
+                const row = [];
+                Object.entries(elt[1]).forEach(entry => {
+                  const [key, value] = entry;
+
+                  if (inputObject=="Event" && eventColumnsTable.includes(key)) {
+
+                  if (key=="Occurrences") {
+                      row["Occurences"]=value.length;
+                    }
+                    else {
+                      row[key]=value;
+                    }
+                  }
+                  else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
+
+                    if (key=="events") {
+                      row["events"]=value.length;
+                    }
+                    else {
+                      row[key]=value;
+                    }
+                  }
+                  else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
+
+                    if (key=="taxon") {
+                      row["taxonID"]=value.taxonID;
+                      row["dyntaxaId"]=value.dyntaxaId;
+                      row["scientificName"]=value.scientificName;
+                      row["vernacularName"]=value.vernacularName;
+                      row["taxonRank"]=value.taxonRank;
+                      row["verbatimName"]=value.verbatimName;
+                      row["verbatimTaxonID"]=value.verbatimTaxonID;
+                    }
+                    else {
+                      row[key]=value;
+                    }
+
+                    //row[key]=value;
+              
+                  }
+                });
+                finalDataToCsv.push(row);
+
+              });
+
+//console.log(finalDataToCsv);
+
+
+              // use the data uncut
+              const csv = new ObjectsToCsv(finalDataToCsv);
              
               // Save to file:
               await csv.toDisk(csvPath);
-             
+              
+              downloadFile = "http://" + req.get('host') + "/" + filenameCsv;
+
               // Return the CSV file as string:
               //console.log(await csv.toString());
-              console.log("Data saved in "+csvPath);
+              console.log("Data saved in "+csvPath+" ("+data.length+" row(s))");
+
+              res.render('pages/index', {
+                maxResults: maxResults,
+                tableCounty: tableCounty,
+                tableTaxon: tableTaxon, 
+                inputObject: inputObject,
+                inputSourceSubmit: inputSourceSubmit,
+                inputTaxon: inputTaxon,
+                inputCounty: inputCounty,
+                inputArea: inputArea,
+                inputStartDate: inputStartDate,
+                inputEndDate: inputEndDate,
+                inputDatumType: inputDatumType,
+                isData: true,
+                tableColumns: tableColumns,
+                tableData: tableData,
+                totalResults: totalResults,
+                downloadFile: downloadFile
+              });
+
             })();
 
+          }
+          else {
+
+            res.render('pages/index', {
+              maxResults: maxResults,
+              tableCounty: tableCounty,
+              tableTaxon: tableTaxon, 
+              inputObject: inputObject,
+              inputSourceSubmit: inputSourceSubmit,
+              inputTaxon: inputTaxon,
+              inputCounty: inputCounty,
+              inputArea: inputArea,
+              inputStartDate: inputStartDate,
+              inputEndDate: inputEndDate,
+              inputDatumType: inputDatumType,
+              isData: true,
+              tableColumns: tableColumns,
+              tableData: tableData,
+              totalResults: totalResults,
+              downloadFile: ""
+            });
           } 
 
         }     
-
-        res.render('pages/index', {
-          maxResults: maxResults,
-          tableCounty: tableCounty,
-          tableTaxon: tableTaxon, 
-          inputObject: inputObject,
-          inputSourceSubmit: inputSourceSubmit,
-          inputTaxon: inputTaxon,
-          inputCounty: inputCounty,
-          inputArea: inputArea,
-          inputStartDate: inputStartDate,
-          inputEndDate: inputEndDate,
-          inputDatumType: inputDatumType,
-          isData: true,
-          tableColumns: tableColumns,
-          tableData: tableData,
-          totalResults: totalResults
-        });
+        else {
+          res.render('pages/index', {
+            maxResults: maxResults,
+            tableCounty: tableCounty, 
+            tableTaxon: tableTaxon,
+            inputObject: inputObject,
+            inputSourceSubmit: inputSourceSubmit,
+            inputTaxon: inputTaxon,
+            inputCounty: inputCounty,
+            inputArea: inputArea,
+            inputStartDate: inputStartDate,
+            inputEndDate: inputEndDate,
+            inputDatumType: inputDatumType,
+            isData: false
+          });
+        }
       }
     });
 
@@ -467,6 +579,7 @@ function startApp () {
       console.log(`Now listening on port ${port} => http://localhost:${port}`); 
   });
 
+  app.use(express.static(__dirname + '/downloads'));
   app.use(express.static(__dirname + '/public'));
   app.use(express.static(__dirname + '/node_modules'));
   app.use(express.static(__dirname + '/node_modules/tablefilter/dist'));

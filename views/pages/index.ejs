@@ -16,6 +16,8 @@
 
   <script src="tablefilter/dist/tablefilter/tablefilter.js"></script>
 
+  <!-- Add icon library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <!-- LEAFLET -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
@@ -299,10 +301,10 @@
 
         <div class="d-grid mt-3">
 
-        <input type="hidden" id="inputSourceSubmit" name="inputSourceSubmit" value="<%= inputSourceSubmit %>">
-        <!--
+        <input type="hidden" id="inputSourceSubmit" name="inputSourceSubmit" value="">
+        
         <button id="downloadButton" class="btn btn-danger">Generate CSV</button>
-      -->
+      
         <br>
         <button type="submit" class="btn btn-danger">Submit</button>
         </div>
@@ -311,6 +313,9 @@
   </div>
 
   <% if (isData) { %>
+    <% if (downloadFile != "") { %>
+      <a href="<%- downloadFile %>" class="btn"><i class="fa fa-download"></i> Download</a>
+    <% } %>
     <br>
     <div class="divTable">
       <h3><%= tableData.length %> result(s)</h3>
