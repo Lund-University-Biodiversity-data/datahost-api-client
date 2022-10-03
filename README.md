@@ -14,7 +14,7 @@ npm start
 
 
 
-pm2 --name datahost-api-server start npm -- start
+pm2 --name datahost-api-client start npm -- start
 
 
 
