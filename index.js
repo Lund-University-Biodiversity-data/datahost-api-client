@@ -76,7 +76,7 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
     inputStartDate: inputStartDate,
     inputEndDate: inputEndDate,
     inputDatumType: inputDatumType,
-    isData: false
+    isDataTable: false
   });
 
 
@@ -97,6 +97,18 @@ app.post('/', encodeUrl, (req, res) => {
   const dataInput = {};
 
   // CREATE THE dataInput based on the form
+
+  // get the export Mode based on the clicked button
+  inputSourceSubmit = req.body.inputSourceSubmit;
+        
+
+  if (inputSourceSubmit=="exportCsv") {
+    dataInput.exportMode="csv";
+  }
+  else dataInput.exportMode="json";
+
+
+
   if (typeof req.body.inputTaxon !== 'undefined' && req.body.inputTaxon!="") {
 
     let taxonIds= [];
@@ -301,8 +313,6 @@ app.post('/', encodeUrl, (req, res) => {
         break;
     }
 
-    
-
     //apiInstance.getEventsBySearch(opts, (error, data, response) => {
     // dynamic method name called
     apiInstance[getResultsBySearch](opts, (error, data, response) => {
@@ -321,7 +331,7 @@ app.post('/', encodeUrl, (req, res) => {
           inputStartDate: inputStartDate,
           inputEndDate: inputEndDate,
           inputDatumType: inputDatumType,
-          isData: false
+          isDataTable: false
         });
 
       } else {
@@ -329,15 +339,7 @@ app.post('/', encodeUrl, (req, res) => {
         console.log('API POST called successfully');
         //var_dump(data);
 
-        inputSourceSubmit = req.body.inputSourceSubmit;
-        
-        if (inputSourceSubmit=="download") {
-          let ts = Date.now();
-          let date_ob = new Date(ts);
-          
-          var filenameCsv="data_"+inputObject+"_"+date_ob.getFullYear()+(("0" + (date_ob.getMonth() + 1)).slice(-2))+(("0" + date_ob.getDate()).slice(-2))+"_"+date_ob.getHours()+date_ob.getMinutes()+date_ob.getSeconds()+".csv";
-          var csvPath=config.downloadFolderUrl+filenameCsv;
-        }
+
 
         const tableColumns =[];
         const tableData =[];
@@ -345,179 +347,23 @@ app.post('/', encodeUrl, (req, res) => {
         var totalResults = data.length;
         console.log(totalResults+" result(s)");
 
-        if(data.length>0) {
-
-          let dataCut;
-
-          // get maximum XXX elements
-          if(data.length>maxResults) {
-            console.log("Cut data results to "+maxResults);
-            dataCut = data.slice(0, maxResults);
-          }
-          else {
-            dataCut = data;
-          }
-          Object.keys(dataCut[0]).forEach(key => {
-            //console.log(key, dataCut[key]);
-            // add only thr columns to be displayed
-            if (inputObject=="Event" && eventColumnsTable.includes(key)) {
-              tableColumns.push(key);
-            }
-            else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
-              tableColumns.push(key);
-            }
-            else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
-
-              if (key=="taxon") {
-                tableColumns.push("taxon");
-                tableColumns.push("Dyntaxa ID");
-                tableColumns.push("Scientific Name");
-              }
-              else {
-                tableColumns.push(key);
-              }
-            }
-          });
-
-          //var_dump(tableColumns);
-
-          Object.entries(dataCut).forEach(elt => {
-            const row = [];
-            Object.entries(elt[1]).forEach(entry => {
-              const [key, value] = entry;
-
-              if (inputObject=="Event" && eventColumnsTable.includes(key)) {
-
-                if (key=="Occurrences") {
-                  row["Occurences"]=value.length;
-                }
-                else {
-                  row[key]=value;
-                }
-              }
-              else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
-
-                if (key=="events") {
-                  row["events"]=value.length;
-                }
-                else {
-                  row[key]=value;
-                }
-              }
-              else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
-
-                if (key=="taxon") {
-                  row["Dyntaxa ID"]=value.dyntaxaId;
-                  row["Scientific Name"]=value.scientificName;
-                }
-                else {
-                  row[key]=value;
-                }
-
-                row[key]=value;
+        if (/*inputSourceSubmit=="download" || */inputSourceSubmit=="exportCsv") {
+          let ts = Date.now();
+          let date_ob = new Date(ts);
           
-              }
-            });
-            tableData.push(row);
+          var filenameCsv="data_"+inputObject+"_"+date_ob.getFullYear()+(("0" + (date_ob.getMonth() + 1)).slice(-2))+(("0" + date_ob.getDate()).slice(-2))+"_"+date_ob.getHours()+date_ob.getMinutes()+date_ob.getSeconds()+".csv";
+          var csvPath=config.downloadFolderUrl+filenameCsv;
 
-          });
+          // async create csv file
+          (async () => {
 
+            fs.writeFileSync(csvPath, data);
 
-          if (inputSourceSubmit=="download") {
+            downloadFile = "http://" + req.get('host') + "/" + filenameCsv;
 
-            (async () => {
-
-//console.log(data);
-
-//console.log(flat(data));
-
-              const finalDataToCsv=[];
-
-              Object.entries(data).forEach(elt => {
-                //console.log(elt);
-                const row = [];
-                Object.entries(elt[1]).forEach(entry => {
-                  const [key, value] = entry;
-
-                  if (inputObject=="Event" && eventColumnsTable.includes(key)) {
-
-                  if (key=="Occurrences") {
-                      row["Occurences"]=value.length;
-                    }
-                    else {
-                      row[key]=value;
-                    }
-                  }
-                  else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
-
-                    if (key=="events") {
-                      row["events"]=value.length;
-                    }
-                    else {
-                      row[key]=value;
-                    }
-                  }
-                  else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
-
-                    if (key=="taxon") {
-                      row["taxonID"]=value.taxonID;
-                      row["dyntaxaId"]=value.dyntaxaId;
-                      row["scientificName"]=value.scientificName;
-                      row["vernacularName"]=value.vernacularName;
-                      row["taxonRank"]=value.taxonRank;
-                      row["verbatimName"]=value.verbatimName;
-                      row["verbatimTaxonID"]=value.verbatimTaxonID;
-                    }
-                    else {
-                      row[key]=value;
-                    }
-
-                    //row[key]=value;
-              
-                  }
-                });
-                finalDataToCsv.push(row);
-
-              });
-
-//console.log(finalDataToCsv);
-
-
-              // use the data uncut
-              const csv = new ObjectsToCsv(finalDataToCsv);
-             
-              // Save to file:
-              await csv.toDisk(csvPath);
-              
-              downloadFile = "http://" + req.get('host') + "/" + filenameCsv;
-
-              // Return the CSV file as string:
-              //console.log(await csv.toString());
-              console.log("Data saved in "+csvPath+" ("+data.length+" row(s))");
-
-              res.render('pages/index', {
-                maxResults: maxResults,
-                tableCounty: tableCounty,
-                tableTaxon: tableTaxon, 
-                inputObject: inputObject,
-                inputSourceSubmit: inputSourceSubmit,
-                inputTaxon: inputTaxon,
-                inputCounty: inputCounty,
-                inputArea: inputArea,
-                inputStartDate: inputStartDate,
-                inputEndDate: inputEndDate,
-                inputDatumType: inputDatumType,
-                isData: true,
-                tableColumns: tableColumns,
-                tableData: tableData,
-                totalResults: totalResults,
-                downloadFile: downloadFile
-              });
-
-            })();
-
-          }
-          else {
+            // Return the CSV file as string:
+            //console.log(await csv.toString());
+            console.log("Data saved in "+csvPath+" ("+data.length+" row(s))");
 
             res.render('pages/index', {
               maxResults: maxResults,
@@ -531,31 +377,246 @@ app.post('/', encodeUrl, (req, res) => {
               inputStartDate: inputStartDate,
               inputEndDate: inputEndDate,
               inputDatumType: inputDatumType,
-              isData: true,
+              isDataTable: false,
+              tableColumns: tableColumns,
+              tableData: tableData,
+              totalResults: totalResults,
+              downloadFile: downloadFile
+            });
+
+          })();
+          // end async create csv file
+
+
+
+        }
+        else {
+
+
+          // IF NOT EXPORTCSV
+
+
+
+          if(data.length>0) {
+
+            let dataCut;
+
+            // get maximum XXX elements
+            if(data.length>maxResults) {
+              console.log("Cut data results to "+maxResults);
+              dataCut = data.slice(0, maxResults);
+            }
+            else {
+              dataCut = data;
+            }
+            Object.keys(dataCut[0]).forEach(key => {
+              //console.log(key, dataCut[key]);
+              // add only thr columns to be displayed
+              if (inputObject=="Event" && eventColumnsTable.includes(key)) {
+                tableColumns.push(key);
+              }
+              else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
+                tableColumns.push(key);
+              }
+              else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
+
+                if (key=="taxon") {
+                  tableColumns.push("taxon");
+                  tableColumns.push("Dyntaxa ID");
+                  tableColumns.push("Scientific Name");
+                }
+                else {
+                  tableColumns.push(key);
+                }
+              }
+            });
+
+            //var_dump(tableColumns);
+
+            Object.entries(dataCut).forEach(elt => {
+              const row = [];
+              Object.entries(elt[1]).forEach(entry => {
+                const [key, value] = entry;
+
+                if (inputObject=="Event" && eventColumnsTable.includes(key)) {
+
+                  if (key=="Occurrences") {
+                    row["Occurrences"]=value.length;
+                  }
+                  else {
+                    row[key]=value;
+                  }
+                }
+                else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
+
+                  if (key=="events") {
+                    row["events"]=value.length;
+                  }
+                  else {
+                    row[key]=value;
+                  }
+                }
+                else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
+
+                  if (key=="taxon") {
+                    row["Dyntaxa ID"]=value.dyntaxaId;
+                    row["Scientific Name"]=value.scientificName;
+                  }
+                  else {
+                    row[key]=value;
+                  }
+
+                  row[key]=value;
+            
+                }
+              });
+              tableData.push(row);
+
+            });
+
+            /* REMOVE OLD VERSION OF DOWNLOAD BUTTON
+            if (inputSourceSubmit=="download") {
+
+              (async () => {
+
+                //console.log(data);
+
+                //console.log(flat(data));
+
+                const finalDataToCsv=[];
+
+                Object.entries(data).forEach(elt => {
+                  //console.log(elt);
+                  const row = [];
+                  Object.entries(elt[1]).forEach(entry => {
+                    const [key, value] = entry;
+
+                    if (inputObject=="Event" && eventColumnsTable.includes(key)) {
+
+                    if (key=="Occurrences") {
+                        row["Occurrences"]=value.length;
+                      }
+                      else {
+                        row[key]=value;
+                      }
+                    }
+                    else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
+
+                      if (key=="events") {
+                        row["events"]=value.length;
+                      }
+                      else {
+                        row[key]=value;
+                      }
+                    }
+                    else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
+
+                      if (key=="taxon") {
+                        row["taxonID"]=value.taxonID;
+                        row["dyntaxaId"]=value.dyntaxaId;
+                        row["scientificName"]=value.scientificName;
+                        row["vernacularName"]=value.vernacularName;
+                        row["taxonRank"]=value.taxonRank;
+                        row["verbatimName"]=value.verbatimName;
+                        row["verbatimTaxonID"]=value.verbatimTaxonID;
+                      }
+                      else {
+                        row[key]=value;
+                      }
+
+                      //row[key]=value;
+                
+                    }
+                  });
+                  finalDataToCsv.push(row);
+
+                });
+
+                //console.log(finalDataToCsv);
+
+
+                // use the data uncut
+                const csv = new ObjectsToCsv(finalDataToCsv);
+               
+                // Save to file:
+                await csv.toDisk(csvPath);
+                
+                downloadFile = "http://" + req.get('host') + "/" + filenameCsv;
+
+                // Return the CSV file as string:
+                //console.log(await csv.toString());
+                console.log("Data saved in "+csvPath+" ("+data.length+" row(s))");
+
+                res.render('pages/index', {
+                  maxResults: maxResults,
+                  tableCounty: tableCounty,
+                  tableTaxon: tableTaxon, 
+                  inputObject: inputObject,
+                  inputSourceSubmit: inputSourceSubmit,
+                  inputTaxon: inputTaxon,
+                  inputCounty: inputCounty,
+                  inputArea: inputArea,
+                  inputStartDate: inputStartDate,
+                  inputEndDate: inputEndDate,
+                  inputDatumType: inputDatumType,
+                  isDataTable: true,
+                  tableColumns: tableColumns,
+                  tableData: tableData,
+                  totalResults: totalResults,
+                  downloadFile: downloadFile
+                });
+
+              })();
+
+            }
+            else {
+            */
+            res.render('pages/index', {
+              maxResults: maxResults,
+              tableCounty: tableCounty,
+              tableTaxon: tableTaxon, 
+              inputObject: inputObject,
+              inputSourceSubmit: inputSourceSubmit,
+              inputTaxon: inputTaxon,
+              inputCounty: inputCounty,
+              inputArea: inputArea,
+              inputStartDate: inputStartDate,
+              inputEndDate: inputEndDate,
+              inputDatumType: inputDatumType,
+              isDataTable: true,
               tableColumns: tableColumns,
               tableData: tableData,
               totalResults: totalResults,
               downloadFile: ""
             });
-          } 
+            //} 
 
-        }     
-        else {
-          res.render('pages/index', {
-            maxResults: maxResults,
-            tableCounty: tableCounty, 
-            tableTaxon: tableTaxon,
-            inputObject: inputObject,
-            inputSourceSubmit: inputSourceSubmit,
-            inputTaxon: inputTaxon,
-            inputCounty: inputCounty,
-            inputArea: inputArea,
-            inputStartDate: inputStartDate,
-            inputEndDate: inputEndDate,
-            inputDatumType: inputDatumType,
-            isData: false
-          });
+          }     
+          else {
+            res.render('pages/index', {
+              maxResults: maxResults,
+              tableCounty: tableCounty, 
+              tableTaxon: tableTaxon,
+              inputObject: inputObject,
+              inputSourceSubmit: inputSourceSubmit,
+              inputTaxon: inputTaxon,
+              inputCounty: inputCounty,
+              inputArea: inputArea,
+              inputStartDate: inputStartDate,
+              inputEndDate: inputEndDate,
+              inputDatumType: inputDatumType,
+              isDataTable: false
+            });
+          }
+
+
+
+
+
+          // END IF NOT DOWNLOAD
+
         }
+
       }
     });
 
