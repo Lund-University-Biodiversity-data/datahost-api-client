@@ -40,14 +40,17 @@ var inputObject = "Event";
 var inputSourceSubmit = "submit";
 var inputTaxon = "";
 var inputArea = "";
+var inputDatasetList = [];
 var inputCounty = ["None selected"];
-var inputStartDate = "2019-10-01";
-var inputEndDate = "2019-10-15";
+var inputStartDate = "2020-06-12";
+var inputEndDate = "2020-06-15";
 var inputDatumType = "BetweenStartDateAndEndDate";
 
 const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDate", "Occurrences"];
 const datasetColumnsTable = ["identifier", "title", "startDate", "endDate", "events"];
 const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "quantity", "unit", "event"];
+
+const availableDatasets = config.availableDatasets;
 
 const tableTaxon=[];
 
@@ -66,9 +69,11 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
 
   res.render('pages/index', {
     maxResults: maxResults,
+    availableDatasets: availableDatasets, 
     tableCounty: tableCounty, 
     tableTaxon: tableTaxon,
     inputObject: inputObject,
+    inputDatasetList: inputDatasetList,
     inputSourceSubmit: inputSourceSubmit,
     inputTaxon: inputTaxon,
     inputCounty: inputCounty,
@@ -259,6 +264,18 @@ app.post('/', encodeUrl, (req, res) => {
 
   }
 
+  if (typeof req.body.datasetCheckB !== 'undefined' && req.body.datasetCheckB.length>=1) {
+
+    if (typeof req.body.datasetCheckB == "string") {
+      inputDatasetList.push(req.body.datasetCheckB);
+    }
+    else { // object => several elements
+      inputDatasetList=req.body.datasetCheckB;
+    }
+
+    dataInput.datasetList=inputDatasetList;
+  }
+
   const dataInputLength = Object.getOwnPropertyNames(dataInput);
 
   console.log("dataInput array :");
@@ -321,6 +338,7 @@ app.post('/', encodeUrl, (req, res) => {
 
         res.render('pages/index', {
           maxResults: maxResults,
+          availableDatasets: availableDatasets, 
           tableCounty: tableCounty, 
           tableTaxon: tableTaxon,
           inputObject: inputObject,
@@ -367,9 +385,11 @@ app.post('/', encodeUrl, (req, res) => {
 
             res.render('pages/index', {
               maxResults: maxResults,
+              availableDatasets: availableDatasets, 
               tableCounty: tableCounty,
               tableTaxon: tableTaxon, 
               inputObject: inputObject,
+              inputDatasetList: inputDatasetList,
               inputSourceSubmit: inputSourceSubmit,
               inputTaxon: inputTaxon,
               inputCounty: inputCounty,
@@ -394,8 +414,6 @@ app.post('/', encodeUrl, (req, res) => {
 
 
           // IF NOT EXPORTCSV
-
-
 
           if(data.length>0) {
 
@@ -573,9 +591,11 @@ app.post('/', encodeUrl, (req, res) => {
             */
             res.render('pages/index', {
               maxResults: maxResults,
+              availableDatasets: availableDatasets, 
               tableCounty: tableCounty,
               tableTaxon: tableTaxon, 
               inputObject: inputObject,
+              inputDatasetList: inputDatasetList,
               inputSourceSubmit: inputSourceSubmit,
               inputTaxon: inputTaxon,
               inputCounty: inputCounty,
@@ -595,9 +615,11 @@ app.post('/', encodeUrl, (req, res) => {
           else {
             res.render('pages/index', {
               maxResults: maxResults,
+              availableDatasets: availableDatasets, 
               tableCounty: tableCounty, 
               tableTaxon: tableTaxon,
               inputObject: inputObject,
+              inputDatasetList: inputDatasetList,
               inputSourceSubmit: inputSourceSubmit,
               inputTaxon: inputTaxon,
               inputCounty: inputCounty,

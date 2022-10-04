@@ -30,6 +30,10 @@ localhost or PROD url ?
 npm init
 
 
+if changes in lu_api_documentation_template
+npm remove lu_api_documentation_template
+npm install Lund-University-Biodiversity-data/datahost-api-client-nodejs --save
+
 FROM GIT
 npm install Lund-University-Biodiversity-data/datahost-api-client-nodejs --save
 

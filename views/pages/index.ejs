@@ -221,14 +221,26 @@
           </select>
         </div>
 
+        <h3>Dataset filter</h3>
+        <div class="form-group mb-3">
+          <label>Select 0 to n datasets</label>
+          <% for (var i = 0; i < availableDatasets.length; i++) { %>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="<%= availableDatasets[i]['datasetID'] %>" id="dataset<%= i %>" name="datasetCheckB" <% if (inputDatasetList.includes(availableDatasets[i]['datasetID'])) { %>checked<% } %> >
+              <label class="form-check-label" for="dataset<%= i %>">
+                <%= availableDatasets[i]['displayName'] %>
+              </label>
+            </div>
+          <% } %>
+        </div>        
 
         <h3>Area</h3>
         <div class="form-group mb-3">
           <label>Län</label>
           <select name="inputCounty" class="form-control selectpicker"  multiple title="Choose one of the following...">
-              <% for (var i = 0; i < tableCounty.length; i++) { %>
-                <option value="<%= tableCounty[i] %>"  <%= (inputCounty.includes(tableCounty[i]) ? "selected" : "") %>><%= tableCounty[i] %></option>
-              <% } %>
+            <% for (var i = 0; i < tableCounty.length; i++) { %>
+              <option value="<%= tableCounty[i] %>"  <%= (inputCounty.includes(tableCounty[i]) ? "selected" : "") %>><%= tableCounty[i] %></option>
+            <% } %>
           </select>
         </div>
 
