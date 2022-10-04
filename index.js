@@ -264,6 +264,7 @@ app.post('/', encodeUrl, (req, res) => {
 
   }
 
+  inputDatasetList = []; // reinit
   if (typeof req.body.datasetCheckB !== 'undefined' && req.body.datasetCheckB.length>=1) {
 
     if (typeof req.body.datasetCheckB == "string") {
