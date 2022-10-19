@@ -89,6 +89,9 @@
       $('#buttonExportCsv').on('click', function() {
         $('#inputSourceSubmit').val("exportCsv");
       });
+      $('#buttonExportXlsx').on('click', function() {
+        $('#inputSourceSubmit').val("exportXlsx");
+      });
 
       var map = L.map('map').setView([62.47204526039855, 16.149376718556645], 4);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -325,7 +328,10 @@
         </div>
       -->
         <div class="d-grid mt-3">
-          <button id="buttonExportCsv" class="btn btn-danger">Generate CSV - NEW</button>
+          <button id="buttonExportCsv" class="btn btn-danger">Generate CSV</button>
+        </div>
+        <div class="d-grid mt-3">
+          <button id="buttonExportXlsx" class="btn btn-danger">Generate XLSX</button>
         </div>
       </form>
     </div>

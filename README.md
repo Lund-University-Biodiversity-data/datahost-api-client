@@ -57,3 +57,11 @@ npm install tablefilter
 
 npm install objects-to-csv
 
+
+
+
+## for xlsx
+npm install fs
+npm install flat
+npm install json2csv
+npm i @aternus/csv-to-xlsx
