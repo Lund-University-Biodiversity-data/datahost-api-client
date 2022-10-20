@@ -64,18 +64,22 @@ const availableDatasets = config.availableDatasets;
 
 const tableTaxon=[];
 
+// for html table
+var tableColumns =[];
+var tableData =[];
+
+var totalResults;
+
 const tableCounty = [/*'None selected', */'Stockholms län', 'Västerbottens län', 'Norrbottens län', 'Uppsala län', 'Södermanlands län', 'Östergötlands län', 'Jönköpings län', 'Kronobergs län', 'Kalmar län', 'Gotlands län', 'Blekinge län', 'Skåne län', 'Hallands län', 'Västra Götalands län', 'Värmlands län', 'Örebro län', 'Västmanlands län', 'Dalarnas län', 'Gävleborgs län', 'Västernorrlands län', 'Jämtlands län'];
 tableCounty.sort(); // alphaebetical sort
 
 var downloadFile = "";
 
-// get /
-//Idiomatic expression in express to route and respond to a client request
-app.get('/', (req, res) => {        //get requests to the root ("/") will route here
 
-    //res.sendFile('index.html', {root: __dirname});      //server responds by sending the index.html file to the client's browser
-                                                        //the .sendFile method needs the absolute path to the file, see: https://expressjs.com/en/4x/api.html#res.sendFile 
-    //res.sendFile('mainForm.html', {root: __dirname});      //server responds by sending the index.html file to the client's browser
+// render the index page with all the global variable
+function renderIndex(res, isDataTable, source) {
+
+  //console.log("renderIndex from "+source);
 
   res.render('pages/index', {
     maxResults: maxResults,
@@ -91,17 +95,74 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
     inputStartDate: inputStartDate,
     inputEndDate: inputEndDate,
     inputDatumType: inputDatumType,
-    isDataTable: false
+    isDataTable: isDataTable,
+    tableColumns: tableColumns,
+    tableData: tableData,
+    totalResults: totalResults,
+    downloadFile: downloadFile
   });
 
 
+}
 
-});
 
 
+function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence){
+
+  //console.log("function getDatasetDataForXlsx "+inputObject);
+
+  let apiInstance, opts, getResultsBySearch;
+
+  var datasetIDsExtra=[];
+
+  Object.entries(dataEvent).forEach(elt => {
+    if (elt[1].hasOwnProperty("datasetID")) {
+      if (!datasetIDsExtra.includes(elt[1].datasetID))
+        datasetIDsExtra.push(elt[1].datasetID);
+    }
+  });
+
+  if (datasetIDsExtra.length>0) {
+    var dataInputExtraDataset = {};
+    dataInputExtraDataset.datasetList=datasetIDsExtra;
+
+    apiInstance = new LuApiDocumentationTemplate.DatasetApi();
+
+    opts = { 
+      'body': LuApiDocumentationTemplate.DatasetFilter.constructFromObject(dataInputExtraDataset),
+      'skip': 0, // Number | Start index
+      'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
+    };
+
+    getResultsBySearch="getDatasetsBySearch";
+
+    apiInstance[getResultsBySearch](opts, (error, data, response) => {
+      if (error) {
+        console.error(error);
+
+      } else {
+        //console.log('API POST called successfully. Returned data: ' + data);
+        console.log('API POST called again (datasets) successfully');
+        console.log(data.length+" result(s)");
+
+        var dataDataset=transformDatasetData(data);
+
+        downloadFile = writeXlsxFlattened(host, inputObject, dataDataset, dataEvent, dataOccurrence);
+
+        renderIndex(res, false, "getDatasetDataForXlsx"+inputObject);
+
+      }
+    });
+
+  }
+  else {
+  }
+
+}
 
 function transformDatasetData (data) {
-  console.log("transformDatasetData function");
+  
+  //console.log("transformDatasetData function");
 
   var dataDataset = [];
 
@@ -121,14 +182,15 @@ function transformDatasetData (data) {
 
   });
   
-  console.log("dataDataset length : " + dataDataset.length);
+  //console.log("dataDataset length : " + dataDataset.length);
   
   return dataDataset;
 }
 
 
 function transformEventData (data) {
-  console.log("transformEventData function");
+  
+  //console.log("transformEventData function");
 
   var dataDataset = [];
 
@@ -148,46 +210,93 @@ function transformEventData (data) {
 
   });
   
-  console.log("dataDataset length : " + dataDataset.length);
+  //console.log("dataEvent length : " + dataDataset.length);
   
   return dataDataset;
 }
 
 
-
-function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccurence) {
-  console.log("writeXlsxFlattened function");
+function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccurrence) {
+  
+  //console.log("writeXlsxFlattened function "+inputObject);
 
   var dataFinal = [];
+  var okCreate=true;
 
-  if (inputObject != "Dataset" && dataEvent != null) {
+  if (inputObject == "Event") {
 
-    var datasetFinalAsIndexedArray = [];
+    if (dataEvent != null && dataDataset != null) {
+      var datasetFinalAsIndexedArray = [];
 
-    Object.entries(dataDataset).forEach(elt => {
-      datasetFinalAsIndexedArray[elt[1].identifier]=elt;
-    });
+      // create array of datasets
+      Object.entries(dataDataset).forEach(elt => {
+        datasetFinalAsIndexedArray[elt[1].identifier]=elt;
+      });
 
-    dataEvent=transformEventData(dataEvent);
+      // remove occurences details from events
+      dataEvent=transformEventData(dataEvent);
 
-    Object.entries(dataEvent).forEach(elt => {
+      Object.entries(dataEvent).forEach(elt => {
 
-      if (datasetFinalAsIndexedArray[elt[1].datasetID]) {
-        elt[1].dataset=datasetFinalAsIndexedArray[elt[1].datasetID];
-      }
-      else {
-        console.log("No dataset data in datasetFinalAsIndexedArray for datasetID : "+elt[1].datasetID);
-      }
+        if (datasetFinalAsIndexedArray[elt[1].datasetID]) {
+          elt[1].datasetData=datasetFinalAsIndexedArray[elt[1].datasetID];
+        }
+        else {
+          console.log("No dataset data in datasetFinalAsIndexedArray for datasetID : "+elt[1].datasetID);
+        }
 
-      dataFinal.push(flatten(elt));
-      /*
-      if (elt[1].hasOwnProperty("datasetID")) {
-        if (!datasetIDsExtra.includes(elt[1].datasetID))
-          datasetIDsExtra.push(elt[1].datasetID);
-      }
-      */
-    });
+        dataFinal.push(flatten(elt));
 
+      });
+    }
+    else {
+      okCreate=false;
+      console.log("ERROR : missing data dataEvent/dataDataset");
+    }
+
+  }
+  else if (inputObject == "Occurrence") {
+
+    if (dataEvent != null && dataOccurrence != null && dataDataset != null) {
+
+      var datasetFinalAsIndexedArray = [];
+
+      // create array of datasets
+      Object.entries(dataDataset).forEach(elt => {
+        datasetFinalAsIndexedArray[elt[1].identifier]=elt;
+      });
+
+      var eventFinalAsIndexedArray = [];
+
+      // create array of datasets
+      Object.entries(dataEvent).forEach(elt => {
+        eventFinalAsIndexedArray[elt[1].eventID]=elt;
+      });
+
+      Object.entries(dataOccurrence).forEach(elt => {
+
+        if (eventFinalAsIndexedArray[elt[1].event]) {
+          elt[1].eventData=eventFinalAsIndexedArray[elt[1].event];
+        }
+        else {
+          console.log("No event data in eventFinalAsIndexedArray for event : "+elt[1].event);
+        }
+
+        if (datasetFinalAsIndexedArray[elt[1].datasetID]) {
+          elt[1].datasetData=datasetFinalAsIndexedArray[elt[1].datasetID];
+        }
+        else {
+          console.log("No dataset data in datasetFinalAsIndexedArray for datasetID : "+elt[1].datasetID);
+        }
+
+        dataFinal.push(flatten(elt));
+
+      });
+    }
+    else {
+      okCreate=false;
+      console.log("ERROR : missing data dataEvent/dataOccurrence");
+    }
 
   }
   else if (inputObject == "Dataset") {
@@ -197,44 +306,53 @@ function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccu
     });
 
   }
-//console.log(dataFinal);
-
-/*
-  const jsonFlattened = [];
-
-  var dataFlattened=flatten(dataFinal);
-console.log("json flattened");
-*/
-
-  const json2csv = new Parser();
-
-  const csv = json2csv.parse(dataFinal);
-console.log("csv parsed");
-  
-  let ts = Date.now();
-  let date_ob = new Date(ts);
-  var filenameCsv="data_"+inputObject+"_"+date_ob.getFullYear()+(("0" + (date_ob.getMonth() + 1)).slice(-2))+(("0" + date_ob.getDate()).slice(-2))+"_"+date_ob.getHours()+date_ob.getMinutes()+date_ob.getSeconds()+".csv";
-  var csvPath=config.downloadFolderUrl+filenameCsv;
-
-  try {
-    fs.writeFileSync(csvPath, csv);
-console.log("csv written"+csvPath);
-    var filenameXlsx="data_"+inputObject+"_"+date_ob.getFullYear()+(("0" + (date_ob.getMonth() + 1)).slice(-2))+(("0" + date_ob.getDate()).slice(-2))+"_"+date_ob.getHours()+date_ob.getMinutes()+date_ob.getSeconds()+".xlsx";
-    var xlsxPath = config.downloadFolderUrl+filenameXlsx;
-
-    convertCsvToXlsx(csvPath, xlsxPath);
-
-    downloadFile = "http://" + host + "/" + filenameXlsx;      
-
-    console.log("Data saved in "+xlsxPath+" ("+dataDataset.length+" row(s))");
-
-    return downloadFile;
-
-
-  } catch (e) {
-    console.log("ERROR write csv/xlsx "+e.toString());
+  else {
+    okCreate=false;
+    console.log("ERROR : wrong inputObject "+inputObject);
   }
+
+  if (okCreate) {
+
+    const json2csv = new Parser();
+
+    const csv = json2csv.parse(dataFinal);
+    
+    let ts = Date.now();
+    let date_ob = new Date(ts);
+    var filenameCsv="data_"+inputObject+"_"+date_ob.getFullYear()+(("0" + (date_ob.getMonth() + 1)).slice(-2))+(("0" + date_ob.getDate()).slice(-2))+"_"+date_ob.getHours()+date_ob.getMinutes()+date_ob.getSeconds()+".csv";
+    var csvPath=config.downloadFolderUrl+filenameCsv;
+
+    try {
+      fs.writeFileSync(csvPath, csv);
+
+      var filenameXlsx="data_"+inputObject+"_"+date_ob.getFullYear()+(("0" + (date_ob.getMonth() + 1)).slice(-2))+(("0" + date_ob.getDate()).slice(-2))+"_"+date_ob.getHours()+date_ob.getMinutes()+date_ob.getSeconds()+".xlsx";
+      var xlsxPath = config.downloadFolderUrl+filenameXlsx;
+
+      convertCsvToXlsx(csvPath, xlsxPath);
+
+      downloadFile = "http://" + host + "/" + filenameXlsx;      
+
+      console.log("Data saved in "+xlsxPath+" ("+dataFinal.length+" row(s))");
+
+      return downloadFile;
+
+    } 
+    catch (e) {
+      console.log("ERROR write csv/xlsx "+e.toString());
+    }
+
+  }
+
+
 }
+
+
+// get /
+app.get('/', (req, res) => {        //get requests to the root ("/") will route here
+
+  renderIndex(res, false, "app.get");
+
+});
 
 
 // get /about
@@ -492,34 +610,17 @@ app.post('/', encodeUrl, (req, res) => {
       if (error) {
         console.error(error);
 
-        res.render('pages/index', {
-          maxResults: maxResults,
-          availableDatasets: availableDatasets, 
-          tableCounty: tableCounty, 
-          tableTaxon: tableTaxon,
-          inputObject: inputObject,
-          inputDatasetList: inputDatasetList,
-          inputSourceSubmit: inputSourceSubmit,
-          inputTaxon: inputTaxon,
-          inputCounty: inputCounty,
-          inputArea: inputArea,
-          inputStartDate: inputStartDate,
-          inputEndDate: inputEndDate,
-          inputDatumType: inputDatumType,
-          isDataTable: false
-        });
+        renderIndex(res, false, "error apiInstance");
 
       } else {
         //console.log('API POST called successfully. Returned data: ' + data);
         console.log('API POST called successfully');
         //var_dump(data);
 
+        tableColumns =[];
+        tableData =[];
 
-
-        const tableColumns =[];
-        const tableData =[];
-
-        var totalResults = data.length;
+        totalResults = data.length;
         console.log(totalResults+" result(s)");
 
         if (inputSourceSubmit=="exportCsv") {
@@ -543,33 +644,13 @@ app.post('/', encodeUrl, (req, res) => {
             //console.log(await csv.toString());
             console.log("Data saved in "+csvPath+" ("+data.length+" row(s))");
 
-            res.render('pages/index', {
-              maxResults: maxResults,
-              availableDatasets: availableDatasets, 
-              tableCounty: tableCounty,
-              tableTaxon: tableTaxon, 
-              inputObject: inputObject,
-              inputDatasetList: inputDatasetList,
-              inputSourceSubmit: inputSourceSubmit,
-              inputTaxon: inputTaxon,
-              inputCounty: inputCounty,
-              inputArea: inputArea,
-              inputStartDate: inputStartDate,
-              inputEndDate: inputEndDate,
-              inputDatumType: inputDatumType,
-              isDataTable: false,
-              tableColumns: tableColumns,
-              tableData: tableData,
-              totalResults: totalResults,
-              downloadFile: downloadFile
-            });
+            renderIndex(res, false, "exportCsv");
 
           })();
           // end async create csv file
 
-
-
         }
+
         else if (inputSourceSubmit=="exportXlsx") {
           // SPECIFIC LU formating for the xlsx
           // needs to be flattened 
@@ -584,115 +665,54 @@ app.post('/', encodeUrl, (req, res) => {
               
               downloadFile = writeXlsxFlattened(req.get('host'), inputObject, dataDataset, null, null);
 
-              res.render('pages/index', {
-                maxResults: maxResults,
-                availableDatasets: availableDatasets, 
-                tableCounty: tableCounty,
-                tableTaxon: tableTaxon, 
-                inputObject: inputObject,
-                inputDatasetList: inputDatasetList,
-                inputSourceSubmit: inputSourceSubmit,
-                inputTaxon: inputTaxon,
-                inputCounty: inputCounty,
-                inputArea: inputArea,
-                inputStartDate: inputStartDate,
-                inputEndDate: inputEndDate,
-                inputDatumType: inputDatumType,
-                isDataTable: false,
-                tableColumns: tableColumns,
-                tableData: tableData,
-                totalResults: totalResults,
-                downloadFile: downloadFile
-              });
-
+              renderIndex(res, false, "xlsxdataset");
 
               break;
 
             case "Event":
               var dataEvent=data;
 
-              var datasetIDsExtra=[];
-
-              Object.entries(dataEvent).forEach(elt => {
-                if (elt[1].hasOwnProperty("datasetID")) {
-                  if (!datasetIDsExtra.includes(elt[1].datasetID))
-                    datasetIDsExtra.push(elt[1].datasetID);
-                }
-              });
-console.log("datasetIDsExtra:");
-console.log(datasetIDsExtra);
-
-              if (datasetIDsExtra.length>0) {
-                var dataInputExtraDataset = {};
-                dataInputExtraDataset.datasetList=datasetIDsExtra;
-
-
-                apiInstance = new LuApiDocumentationTemplate.DatasetApi();
-
-                opts = { 
-                  'body': LuApiDocumentationTemplate.DatasetFilter.constructFromObject(dataInput),
-                  'skip': 0, // Number | Start index
-                  'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
-                };
-
-                getResultsBySearch="getDatasetsBySearch";
-
-                apiInstance[getResultsBySearch](opts, (error, data, response) => {
-                  if (error) {
-                    console.error(error);
-
-
-                  } else {
-                    //console.log('API POST called successfully. Returned data: ' + data);
-                    console.log('API POST called again successfully');
-
-                    dataDataset=transformDatasetData(data);
-
-                    console.log("data dataset obtained !");
-
-                    downloadFile = writeXlsxFlattened(req.get('host'), inputObject, dataDataset, dataEvent, null);
-
-                    res.render('pages/index', {
-                      maxResults: maxResults,
-                      availableDatasets: availableDatasets, 
-                      tableCounty: tableCounty,
-                      tableTaxon: tableTaxon, 
-                      inputObject: inputObject,
-                      inputDatasetList: inputDatasetList,
-                      inputSourceSubmit: inputSourceSubmit,
-                      inputTaxon: inputTaxon,
-                      inputCounty: inputCounty,
-                      inputArea: inputArea,
-                      inputStartDate: inputStartDate,
-                      inputEndDate: inputEndDate,
-                      inputDatumType: inputDatumType,
-                      isDataTable: false,
-                      tableColumns: tableColumns,
-                      tableData: tableData,
-                      totalResults: totalResults,
-                      downloadFile: downloadFile
-                    });
-
-
-                  }
-                });
-
-              }
+              downloadFile = getDatasetDataForXlsx(res, req.get('host'), inputObject, dataEvent, null);
 
               break;
             case "Occurrence":
               var dataOccurrence=data;
+
+              // new request to the server with the same input parameters, but for events
+
+              apiInstance = new LuApiDocumentationTemplate.EventApi();
+
+              opts = { 
+                'body': LuApiDocumentationTemplate.EventsFilter.constructFromObject(dataInput),
+                'skip': 0, // Number | Start index
+                'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
+              };
+
+              getResultsBySearch="getEventsBySearch";
+
+              apiInstance[getResultsBySearch](opts, (error, data, response) => {
+                if (error) {
+                  console.error(error);
+
+                } else {
+                  //console.log('API POST called successfully. Returned data: ' + data);
+                  console.log('API POST called again (events) successfully');
+                  console.log(data.length+" result(s)");
+
+                  dataEvent=transformEventData(data);
+
+                  //console.log("data event obtained !");
+
+                  getDatasetDataForXlsx(res, req.get('host'), inputObject, dataEvent, dataOccurrence);
+                  
+                }
+              });
+
               break;
           }
 
-          
-
-
-
-
-        }
+        } // end if EXPORTXLSX
         else {
-
 
           // IF NOT EXPORTCSV/EXPORTXLSX
 
@@ -773,51 +793,14 @@ console.log(datasetIDsExtra);
 
             });
 
-            res.render('pages/index', {
-              maxResults: maxResults,
-              availableDatasets: availableDatasets, 
-              tableCounty: tableCounty,
-              tableTaxon: tableTaxon, 
-              inputObject: inputObject,
-              inputDatasetList: inputDatasetList,
-              inputSourceSubmit: inputSourceSubmit,
-              inputTaxon: inputTaxon,
-              inputCounty: inputCounty,
-              inputArea: inputArea,
-              inputStartDate: inputStartDate,
-              inputEndDate: inputEndDate,
-              inputDatumType: inputDatumType,
-              isDataTable: true,
-              tableColumns: tableColumns,
-              tableData: tableData,
-              totalResults: totalResults,
-              downloadFile: ""
-            });
-            //} 
+            renderIndex(res, true, "tableviewOK");
 
           }     
           else {
-            res.render('pages/index', {
-              maxResults: maxResults,
-              availableDatasets: availableDatasets, 
-              tableCounty: tableCounty, 
-              tableTaxon: tableTaxon,
-              inputObject: inputObject,
-              inputDatasetList: inputDatasetList,
-              inputSourceSubmit: inputSourceSubmit,
-              inputTaxon: inputTaxon,
-              inputCounty: inputCounty,
-              inputArea: inputArea,
-              inputStartDate: inputStartDate,
-              inputEndDate: inputEndDate,
-              inputDatumType: inputDatumType,
-              isDataTable: false
-            });
+
+            renderIndex(res, true, "tableviewERROR");
+
           }
-
-
-
-
 
           // END IF NOT DOWNLOAD
 
