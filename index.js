@@ -48,12 +48,13 @@ var maxResults = 1000;
 
 var inputObject = "Event";
 var inputSourceSubmit = "submit";
-var inputTaxon = "";
+var inputTaxon = "[100099]";
 var inputArea = "";
 var inputDatasetList = [];
-var inputCounty = ["None selected"];
-var inputStartDate = "2020-06-12";
-var inputEndDate = "2020-06-15";
+var inputCounty = ["Skåne län"];
+//var inputCounty = ["None selected"];
+var inputStartDate = "2010-01-01";
+var inputEndDate = "2020-12-31";
 var inputDatumType = "BetweenStartDateAndEndDate";
 
 const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDate", "Occurrences"];
@@ -160,6 +161,7 @@ function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence
 
 }
 
+// remove the last column with all the eventsIds, put the number of events instead
 function transformDatasetData (data) {
   
   //console.log("transformDatasetData function");
@@ -634,9 +636,6 @@ app.post('/', encodeUrl, (req, res) => {
           (async () => {
 
             fs.writeFileSync(csvPath, data);
-
-            // generate the xls file from the 
-            if (inputSourceSubmit=="exportXlsx") extension="xlsx";
 
             downloadFile = "http://" + req.get('host') + "/" + filenameCsv;
 
