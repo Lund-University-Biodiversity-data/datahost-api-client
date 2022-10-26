@@ -518,8 +518,8 @@ app.post('/', encodeUrl, (req, res) => {
   if ( (typeof req.body.inputStartDate !== 'undefined' && req.body.inputStartDate !="")
    || (typeof req.body.inputEndDate !== 'undefined' && req.body.inputEndDate !="")) {
 
-    var inputStartDate="";
-    var inputEndDate="";
+    inputStartDate="";
+    inputEndDate="";
 
     dataInput.datum={};
 
