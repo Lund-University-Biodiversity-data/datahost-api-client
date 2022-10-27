@@ -211,6 +211,12 @@
   <div class="">
     <h1>Browse LU data</h1>
 
+    <% if (errorMsg != "") { %>
+    <div class="alert alert-danger" role="alert">
+      <%= errorMsg %>
+    </div>
+    <% } %>
+
     <div class="">
 
       <form action="/" method="POST">

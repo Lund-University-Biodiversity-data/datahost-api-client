@@ -57,6 +57,7 @@ var inputCounty = ["None selected"];
 var inputStartDate = "2020-01-01";
 var inputEndDate = "2020-12-31";
 var inputDatumType = "BetweenStartDateAndEndDate";
+var errorMsg = "";
 
 const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDate", "Occurrences"];
 const datasetColumnsTable = ["identifier", "title", "startDate", "endDate", "events"];
@@ -88,6 +89,7 @@ function renderIndex(res, isDataTable, source) {
     availableDatasets: availableDatasets, 
     tableCounty: tableCounty, 
     tableTaxon: tableTaxon,
+    errorMsg: errorMsg,
     inputObject: inputObject,
     inputDatasetList: inputDatasetList,
     inputSourceSubmit: inputSourceSubmit,
@@ -620,9 +622,14 @@ app.post('/', encodeUrl, (req, res) => {
       if (error) {
         console.error(error);
 
+        errorMsg="Error received from the server";
+
         renderIndex(res, false, "error apiInstance");
 
       } else {
+
+        errorMsg="";
+        
         //console.log('API POST called successfully. Returned data: ' + data);
         console.log('API POST called successfully');
         //var_dump(data);
