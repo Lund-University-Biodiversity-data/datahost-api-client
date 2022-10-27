@@ -48,12 +48,13 @@ var maxResults = 1000;
 
 var inputObject = "Event";
 var inputSourceSubmit = "submit";
-var inputTaxon = "[100099]";
+//var inputTaxon = "[100099]";
+var inputTaxon = "[]";
 var inputArea = "";
 var inputDatasetList = [];
-var inputCounty = ["Skåne län"];
-//var inputCounty = ["None selected"];
-var inputStartDate = "2010-01-01";
+//var inputCounty = ["Skåne län"];
+var inputCounty = ["None selected"];
+var inputStartDate = "2020-01-01";
 var inputEndDate = "2020-12-31";
 var inputDatumType = "BetweenStartDateAndEndDate";
 
@@ -80,7 +81,7 @@ var downloadFile = "";
 // render the index page with all the global variable
 function renderIndex(res, isDataTable, source) {
 
-  //console.log("renderIndex from "+source);
+  console.log("renderIndex from "+source);
 
   res.render('pages/index', {
     maxResults: maxResults,
@@ -389,6 +390,8 @@ app.post('/', encodeUrl, (req, res) => {
 
 
 
+  // reinit
+  inputTaxon=[];
   if (typeof req.body.inputTaxon !== 'undefined' && req.body.inputTaxon!="") {
 
     let taxonIds= [];
@@ -421,6 +424,9 @@ app.post('/', encodeUrl, (req, res) => {
 
   }
 
+
+  // reinit
+  inputCounty=["None selected"];
   if (typeof req.body.inputCounty !== 'undefined' && req.body.inputCounty!="") {
 
     let countyNames= [];
@@ -450,6 +456,8 @@ app.post('/', encodeUrl, (req, res) => {
     inputCounty = req.body.inputCounty;
   }
 
+  // reinit
+  inputArea="";
   if (typeof req.body.inputArea !== 'undefined' && req.body.inputArea!="") {
 
     var coordinates = req.body.inputArea;
@@ -515,11 +523,11 @@ app.post('/', encodeUrl, (req, res) => {
   }
 
 
+  // reinit
+  inputStartDate="";
+  inputEndDate="";    
   if ( (typeof req.body.inputStartDate !== 'undefined' && req.body.inputStartDate !="")
    || (typeof req.body.inputEndDate !== 'undefined' && req.body.inputEndDate !="")) {
-
-    inputStartDate="";
-    inputEndDate="";
 
     dataInput.datum={};
 
