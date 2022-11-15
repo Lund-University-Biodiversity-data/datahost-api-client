@@ -19,7 +19,7 @@ pm2 --name datahost-api-client start npm -- start
 
 
 **** LOCALMODE *****
-please double cheeck in node_modules/lu_api_documentation_template/ApiCLient.js
+please double check in node_modules/lu_api_documentation_template/ApiCLient.js
         this.basePath = 'http://localhost:8088'.replace(/\/+$/, '');
 localhost or PROD url ?
 

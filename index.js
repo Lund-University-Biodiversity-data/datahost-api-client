@@ -48,19 +48,19 @@ var maxResults = 1000;
 
 var inputObject = "Event";
 var inputSourceSubmit = "submit";
-//var inputTaxon = "[100099]";
-var inputTaxon = "[]";
+var inputTaxon = "[100062, 102933]";
+//var inputTaxon = "[]";
 var inputArea = "";
 var inputDatasetList = [];
 //var inputCounty = ["Skåne län"];
 var inputCounty = ["None selected"];
-var inputStartDate = "2020-01-01";
-var inputEndDate = "2020-12-31";
-var inputDatumType = "BetweenStartDateAndEndDate";
+var inputStartDate = "1995-05-25";
+var inputEndDate = "1997-05-27";
+var inputDateType = "BetweenStartDateAndEndDate";
 var errorMsg = "";
 
-const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDate", "Occurrences"];
-const datasetColumnsTable = ["identifier", "title", "startDate", "endDate", "events"];
+const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDate", "occurrenceIds"];
+const datasetColumnsTable = ["identifier", "title", "startDate", "endDate", "eventIds"];
 const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "quantity", "unit", "event"];
 
 const availableDatasets = config.availableDatasets;
@@ -98,7 +98,7 @@ function renderIndex(res, isDataTable, source) {
     inputArea: inputArea,
     inputStartDate: inputStartDate,
     inputEndDate: inputEndDate,
-    inputDatumType: inputDatumType,
+    inputDateType: inputDateType,
     isDataTable: isDataTable,
     tableColumns: tableColumns,
     tableData: tableData,
@@ -128,7 +128,7 @@ function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence
 
   if (datasetIDsExtra.length>0) {
     var dataInputExtraDataset = {};
-    dataInputExtraDataset.datasetList=datasetIDsExtra;
+    dataInputExtraDataset.datasetIds=datasetIDsExtra;
 
     apiInstance = new LuApiDocumentationTemplate.DatasetApi();
 
@@ -176,8 +176,8 @@ function transformDatasetData (data) {
     Object.entries(elt[1]).forEach(entry => {
       const [key, value] = entry;
 
-      if (key=="events") {
-        row["events"]=value.length;
+      if (key=="eventIds") {
+        row["eventIds"]=value.length;
       }
       else {
         row[key]=value;
@@ -204,8 +204,8 @@ function transformEventData (data) {
     Object.entries(elt[1]).forEach(entry => {
       const [key, value] = entry;
 
-      if (key=="Occurrences") {
-        row["Occurrences"]=value.length;
+      if (key=="occurrenceIds") {
+        row["occurrenceIds"]=value.length;
       }
       else {
         row[key]=value;
@@ -542,9 +542,9 @@ app.post('/', encodeUrl, (req, res) => {
       dataInput.datum["endDate"] = inputEndDate;
     }
 
-    dataInput.datum["datumFilterType"] = inputDatumType;
+    dataInput.datum["dateFilterType"] = inputDateType;
 
-    //console.log("datum filter : ");
+    //console.log("date filter : ");
     //console.log(dataInput.datum);
 
   }
@@ -559,7 +559,7 @@ app.post('/', encodeUrl, (req, res) => {
       inputDatasetList=req.body.datasetCheckB;
     }
 
-    dataInput.datasetList=inputDatasetList;
+    dataInput.datasetIds=inputDatasetList;
   }
 
   const dataInputLength = Object.getOwnPropertyNames(dataInput);
@@ -773,8 +773,8 @@ app.post('/', encodeUrl, (req, res) => {
 
                 if (inputObject=="Event" && eventColumnsTable.includes(key)) {
 
-                  if (key=="Occurrences") {
-                    row["Occurrences"]=value.length;
+                  if (key=="occurrenceIds") {
+                    row["occurrenceIds"]=value.length;
                   }
                   else {
                     row[key]=value;
@@ -782,8 +782,8 @@ app.post('/', encodeUrl, (req, res) => {
                 }
                 else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
 
-                  if (key=="events") {
-                    row["events"]=value.length;
+                  if (key=="eventIds") {
+                    row["eventIds"]=value.length;
                   }
                   else {
                     row[key]=value;

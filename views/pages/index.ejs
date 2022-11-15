@@ -204,206 +204,208 @@
 </header>
 
 
-<body class="container">
+<body>
 
 <main>
 
-  
-  <div>
-    <%= inputArea[0] %>
-    <%= inputArea[1] %>
-    <%= inputArea[2] %>
-  </div>
-  
+  <div class="container">
 
-  <div class="">
-    <h1>Datahost Client API</h1>
-
-    <% if (errorMsg != "") { %>
-    <div class="alert alert-danger" role="alert">
-      <%= errorMsg %>
+    <div>
+      <%= inputArea[0] %>
+      <%= inputArea[1] %>
+      <%= inputArea[2] %>
     </div>
-    <% } %>
+    
 
     <div class="">
+      <h1>Datahost Client API</h1>
 
-      <form action="/" method="POST">
+      <% if (errorMsg != "") { %>
+      <div class="alert alert-danger" role="alert">
+        <%= errorMsg %>
+      </div>
+      <% } %>
 
-        <div class="form-group mb-3">
-          <label>Pick an object</label>
-          <select name="inputObject" class="form-control">
-            <option value="Event" <%= (inputObject=="Event" ? "selected" : "") %>>Events</option>
-            <option value="Dataset" <%= (inputObject=="Dataset" ? "selected" : "") %>>Datasets</option>
-            <option value="Occurrence" <%= (inputObject=="Occurrence" ? "selected" : "") %>>Occurrences</option>
-          </select>
-        </div>
+      <div class="">
 
-        <hr>
-        <h3>Direct downlad section</h3>
-        <div class="form-group mb-3">
-          <% for (var i = 0; i < availableDatasets.length; i++) { %>
-            <p><a href="<%= availableDatasets[i]['downloadPath'] %>" target="_blank"><%= availableDatasets[i]['displayName'] %></a></p>
-          <% } %>          
-        </div>
+        <form action="/" method="POST">
 
-        <hr>
+          <div class="form-group mb-3">
+            <label>Pick an object</label>
+            <select name="inputObject" class="form-control">
+              <option value="Event" <%= (inputObject=="Event" ? "selected" : "") %>>Events</option>
+              <option value="Dataset" <%= (inputObject=="Dataset" ? "selected" : "") %>>Datasets</option>
+              <option value="Occurrence" <%= (inputObject=="Occurrence" ? "selected" : "") %>>Occurrences</option>
+            </select>
+          </div>
 
-        <h3>Dataset filter</h3>
-        <div class="form-group mb-3">
-          <label>Select 0 to n datasets</label>
-          <% for (var i = 0; i < availableDatasets.length; i++) { %>
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="<%= availableDatasets[i]['datasetID'] %>" id="dataset<%= i %>" name="datasetCheckB" <% if (inputDatasetList.includes(availableDatasets[i]['datasetID'])) { %>checked<% } %> >
-              <label class="form-check-label" for="dataset<%= i %>">
-                <%= availableDatasets[i]['displayName'] %>
-              </label>
-            </div>
-          <% } %>
-        </div>        
+          <hr>
+          <h3>Direct downlad section</h3>
+          <div class="form-group mb-3">
+            <% for (var i = 0; i < availableDatasets.length; i++) { %>
+              <p><a href="<%= availableDatasets[i]['downloadPath'] %>" target="_blank"><%= availableDatasets[i]['displayName'] %></a></p>
+            <% } %>          
+          </div>
 
-        <hr>
+          <hr>
 
-        <h3>Area</h3>
-        <div class="form-group mb-3">
-          <label>Län</label>
-          <select name="inputCounty" class="form-control selectpicker"  multiple title="Choose one of the following...">
-            <% for (var i = 0; i < tableCounty.length; i++) { %>
-              <option value="<%= tableCounty[i] %>"  <%= (inputCounty.includes(tableCounty[i]) ? "selected" : "") %>><%= tableCounty[i] %></option>
+          <h3>Dataset filter</h3>
+          <div class="form-group mb-3">
+            <label>Select 0 to n datasets</label>
+            <% for (var i = 0; i < availableDatasets.length; i++) { %>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="<%= availableDatasets[i]['datasetID'] %>" id="dataset<%= i %>" name="datasetCheckB" <% if (inputDatasetList.includes(availableDatasets[i]['datasetID'])) { %>checked<% } %> >
+                <label class="form-check-label" for="dataset<%= i %>">
+                  <%= availableDatasets[i]['displayName'] %>
+                </label>
+              </div>
             <% } %>
-          </select>
-        </div>
+          </div>        
 
-        <div id="map"></div>
-        <div class="form-group mb-3">
-          <label>Bounding box</label>
-          <input type="text" class="form-control" name="inputArea" id="inputArea" value="<%= inputArea %>" readOnly=true>
-        </div>
+          <hr>
 
-        <hr>
-
-        <h3>Taxon</h3>
-
-        <div class="form-group mb-3">
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonAll" value="taxonAll">
-            <label class="form-check-label" for="radioTaxonAll">All list</label>
+          <h3>Area</h3>
+          <div class="form-group mb-3">
+            <label>Län</label>
+            <select name="inputCounty" class="form-control selectpicker"  multiple title="Choose one of the following...">
+              <% for (var i = 0; i < tableCounty.length; i++) { %>
+                <option value="<%= tableCounty[i] %>"  <%= (inputCounty.includes(tableCounty[i]) ? "selected" : "") %>><%= tableCounty[i] %></option>
+              <% } %>
+            </select>
           </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonBirds" value="taxonBirds">
-            <label class="form-check-label" for="radioTaxonBirds">Birds</label>
+
+          <div id="map"></div>
+          <div class="form-group mb-3">
+            <label>Bounding box</label>
+            <input type="text" class="form-control" name="inputArea" id="inputArea" value="<%= inputArea %>" readOnly=true>
           </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonKrak" value="taxonKrak">
-            <label class="form-check-label" for="radioTaxonKrak">Kråkfåglar</label>
+
+          <hr>
+
+          <h3>Taxon</h3>
+
+          <div class="form-group mb-3">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonAll" value="taxonAll">
+              <label class="form-check-label" for="radioTaxonAll">All list</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonBirds" value="taxonBirds">
+              <label class="form-check-label" for="radioTaxonBirds">Birds</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonKrak" value="taxonKrak">
+              <label class="form-check-label" for="radioTaxonKrak">Kråkfåglar</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonClear" value="taxonClear">
+              <label class="form-check-label" for="radioTaxonClear">Clear selection</label>
+            </div>
+            <!--
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonButterflies" value="taxonButterflies">
+              <label class="form-check-label" for="radioTaxonButterflies">Butterflies</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonOwls" value="taxonOwls">
+              <label class="form-check-label" for="radioTaxonOwls">Owls</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonMammals" value="taxonMammals">
+              <label class="form-check-label" for="radioTaxonMammals">Mammals</label>
+            </div>
+          -->
           </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonClear" value="taxonClear">
-            <label class="form-check-label" for="radioTaxonClear">Clear selection</label>
+
+          <div class="form-group mb-3" id="divTaxonList">
+            <select id="inputTaxon" name="inputTaxon" class="form-control selectpicker" multiple title="Choose one of the following..." data-live-search="true">
+
+              <% Object.entries(tableTaxon).forEach(function([key, val]) { %>
+                  <option value="<%= tableTaxon[key].id %>"  <%= (inputTaxon.includes(tableTaxon[key].id) ? "selected" : "") %>><%- tableTaxon[key].data %></option>
+              <% }); %>    
+            </select>
+
+          </div>
+
+          
+          <hr>
+
+          <h3>Dates</h3>
+          <div class="form-group mb-3">
+            <label>Start Date</label>
+            <input type="date" class="form-control" placeholder="YYYY-MM-DD" name="inputStartDate" value="<%= inputStartDate %>">
+          </div>
+          <div class="form-group mb-3">
+            <label>End Date</label>
+            <input type="date" class="form-control" placeholder="YYYY-MM-DD" name="inputEndDate" value="<%= inputEndDate %>">
           </div>
           <!--
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonButterflies" value="taxonButterflies">
-            <label class="form-check-label" for="radioTaxonButterflies">Butterflies</label>
+          <div class="form-group mb-3">
+            <label>Date filter</label>
+            <select name="inputDateType" class="form-control">
+              <option value="OverlappingStartDateAndEndDate" <%= (inputDateType=="OverlappingStartDateAndEndDate" ? "selected" : "") %>>OverlappingStartDateAndEndDate</option>
+              <option value="BetweenStartDateAndEndDate" <%= (inputDateType=="BetweenStartDateAndEndDate" ? "selected" : "") %>>BetweenStartDateAndEndDate</option>
+            </select>
           </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonOwls" value="taxonOwls">
-            <label class="form-check-label" for="radioTaxonOwls">Owls</label>
+          -->
+
+          <hr>
+
+          <input type="hidden" id="inputSourceSubmit" name="inputSourceSubmit" value="">
+          <div class="d-grid mt-3">
+            <button type="submit" class="btn btn-danger">View in a table</button>
           </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonMammals" value="taxonMammals">
-            <label class="form-check-label" for="radioTaxonMammals">Mammals</label>
+          <!--
+          <div class="d-grid mt-3">
+            <button id="downloadButton" class="btn btn-danger">Generate CSV (OLD)</button>
           </div>
         -->
-        </div>
-
-        <div class="form-group mb-3" id="divTaxonList">
-          <select id="inputTaxon" name="inputTaxon" class="form-control selectpicker" multiple title="Choose one of the following..." data-live-search="true">
-
-            <% Object.entries(tableTaxon).forEach(function([key, val]) { %>
-                <option value="<%= tableTaxon[key].id %>"  <%= (inputTaxon.includes(tableTaxon[key].id) ? "selected" : "") %>><%- tableTaxon[key].data %></option>
-            <% }); %>    
-          </select>
-
-        </div>
-
-        
-        <hr>
-
-        <h3>Dates</h3>
-        <div class="form-group mb-3">
-          <label>Start Date</label>
-          <input type="date" class="form-control" placeholder="YYYY-MM-DD" name="inputStartDate" value="<%= inputStartDate %>">
-        </div>
-        <div class="form-group mb-3">
-          <label>End Date</label>
-          <input type="date" class="form-control" placeholder="YYYY-MM-DD" name="inputEndDate" value="<%= inputEndDate %>">
-        </div>
-        <!--
-        <div class="form-group mb-3">
-          <label>Date filter</label>
-          <select name="inputDatumType" class="form-control">
-            <option value="OverlappingStartDateAndEndDate" <%= (inputDatumType=="OverlappingStartDateAndEndDate" ? "selected" : "") %>>OverlappingStartDateAndEndDate</option>
-            <option value="BetweenStartDateAndEndDate" <%= (inputDatumType=="BetweenStartDateAndEndDate" ? "selected" : "") %>>BetweenStartDateAndEndDate</option>
-          </select>
-        </div>
-        -->
-
-        <hr>
-
-        <input type="hidden" id="inputSourceSubmit" name="inputSourceSubmit" value="">
-        <div class="d-grid mt-3">
-          <button type="submit" class="btn btn-danger">View in a table</button>
-        </div>
-        <!--
-        <div class="d-grid mt-3">
-          <button id="downloadButton" class="btn btn-danger">Generate CSV (OLD)</button>
-        </div>
-      -->
-        <div class="d-grid mt-3">
-          <button id="buttonExportCsv" class="btn btn-danger">Generate CSV</button>
-        </div>
-        <div class="d-grid mt-3">
-          <button id="buttonExportXlsx" class="btn btn-danger">Generate XLSX</button>
-        </div>
-      </form>
+          <div class="d-grid mt-3">
+            <button id="buttonExportCsv" class="btn btn-danger">Generate CSV</button>
+          </div>
+          <div class="d-grid mt-3">
+            <button id="buttonExportXlsx" class="btn btn-danger">Generate XLSX</button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
 
-        <hr>
+          <hr>
 
-  <% if (locals.downloadFile && downloadFile != "") { %>
-    <a href="<%- downloadFile %>" class="btn"><i class="fa fa-download"></i> Download</a>
-  <% } %>
-  <br>
+    <% if (locals.downloadFile && downloadFile != "") { %>
+      <a href="<%- downloadFile %>" class="btn"><i class="fa fa-download"></i> Download</a>
+    <% } %>
+    <br>
 
-  <% if (isDataTable) { %>
-    <div class="divTable">
-      <h3><%= tableData.length %> result(s)</h3>
-      <% if (totalResults != tableData.length ) { %>
-      <p><%- totalResults %> result(s) obtained but table display limited to <%= maxResults %> results.</p>
-      <% } %>
-      <table id="resultTable">
-        <thead>
-            <tr>
-              <% for (var i = 0; i < tableColumns.length; i++) { %>
-                <th><%= tableColumns[i] %></th>
-              <% } %>
-            </tr>
-        </thead>
-        <tbody>
-          <% for (var i = 0; i < tableData.length; i++) { %>
-            <tr>
-              <% Object.keys(tableData[i]).forEach(function(key) { %>
-               <td><%= tableData[i][key] %></td>
-              <% }); %>    
-            </tr>
-          <% } %>
-        </tbody>
-      </table>
+    <% if (isDataTable) { %>
+      <div class="divTable">
+        <h3><%= tableData.length %> result(s)</h3>
+        <% if (totalResults != tableData.length ) { %>
+        <p><%- totalResults %> result(s) obtained but table display limited to <%= maxResults %> results.</p>
+        <% } %>
+        <table id="resultTable">
+          <thead>
+              <tr>
+                <% for (var i = 0; i < tableColumns.length; i++) { %>
+                  <th><%= tableColumns[i] %></th>
+                <% } %>
+              </tr>
+          </thead>
+          <tbody>
+            <% for (var i = 0; i < tableData.length; i++) { %>
+              <tr>
+                <% Object.keys(tableData[i]).forEach(function(key) { %>
+                 <td><%= tableData[i][key] %></td>
+                <% }); %>    
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
 
-    </div>
-  <% } %>
+      </div>
+    <% } %>
 
+  </div> <!-- end container -->
 </main>
 
 <footer>
