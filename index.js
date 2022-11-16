@@ -135,7 +135,8 @@ function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence
     opts = { 
       'body': LuApiDocumentationTemplate.DatasetFilter.constructFromObject(dataInputExtraDataset),
       'skip': 0, // Number | Start index
-      'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
+      'take': 100, // Number | Number of items to return. 1000 items is the max to return in one call.
+      'exportMode': 'json'
     };
 
     getResultsBySearch="getDatasetsBySearch";
@@ -582,7 +583,8 @@ app.post('/', encodeUrl, (req, res) => {
         opts = { 
           'body': LuApiDocumentationTemplate.DatasetFilter.constructFromObject(dataInput),
           'skip': 0, // Number | Start index
-          'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
+          'take': 100, // Number | Number of items to return. 1000 items is the max to return in one call.
+          'exportMode': dataInput.exportMode
         };
 
         getResultsBySearch="getDatasetsBySearch";
@@ -594,7 +596,8 @@ app.post('/', encodeUrl, (req, res) => {
         opts = { 
           'body': LuApiDocumentationTemplate.OccurrenceFilter.constructFromObject(dataInput),
           'skip': 0, // Number | Start index
-          'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
+          'take': 100, // Number | Number of items to return. 1000 items is the max to return in one call.
+          'exportMode': dataInput.exportMode
         };
 
         getResultsBySearch="getOccurrencesBySearch";
@@ -608,7 +611,8 @@ app.post('/', encodeUrl, (req, res) => {
         opts = { 
           'body': LuApiDocumentationTemplate.EventsFilter.constructFromObject(dataInput), // EventsFilter | Filter used to limit the search.
           'skip': 0, // Number | Start index
-          'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
+          'take': 100, // Number | Number of items to return. 1000 items is the max to return in one call.
+          'exportMode': dataInput.exportMode
         };
 
         getResultsBySearch="getEventsBySearch";
@@ -632,6 +636,8 @@ app.post('/', encodeUrl, (req, res) => {
         
         //console.log('API POST called successfully. Returned data: ' + data);
         console.log('API POST called successfully');
+        //console.log(opts);
+
         //var_dump(data);
 
         tableColumns =[];
@@ -699,7 +705,8 @@ app.post('/', encodeUrl, (req, res) => {
               opts = { 
                 'body': LuApiDocumentationTemplate.EventsFilter.constructFromObject(dataInput),
                 'skip': 0, // Number | Start index
-                'take': 100 // Number | Number of items to return. 1000 items is the max to return in one call.
+                'take': 100, // Number | Number of items to return. 1000 items is the max to return in one call.
+                'exportMode': dataInput.exportMode
               };
 
               getResultsBySearch="getEventsBySearch";
