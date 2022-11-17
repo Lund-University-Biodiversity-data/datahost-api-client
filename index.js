@@ -57,6 +57,8 @@ var inputCounty = ["None selected"];
 var inputStartDate = "1995-05-25";
 var inputEndDate = "1997-05-27";
 var inputDateType = "BetweenStartDateAndEndDate";
+var exportMode = "json";
+var responseCoordinateSystem = "EPSG:4326";
 var errorMsg = "";
 
 const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDate", "occurrenceIds"];
@@ -148,9 +150,9 @@ function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence
       } else {
         //console.log('API POST called successfully. Returned data: ' + data);
         console.log('API POST called again (datasets) successfully');
-        console.log(data.length+" result(s)");
+        console.log(data.totalCount+" result(s)");
 
-        var dataDataset=transformDatasetData(data);
+        var dataDataset=transformDatasetData(data.results);
 
         downloadFile = writeXlsxFlattened(host, inputObject, dataDataset, dataEvent, dataOccurrence);
 
@@ -381,7 +383,7 @@ app.post('/', encodeUrl, (req, res) => {
         
 
   if (inputSourceSubmit=="exportCsv") {
-    dataInput.exportMode="csv";
+    exportMode="csv";
   }
   /*
   else if (inputSourceSubmit=="exportXlsx") {
@@ -389,7 +391,7 @@ app.post('/', encodeUrl, (req, res) => {
   }
   // json even for xlsx
   */
-  else dataInput.exportMode="json";
+  else exportMode="json";
 
 
 
@@ -584,7 +586,7 @@ app.post('/', encodeUrl, (req, res) => {
           'body': LuApiDocumentationTemplate.DatasetFilter.constructFromObject(dataInput),
           'skip': 0, // Number | Start index
           'take': 100, // Number | Number of items to return. 1000 items is the max to return in one call.
-          'exportMode': dataInput.exportMode
+          'exportMode': exportMode
         };
 
         getResultsBySearch="getDatasetsBySearch";
@@ -597,7 +599,7 @@ app.post('/', encodeUrl, (req, res) => {
           'body': LuApiDocumentationTemplate.OccurrenceFilter.constructFromObject(dataInput),
           'skip': 0, // Number | Start index
           'take': 100, // Number | Number of items to return. 1000 items is the max to return in one call.
-          'exportMode': dataInput.exportMode
+          'exportMode': exportMode
         };
 
         getResultsBySearch="getOccurrencesBySearch";
@@ -612,9 +614,9 @@ app.post('/', encodeUrl, (req, res) => {
           'body': LuApiDocumentationTemplate.EventsFilter.constructFromObject(dataInput), // EventsFilter | Filter used to limit the search.
           'skip': 0, // Number | Start index
           'take': 100, // Number | Number of items to return. 1000 items is the max to return in one call.
-          'exportMode': dataInput.exportMode
+          'exportMode': exportMode
         };
-
+console.log(opts);
         getResultsBySearch="getEventsBySearch";
 
         break;
@@ -643,10 +645,13 @@ app.post('/', encodeUrl, (req, res) => {
         tableColumns =[];
         tableData =[];
 
-        totalResults = data.length;
-        console.log(totalResults+" result(s)");
+
 
         if (inputSourceSubmit=="exportCsv") {
+
+          totalResults = data.length;
+          console.log(totalResults+" result(s)");
+
           let ts = Date.now();
           let date_ob = new Date(ts);
 
@@ -662,7 +667,7 @@ app.post('/', encodeUrl, (req, res) => {
 
             // Return the CSV file as string:
             //console.log(await csv.toString());
-            console.log("Data saved in "+csvPath+" ("+data.length+" row(s))");
+            console.log("Data saved in "+csvPath+" ("+totalResults+" row(s))");
 
             renderIndex(res, false, "exportCsv");
 
@@ -672,6 +677,10 @@ app.post('/', encodeUrl, (req, res) => {
         }
 
         else if (inputSourceSubmit=="exportXlsx") {
+
+          totalResults = data.totalCount;
+          console.log(totalResults+" result(s)");
+
           // SPECIFIC LU formating for the xlsx
           // needs to be flattened 
           // and extended to the extensive information (dataset+events+sites+occurrences)
@@ -681,7 +690,7 @@ app.post('/', encodeUrl, (req, res) => {
           switch(inputObject) {
             case "Dataset":
 
-              dataDataset=transformDatasetData(data);
+              dataDataset=transformDatasetData(data.results);
               
               downloadFile = writeXlsxFlattened(req.get('host'), inputObject, dataDataset, null, null);
 
@@ -690,13 +699,13 @@ app.post('/', encodeUrl, (req, res) => {
               break;
 
             case "Event":
-              var dataEvent=data;
+              var dataEvent=data.results;
 
               downloadFile = getDatasetDataForXlsx(res, req.get('host'), inputObject, dataEvent, null);
 
               break;
             case "Occurrence":
-              var dataOccurrence=data;
+              var dataOccurrence=data.results;
 
               // new request to the server with the same input parameters, but for events
 
@@ -706,7 +715,7 @@ app.post('/', encodeUrl, (req, res) => {
                 'body': LuApiDocumentationTemplate.EventsFilter.constructFromObject(dataInput),
                 'skip': 0, // Number | Start index
                 'take': 100, // Number | Number of items to return. 1000 items is the max to return in one call.
-                'exportMode': dataInput.exportMode
+                'exportMode': exportMode
               };
 
               getResultsBySearch="getEventsBySearch";
@@ -718,9 +727,9 @@ app.post('/', encodeUrl, (req, res) => {
                 } else {
                   //console.log('API POST called successfully. Returned data: ' + data);
                   console.log('API POST called again (events) successfully');
-                  console.log(data.length+" result(s)");
+                  console.log(data.totalCount+" result(s)");
 
-                  dataEvent=transformEventData(data);
+                  dataEvent=transformEventData(data.results);
 
                   //console.log("data event obtained !");
 
@@ -735,19 +744,22 @@ app.post('/', encodeUrl, (req, res) => {
         } // end if EXPORTXLSX
         else {
 
+          totalResults = data.totalCount;
+          console.log(totalResults+" result(s)");
+
           // IF NOT EXPORTCSV/EXPORTXLSX
 
-          if(data.length>0) {
+          if(data.totalCount>0) {
 
             let dataCut;
 
             // get maximum XXX elements
-            if(data.length>maxResults) {
+            if(data.totalCount>maxResults) {
               console.log("Cut data results to "+maxResults);
-              dataCut = data.slice(0, maxResults);
+              dataCut = data.results.slice(0, maxResults);
             }
             else {
-              dataCut = data;
+              dataCut = data.results;
             }
             Object.keys(dataCut[0]).forEach(key => {
               //console.log(key, dataCut[key]);
