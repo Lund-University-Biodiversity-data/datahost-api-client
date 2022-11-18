@@ -16,7 +16,9 @@
   <script src="tablefilter/dist/tablefilter/tablefilter.js"></script>
 
   <!-- Add icon library -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="@fortawesome/fontawesome-free/css/fontawesome.css" rel="stylesheet">
+  <link href="@fortawesome/fontawesome-free/css/brands.css" rel="stylesheet">
+  <link href="@fortawesome/fontawesome-free/css/solid.css" rel="stylesheet">
 
   <link rel="stylesheet" href="css/client.css">
 
@@ -210,15 +212,16 @@
 
   <div class="container">
 
+    <!--
     <div>
       <%= inputArea[0] %>
       <%= inputArea[1] %>
       <%= inputArea[2] %>
     </div>
-    
+    -->
 
     <div class="">
-      <h1>Datahost Client API</h1>
+      <h1>Datahost Client API - Sök och ladda ner data</h1>
 
       <% if (errorMsg != "") { %>
       <div class="alert alert-danger" role="alert">
@@ -228,14 +231,20 @@
 
       <div class="">
 
+        <p>Med hjälp av filtren här nedan kan du söka ut data. Gör du inget aktivt val baseras sökningen automatiskt på samtliga valmöjligheter. </p>
+        <p>Resultatet kan laddas ner som en kommaseparerad csv-fil eller en xlsx-fil.</p>
+        <p>Du hittar utförliga instruktioner via den här länken.</p>
+
+
         <form action="/" method="POST">
 
+
           <div class="form-group mb-3">
-            <label>Pick an object</label>
+            <h3 title="”Artobservationer” är det mest informationsrika utsnittet av data du kan få, från t.ex. antal av arten du valt till metadata om delprogrammet som observationen gjorts i. Läs mer om de olika alternativen i instruktionsdokumentet. ">Typ av information <i class="fa-regular fa-circle-info"></i></h3>
             <select name="inputObject" class="form-control">
-              <option value="Event" <%= (inputObject=="Event" ? "selected" : "") %>>Events</option>
-              <option value="Dataset" <%= (inputObject=="Dataset" ? "selected" : "") %>>Datasets</option>
-              <option value="Occurrence" <%= (inputObject=="Occurrence" ? "selected" : "") %>>Occurrences</option>
+              <option value="Occurrence" <%= (inputObject=="Occurrence" ? "selected" : "") %>>Artobservationer</option>
+              <option value="Event" <%= (inputObject=="Event" ? "selected" : "") %>>Inventeringstillfällen</option>
+              <option value="Dataset" <%= (inputObject=="Dataset" ? "selected" : "") %>>Delprogram/Metadata</option>
             </select>
           </div>
 
@@ -249,7 +258,7 @@
 
           <hr>
 
-          <h3>Dataset filter</h3>
+          <h3 title="blabla">Data från specifika delprogram <i class="fa-regular fa-circle-info"></i></h3>
           <div class="form-group mb-3">
             <label>Select 0 to n datasets</label>
             <% for (var i = 0; i < availableDatasets.length; i++) { %>

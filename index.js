@@ -46,7 +46,7 @@ app.set('view engine', 'ejs');
 
 var maxResults = 1000;
 
-var inputObject = "Event";
+var inputObject = "Occurrence";
 var inputSourceSubmit = "submit";
 var inputTaxon = "[100062, 102933]";
 //var inputTaxon = "[]";
@@ -866,6 +866,10 @@ function startApp () {
   app.use(express.static(__dirname + '/public'));
   app.use(express.static(__dirname + '/node_modules'));
   app.use(express.static(__dirname + '/node_modules/tablefilter/dist'));
+
+  app.use('/fa', express.static(__dirname + '/node_modules/font-awesome/css'));
+  app.use('/fonts', express.static(__dirname + '/node_modules/font-awesome/fonts'));
+
 
 }
 
