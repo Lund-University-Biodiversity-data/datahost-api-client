@@ -260,62 +260,71 @@ function updateToTemplateXlsx (dataInput) {
   templateXlsxHeader["1.metadatalanguage"] = "metadataspråk";
   templateXlsxHeader["1.language"] = "datamängdspråk";
 
-  //EVENT
-  templateXlsxHeader["1.eventID"] = "besöks-id_1";
-  templateXlsxHeader["1.eventType"] = "besökstyp";
-  templateXlsxHeader["1.parentEventID"] = "grupperingsbesöks-id";
-  templateXlsxHeader["1.hierarchy1"] = "besökshierarki_1";
-  templateXlsxHeader["1.hierarchy2"] = "besökshierarki_2";
-  templateXlsxHeader["1.eventStartDate"] = "inventeringsstartdatum";
-  templateXlsxHeader["1.eventStartDate_y"] = "inventeringsstartår";
-  templateXlsxHeader["1.eventStartDate_m"] = "inventeringsstartmånad";
-  templateXlsxHeader["1.eventStartDate_d"] = "inventeringsstartdag";
-  templateXlsxHeader["1.eventStartDate_t"] = "inventeringsstarttid";
-  templateXlsxHeader["1.eventEndDate"] = "inventeringsslutdatum";
-  templateXlsxHeader["1.eventEndDate_y"] = "inventeringsslutår";
-  templateXlsxHeader["1.eventEndDate_m"] = "inventeringsslutmånad";
-  templateXlsxHeader["1.eventEndDate_d"] = "inventeringsslutdag";
-  templateXlsxHeader["1.eventEndDate_t"] = "inventeringssluttid";
-  templateXlsxHeader["1.locationProtected"] = "lokalskyddad";
-  //SITE
+  if (inputObject!="Dataset") {
 
-  // RE-EVENT
-  templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
-  templateXlsxHeader["1.recorderCode"] = "inventerare_1";
-  templateXlsxHeader["1.recorderCode_2"] = "inventerare_2";
-  templateXlsxHeader["1.recorderCode_3"] = "inventerare_3";
-  templateXlsxHeader["1.recorderCode_4"] = "inventerare_4";
-  templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
-  templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
-  templateXlsxHeader["1.noObservations"] = "ingaObservationerUnderBesöket";
+    //EVENT
+    templateXlsxHeader["1.eventID"] = "besöks-id_1";
+    templateXlsxHeader["1.eventType"] = "besökstyp";
+    templateXlsxHeader["1.parentEventID"] = "grupperingsbesöks-id";
+    templateXlsxHeader["1.hierarchy1"] = "besökshierarki_1";
+    templateXlsxHeader["1.hierarchy2"] = "besökshierarki_2";
+    templateXlsxHeader["1.eventStartDate"] = "inventeringsstartdatum";
+    templateXlsxHeader["1.eventStartDate_y"] = "inventeringsstartår";
+    templateXlsxHeader["1.eventStartDate_m"] = "inventeringsstartmånad";
+    templateXlsxHeader["1.eventStartDate_d"] = "inventeringsstartdag";
+    templateXlsxHeader["1.eventStartDate_t"] = "inventeringsstarttid";
+    templateXlsxHeader["1.eventEndDate"] = "inventeringsslutdatum";
+    templateXlsxHeader["1.eventEndDate_y"] = "inventeringsslutår";
+    templateXlsxHeader["1.eventEndDate_m"] = "inventeringsslutmånad";
+    templateXlsxHeader["1.eventEndDate_d"] = "inventeringsslutdag";
+    templateXlsxHeader["1.eventEndDate_t"] = "inventeringssluttid";
+    templateXlsxHeader["1.locationProtected"] = "lokalskyddad";
+    //SITE
 
-  // OCCURRENCE
-  templateXlsxHeader["1.occurrenceID"] = "Observations-id";
-  templateXlsxHeader["1.basisOfRecord"] = "observationsunderlag";
-  //templateXlsxHeader["1.observationTime"] = "";
-  //templateXlsxHeader["1.observationPoint"] = "[]";
-  templateXlsxHeader["1.taxon.taxonID"] = "Taxon-id";
-  templateXlsxHeader["1.taxon.dyntaxaId"] = "EU-artkod";
-  templateXlsxHeader["1.taxon.vernacularName"] = "svensktNamn";
-  templateXlsxHeader["1.taxon.scientificName"] = "vetenskapligtNamn";
-  templateXlsxHeader["1.taxon.family"] = "släkte";
-  templateXlsxHeader["1.taxon.species"] = "art";
-  templateXlsxHeader["1.taxon.subspecies"] = "underart";
-  templateXlsxHeader["1.taxon.taxonRank"] = "taxonomiskNivå";
-  //templateXlsxHeader["1.taxon.verbatimName"] = "";
-  //templateXlsxHeader["1.taxon.verbatimTaxonID"] = "";
-  templateXlsxHeader["1.occurrenceStatus"] = "förekomst";
-  templateXlsxHeader["1.quantityVariable"] = "kvantitetsvariabel";
-  templateXlsxHeader["1.quantity"] = "kvantitet";
-  templateXlsxHeader["1.unit"] = "enhet";
-  templateXlsxHeader["1.sex"] = "kön";
-  templateXlsxHeader["1.age"] = "ålder-stadium";
-  templateXlsxHeader["1.activity"] = "aktivitet";
-  templateXlsxHeader["1.size"] = "storlek";
-  //templateXlsxHeader["1.organism"] = "[]";
-  templateXlsxHeader["1.occurrenceRemarks"] = "observationskommentar";
-  templateXlsxHeader["1.observationCertainty"] = "observationsnoggrannhet";
-  templateXlsxHeader["1.identificationVerificationStatus"] = "kvalitetskontroll";
+    // RE-EVENT
+    templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
+    templateXlsxHeader["1.recorderCode"] = "inventerare_1";
+    templateXlsxHeader["1.recorderCode_2"] = "inventerare_2";
+    templateXlsxHeader["1.recorderCode_3"] = "inventerare_3";
+    templateXlsxHeader["1.recorderCode_4"] = "inventerare_4";
+    templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
+    templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
+    templateXlsxHeader["1.noObservations"] = "ingaObservationerUnderBesöket";
+
+
+  }
+
+  if (inputObject=="Occurrence") {
+    
+    // OCCURRENCE
+    templateXlsxHeader["1.occurrenceID"] = "Observations-id";
+    templateXlsxHeader["1.basisOfRecord"] = "observationsunderlag";
+    //templateXlsxHeader["1.observationTime"] = "";
+    //templateXlsxHeader["1.observationPoint"] = "[]";
+    templateXlsxHeader["1.taxon.taxonID"] = "Taxon-id";
+    templateXlsxHeader["1.taxon.dyntaxaId"] = "EU-artkod";
+    templateXlsxHeader["1.taxon.vernacularName"] = "svensktNamn";
+    templateXlsxHeader["1.taxon.scientificName"] = "vetenskapligtNamn";
+    templateXlsxHeader["1.taxon.family"] = "släkte";
+    templateXlsxHeader["1.taxon.species"] = "art";
+    templateXlsxHeader["1.taxon.subspecies"] = "underart";
+    templateXlsxHeader["1.taxon.taxonRank"] = "taxonomiskNivå";
+    //templateXlsxHeader["1.taxon.verbatimName"] = "";
+    //templateXlsxHeader["1.taxon.verbatimTaxonID"] = "";
+    templateXlsxHeader["1.occurrenceStatus"] = "förekomst";
+    templateXlsxHeader["1.quantityVariable"] = "kvantitetsvariabel";
+    templateXlsxHeader["1.quantity"] = "kvantitet";
+    templateXlsxHeader["1.unit"] = "enhet";
+    templateXlsxHeader["1.sex"] = "kön";
+    templateXlsxHeader["1.age"] = "ålder-stadium";
+    templateXlsxHeader["1.activity"] = "aktivitet";
+    templateXlsxHeader["1.size"] = "storlek";
+    //templateXlsxHeader["1.organism"] = "[]";
+    templateXlsxHeader["1.occurrenceRemarks"] = "observationskommentar";
+    templateXlsxHeader["1.observationCertainty"] = "observationsnoggrannhet";
+    templateXlsxHeader["1.identificationVerificationStatus"] = "kvalitetskontroll";
+
+  }
 
 
 
