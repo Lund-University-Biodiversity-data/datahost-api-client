@@ -73,6 +73,8 @@ const tableTaxon=[];
 var tableColumns =[];
 var tableData =[];
 
+// for xslx mapping fields
+
 var totalResults;
 
 const tableCounty = [/*'None selected', */'Stockholms län', 'Västerbottens län', 'Norrbottens län', 'Uppsala län', 'Södermanlands län', 'Östergötlands län', 'Jönköpings län', 'Kronobergs län', 'Kalmar län', 'Gotlands län', 'Blekinge län', 'Skåne län', 'Hallands län', 'Västra Götalands län', 'Värmlands län', 'Örebro län', 'Västmanlands län', 'Dalarnas län', 'Gävleborgs län', 'Västernorrlands län', 'Jämtlands län'];
@@ -176,6 +178,7 @@ function transformDatasetData (data) {
 
   Object.entries(data).forEach(elt => {
     const row = [];
+
     Object.entries(elt[1]).forEach(entry => {
       const [key, value] = entry;
 
@@ -223,6 +226,126 @@ function transformEventData (data) {
   return dataDataset;
 }
 
+function updateToTemplateXlsx (dataInput) {
+
+  var dataTemplateOk=[];
+
+  var templateXlsxHeader=[];
+
+  //DATASET
+  templateXlsxHeader["1.title"] = "datamängdnamn";
+  templateXlsxHeader["1.projectID"] = "Projekt-id";
+  templateXlsxHeader["1.projetCode"] = "projektnamn";
+  templateXlsxHeader["1.assigner.organisationCode"] = "beställare:organisationsnamn";
+  templateXlsxHeader["1.assigner.organisationID"] = "beställare:organisationsnummer";
+  templateXlsxHeader["1.creator.organisationCode"] = "utförare:organisationsnamn";
+  templateXlsxHeader["1.creator.organisationID"] = "utförare:organisationsnummer";
+  templateXlsxHeader["1.ownerinstitutionCode.organisationCode"] = "Informationsansvarig myndighet:organisationsnamn";
+  templateXlsxHeader["1.ownerinstitutionCode.organisationID"] = "Informationsansvarig myndighet:organisationsnummer";
+  templateXlsxHeader["1.publisher.organisationCode"] = "datavärd:organisationsnamn";
+  templateXlsxHeader["1.publisher.organisationID"] = "datavärd:organisationsnummer";
+  templateXlsxHeader["1.dateStewardship"] = "datavärdskap";
+  templateXlsxHeader["1.purpose"] = "syfte";
+  templateXlsxHeader["1.description"] = "datamängdbeskrivning";
+  templateXlsxHeader["1.methodology.methodologyName"] = "";
+  templateXlsxHeader["1.methodology.methodologyDescription"] = "metodikbeskrivning";
+  templateXlsxHeader["1.methodology.methodologyLink"] = "metodiklänk";
+  templateXlsxHeader["1.methodology.speciesList"] = "artlista";
+  templateXlsxHeader["1.startDate"] = "startdatum";
+  templateXlsxHeader["1.endDate"] = "slutdatum";
+  templateXlsxHeader["1.latestDate"] = "senaste datum";
+  templateXlsxHeader["1.spatial"] = "land";
+  templateXlsxHeader["1.accessRights"] = "åtkomsträttigheter";
+  templateXlsxHeader["1.accessRightsDescription"] = "beskrivning-åtkomsträttigheter";
+  templateXlsxHeader["1.metadatalanguage"] = "metadataspråk";
+  templateXlsxHeader["1.language"] = "datamängdspråk";
+
+  //EVENT
+  templateXlsxHeader["1.eventID"] = "besöks-id_1";
+  templateXlsxHeader["1.eventType"] = "besökstyp";
+  templateXlsxHeader["1.parentEventID"] = "grupperingsbesöks-id";
+  templateXlsxHeader["1.hierarchy1"] = "besökshierarki_1";
+  templateXlsxHeader["1.hierarchy2"] = "besökshierarki_2";
+  templateXlsxHeader["1.eventStartDate"] = "inventeringsstartdatum";
+  templateXlsxHeader["1.eventStartDate_y"] = "inventeringsstartår";
+  templateXlsxHeader["1.eventStartDate_m"] = "inventeringsstartmånad";
+  templateXlsxHeader["1.eventStartDate_d"] = "inventeringsstartdag";
+  templateXlsxHeader["1.eventStartDate_t"] = "inventeringsstarttid";
+  templateXlsxHeader["1.eventEndDate"] = "inventeringsslutdatum";
+  templateXlsxHeader["1.eventEndDate_y"] = "inventeringsslutår";
+  templateXlsxHeader["1.eventEndDate_m"] = "inventeringsslutmånad";
+  templateXlsxHeader["1.eventEndDate_d"] = "inventeringsslutdag";
+  templateXlsxHeader["1.eventEndDate_t"] = "inventeringssluttid";
+  templateXlsxHeader["1.locationProtected"] = "lokalskyddad";
+  //SITE
+
+  // RE-EVENT
+  templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
+  templateXlsxHeader["1.recorderCode"] = "inventerare_1";
+  templateXlsxHeader["1.recorderCode_2"] = "inventerare_2";
+  templateXlsxHeader["1.recorderCode_3"] = "inventerare_3";
+  templateXlsxHeader["1.recorderCode_4"] = "inventerare_4";
+  templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
+  templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
+  templateXlsxHeader["1.noObservations"] = "ingaObservationerUnderBesöket";
+
+  // OCCURRENCE
+  templateXlsxHeader["1.occurrenceID"] = "Observations-id";
+  templateXlsxHeader["1.basisOfRecord"] = "observationsunderlag";
+  //templateXlsxHeader["1.observationTime"] = "";
+  //templateXlsxHeader["1.observationPoint"] = "[]";
+  templateXlsxHeader["1.taxon.taxonID"] = "Taxon-id";
+  templateXlsxHeader["1.taxon.dyntaxaId"] = "EU-artkod";
+  templateXlsxHeader["1.taxon.vernacularName"] = "svensktNamn";
+  templateXlsxHeader["1.taxon.scientificName"] = "vetenskapligtNamn";
+  templateXlsxHeader["1.taxon.family"] = "släkte";
+  templateXlsxHeader["1.taxon.species"] = "art";
+  templateXlsxHeader["1.taxon.subspecies"] = "underart";
+  templateXlsxHeader["1.taxon.taxonRank"] = "taxonomiskNivå";
+  //templateXlsxHeader["1.taxon.verbatimName"] = "";
+  //templateXlsxHeader["1.taxon.verbatimTaxonID"] = "";
+  templateXlsxHeader["1.occurrenceStatus"] = "förekomst";
+  templateXlsxHeader["1.quantityVariable"] = "kvantitetsvariabel";
+  templateXlsxHeader["1.quantity"] = "kvantitet";
+  templateXlsxHeader["1.unit"] = "enhet";
+  templateXlsxHeader["1.sex"] = "kön";
+  templateXlsxHeader["1.age"] = "ålder-stadium";
+  templateXlsxHeader["1.activity"] = "aktivitet";
+  templateXlsxHeader["1.size"] = "storlek";
+  //templateXlsxHeader["1.organism"] = "[]";
+  templateXlsxHeader["1.occurrenceRemarks"] = "observationskommentar";
+  templateXlsxHeader["1.observationCertainty"] = "observationsnoggrannhet";
+  templateXlsxHeader["1.identificationVerificationStatus"] = "kvalitetskontroll";
+
+
+
+
+  // foor each dataset of the data
+  Object.entries(dataInput).forEach(datasetI => {
+console.log(datasetI[1]);
+    var oneDataset=[];
+    // check the template header
+    Object.entries(templateXlsxHeader).forEach(([key, val]) => {
+      if (key in datasetI[1]) {
+        oneDataset[val]=datasetI[1][key];
+      }
+      else if (("1.datasetData." + key) in datasetI[1]) {
+        oneDataset[val]=datasetI[1][("1.datasetData." + key)];
+      }
+      else if (("1.eventData." + key) in datasetI[1]) {
+        oneDataset[val]=datasetI[1][("1.eventData." + key)];
+      }
+      else {
+        console.log("key notfound "+key);
+        oneDataset[val]="";
+      }
+    });
+    dataTemplateOk.push(oneDataset);
+  });
+
+
+  return dataTemplateOk;
+}
 
 function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccurrence) {
   
@@ -283,8 +406,8 @@ function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccu
 
       Object.entries(dataOccurrence).forEach(elt => {
 
-        if (eventFinalAsIndexedArray[elt[1].event]) {
-          elt[1].eventData=eventFinalAsIndexedArray[elt[1].event];
+        if (eventFinalAsIndexedArray[elt[1].eventID]) {
+          elt[1].eventData=eventFinalAsIndexedArray[elt[1].eventID];
         }
         else {
           console.log("No event data in eventFinalAsIndexedArray for event : "+elt[1].event);
@@ -311,6 +434,7 @@ function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccu
 
     Object.entries(dataDataset).forEach(elt => {
       dataFinal.push(flatten(elt));
+
     });
 
   }
@@ -318,6 +442,10 @@ function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccu
     okCreate=false;
     console.log("ERROR : wrong inputObject "+inputObject);
   }
+
+
+  dataFinal = updateToTemplateXlsx(dataFinal);
+
 
   if (okCreate) {
 
@@ -327,13 +455,14 @@ function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccu
     
     let ts = Date.now();
     let date_ob = new Date(ts);
-    var filenameCsv="data_"+inputObject+"_"+date_ob.getFullYear()+(("0" + (date_ob.getMonth() + 1)).slice(-2))+(("0" + date_ob.getDate()).slice(-2))+"_"+date_ob.getHours()+date_ob.getMinutes()+date_ob.getSeconds()+".csv";
+    var filenameBase = "data_"+inputObject+"_"+date_ob.getFullYear()+(("0" + (date_ob.getMonth() + 1)).slice(-2))+(("0" + date_ob.getDate()).slice(-2))+"_"+(("0" + date_ob.getHours()).slice(-2))+date_ob.getMinutes()+date_ob.getSeconds();
+    var filenameCsv=filenameBase+".csv";
     var csvPath=config.downloadFolderUrl+filenameCsv;
 
     try {
       fs.writeFileSync(csvPath, csv);
 
-      var filenameXlsx="data_"+inputObject+"_"+date_ob.getFullYear()+(("0" + (date_ob.getMonth() + 1)).slice(-2))+(("0" + date_ob.getDate()).slice(-2))+"_"+date_ob.getHours()+date_ob.getMinutes()+date_ob.getSeconds()+".xlsx";
+      var filenameXlsx=filenameBase+".xlsx";
       var xlsxPath = config.downloadFolderUrl+filenameXlsx;
 
       convertCsvToXlsx(csvPath, xlsxPath);
