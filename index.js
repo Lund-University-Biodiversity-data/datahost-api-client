@@ -30,6 +30,9 @@ const { Parser } = pkgJson2csv;
 import pkgFlat from 'flat';
 var flatten = pkgFlat;
 
+import pkgScanf from 'sscanf';
+var scanf = pkgScanf;
+
 import pkgCsvToXlsx from '@aternus/csv-to-xlsx';
 const { convertCsvToXlsx } = pkgCsvToXlsx;
 
@@ -228,6 +231,18 @@ function transformEventData (data) {
   return dataDataset;
 }
 
+// input : date as yyyy-mm-ddThh:ii:ssZ
+// returns an array with 3 (if no time) or 6 elements
+function splitDateInArray (dateToSplit) {
+
+  var datetimeTemp = dateToSplit.replace("T", " T");
+  var datetimeTemp = datetimeTemp.replace("Z", " Z");
+  var splitDate=scanf(datetimeTemp, "%d-%d-%d T%s:%s:%s");
+
+  return splitDate;
+}
+
+
 function updateToTemplateXlsx (dataInput) {
 
   var dataTemplateOk=[];
@@ -346,10 +361,45 @@ function updateToTemplateXlsx (dataInput) {
       else if (("1.eventData." + key) in datasetI[1]) {
         oneDataset[val]=datasetI[1][("1.eventData." + key)];
       }
-      else {
+      else if (!(val in oneDataset)) { // check if the field has not already been filled (like the detailed start/end date-time)
         console.log("key notfound "+key);
         oneDataset[val]="";
       }
+
+
+      if (key=="1.eventStartDate" && oneDataset[val]!="") {
+
+        var splitDate=splitDateInArray(oneDataset[val]);
+
+        if (splitDate.length>=3) {
+          oneDataset["inventeringsstartår"]=splitDate[0];
+          oneDataset["inventeringsstartmånad"]=splitDate[1];
+          oneDataset["inventeringsstartdag"]=splitDate[2];
+
+          if (splitDate.length==6) {
+            oneDataset["inventeringsstarttid"]=splitDate[3]+":"+splitDate[4]+":"+splitDate[5];
+          }
+
+        }
+      }
+
+      if (key=="1.eventEndDate" && oneDataset[val]!="") {
+
+        var splitDate=splitDateInArray(oneDataset[val]);
+
+        if (splitDate.length>=3) {
+
+          oneDataset["inventeringsslutår"]=splitDate[0];
+          oneDataset["inventeringsslutmånad"]=splitDate[1];
+          oneDataset["inventeringsslutdag"]=splitDate[2];
+
+          if (splitDate.length==6) {
+            oneDataset["inventeringssluttid"]=splitDate[3]+":"+splitDate[4]+":"+splitDate[5];
+          }
+
+        }
+      }
+
     });
     dataTemplateOk.push(oneDataset);
   });
