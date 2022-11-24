@@ -3,6 +3,8 @@ var config = {};
 config.speciesListUrl = "URL/speciesList";
 config.downloadFolderUrl = "folder/"; // folder with access rights
 
+config.defaultStartDate="1975-01-01";
+config.defaultEndDate="2010-12-31";
 
 config.availableDatasets = [
 	{

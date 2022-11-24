@@ -54,8 +54,10 @@ var inputArea = "";
 var inputDatasetList = [];
 //var inputCounty = ["Skåne län"];
 var inputCounty = ["None selected"];
-var inputStartDate = "1995-05-25";
-var inputEndDate = "1997-05-27";
+var inputStartDate = config.defaultStartDate;
+//var inputStartDate = "1995-05-25";
+var inputEndDate = config.defaultEndDate;;
+//var inputEndDate = "1997-05-27";
 var inputDateType = "BetweenStartDateAndEndDate";
 var exportMode = "json";
 var responseCoordinateSystem = "EPSG:4326";
@@ -331,7 +333,7 @@ function updateToTemplateXlsx (dataInput) {
 
   // foor each dataset of the data
   Object.entries(dataInput).forEach(datasetI => {
-console.log(datasetI[1]);
+
     var oneDataset=[];
     // check the template header
     Object.entries(templateXlsxHeader).forEach(([key, val]) => {
@@ -487,6 +489,9 @@ function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccu
       console.log("ERROR write csv/xlsx "+e.toString());
     }
 
+  }
+  else {
+    return 0;
   }
 
 
@@ -883,9 +888,10 @@ console.log(opts);
         else {
 
           totalResults = data.totalCount;
-          console.log(totalResults+" result(s)");
+          console.log(totalResults+" result(s) in json");
 
           // IF NOT EXPORTCSV/EXPORTXLSX
+          downloadFile="";
 
           if(data.totalCount>0) {
 

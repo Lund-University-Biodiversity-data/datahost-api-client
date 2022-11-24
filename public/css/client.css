@@ -9,3 +9,10 @@ main { padding-top:50px; }
 h3 { 
 	font-family: Georgia, Times, Times New Roman, serif; 
 }
+
+
+
+.all-none-button {
+	cursor:pointer;
+	text-decoration:underline;
+}

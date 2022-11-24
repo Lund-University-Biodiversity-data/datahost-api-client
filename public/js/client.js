@@ -1,27 +1,172 @@
-//var LuApiDocumentationTemplate = require('lu_api_documentation_template');
-//import pkg from 'lu_api_documentation_template';
-//import pkg from '../lu_api_documentation_template/src/index.js';
-//const { LuApiDocumentationTemplate } = pkg;
 
-var LuApiDocumentationTemplate = require('./LuApiDocumentationTemplate');
+$(document).ready(function () {
+
+  $( "#selectAllDatasets").click(function() {
+    if ($( "#tokenMarkAllDatasets").val()==0) {
+      $( "#tokenMarkAllDatasets").val(1);
+      $('input[name=datasetCheckB]').prop('checked', true); 
+    }
+    else {
+      $( "#tokenMarkAllDatasets").val(0);
+      $('input[name=datasetCheckB]').prop('checked', false); 
+    }
+  });
 
 
-console.error("coucou");
-console.log("coucourequire");
+  $('input[name="radioTaxon"]').on('click', function() {
+    if ($(this).attr('id')!="radioTaxonAll") {
+      //$("#divTaxonList").css("display", "none");
 
-console.log("GET TEST");
+      $('select[name=inputTaxon]').val('').selectpicker('deselectAll');
 
-var api = new LuApiDocumentationTemplate.EventApi()
-var id = "SFTstd:19960602:75"; // {String} ID of the event to get
+      switch ($(this).attr('id')) {
+        case "radioTaxonBirds":   
+          $('select[name=inputTaxon]').val(4000104).selectpicker("refresh");;
+          break;
+        case "radioTaxonButterflies":
+          $('select[name=inputTaxon]').val(3000188).selectpicker("refresh");;
+          break;
+        case "radioTaxonMammals":
+          $('select[name=inputTaxon]').val(4000107).selectpicker("refresh");;
+          break;
+        case "radioTaxonAmphibians":
+          $('select[name=inputTaxon]').val(4000105).selectpicker("refresh");;
+          break;
+        case "radioTaxonKrak":
+          $('select[name=inputTaxon]').val(2002118).selectpicker("refresh");;
+          break;
+      }
+      
+    }
+    else {
+      //$("#divTaxonList").css("display", "inline");
+    }
+  });
 
-var callback = function(error, data, response) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API GET called successfully. Returned data: ' + data);
-    var_dump(data);
+
+  $(function () {
+    $('.selectpicker').selectpicker();
+  });
+
+  /*
+  $('#downloadButton').on('click', function() {
+    $('#inputSourceSubmit').val("download");
+  });
+  */
+
+  $('#buttonExportCsv').on('click', function() {
+    $('#inputSourceSubmit').val("exportCsv");
+  });
+  $('#buttonExportXlsx').on('click', function() {
+    $('#inputSourceSubmit').val("exportXlsx");
+  });
+
+  var map = L.map('map').setView([62.47204526039855, 16.149376718556645], 4);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+  }).addTo(map);
+  // FeatureGroup is to store editable layers
+  //var drawnItems = new L.FeatureGroup();
+  //map.addLayer(drawnItems);
+  var drawControl = new L.Control.Draw({
+     draw: {
+         polygon: false,
+         marker: false,
+         polyline: false,
+         circle: false
+     }
+  });
+  map.addControl(drawControl);
+
+  
+  if ($("#inputArea").val()!="") {
+    //alert("yes");
+
+    // A RETESTER CA !!
+    //var bounds= <%- JSON.stringify(inputArea) %>;
+    var bounds= $("#inputArea").val(); // faut le re-de-jsoninser lui
+    //console.log(bounds);
+
+    var rect = L.rectangle(bounds, {color: 'blue', weight: 1}).on('click', function (e) {
+        // There event is event object
+        // there e.type === 'click'
+        // there e.lanlng === L.LatLng on map
+        // there e.target.getLatLngs() - your rectangle coordinates
+        // but e.target !== rect
+        console.info(e);
+    }).addTo(map);
+    //alert("rect");
+
   }
-};
-api.getEventsByID(id, callback);
+  
 
-console.log("FIN GET TEST");
+  // event when object drawn on the map
+  map.on('draw:created', function (e) {
+    var type = e.layerType,
+        layer = e.layer;
+
+    if (type === 'marker') {
+        // Do marker specific actions
+    }
+
+    if (type === 'rectangle' || type === 'polygon') {
+      //layer.on('mouseover', function() {   });
+
+      $('#inputArea').val(layer.getLatLngs());
+    }
+
+    // Do whatever else you need to. (save to db, add to map etc)
+    map.addLayer(layer);
+  });
+
+
+
+  // check if the element exists
+  if ($('#resultTable').length > 0) {
+
+    var filtersConfig = {
+        base_path: 'tablefilter/',
+        paging: {
+          results_per_page: ['Records: ', [10, 25, 50, 100]]
+        },
+        state: {
+          types: ['local_storage'],
+          filters: true,
+          page_number: true,
+          page_length: true,
+          sort: true
+        },
+        alternate_rows: true,
+        btn_reset: true,
+        rows_counter: true,
+        loader: {
+          html: '<div id="lblMsg"></div>',
+          css_class: 'myLoader'
+        },
+        status_bar: {
+          target_id: 'lblMsg',
+          css_class: 'myStatus'
+        },
+        col_0: 'select',
+        col_1: 'select',
+        col_2: 'select',
+        col_types: [
+            'string', 'string', 'number',
+            'number', 'number', 'number',
+            'number', 'number', 'number'
+        ],
+        extensions:[{
+            name: 'sort'
+        }]
+    };
+    var tf = new TableFilter('resultTable', filtersConfig);
+
+
+    tf.init();
+
+  }
+
+});
+
+

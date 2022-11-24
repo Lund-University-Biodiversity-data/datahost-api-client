@@ -38,170 +38,21 @@
 
   <!-- end LEAFLET -->
 
-
-
-
   <!-- multiple select bootstrap -->
 
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
 
 
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
 
   <!-- end multiple select bootstrap -->
 
 
-  <script>
 
-    $(document).ready(function () {
+  <script src="js/client.js"></script>
 
-      $('input[name="radioTaxon"]').on('click', function() {
-        if ($(this).attr('id')!="radioTaxonAll") {
-          //$("#divTaxonList").css("display", "none");
-
-          $('select[name=inputTaxon]').val('').selectpicker('deselectAll');
-
-          switch ($(this).attr('id')) {
-            case "radioTaxonBirds":
-              
-              $('select[name=inputTaxon]').val(4000104).selectpicker("refresh");;
-              break;
-            case "radioTaxonKrak":
-              $('select[name=inputTaxon]').val(2002118).selectpicker("refresh");;
-              break;
-          }
-          
-        }
-        else {
-          //$("#divTaxonList").css("display", "inline");
-        }
-      });
-
-
-      $(function () {
-        $('.selectpicker').selectpicker();
-      });
-
-      /*
-      $('#downloadButton').on('click', function() {
-        $('#inputSourceSubmit').val("download");
-      });
-      */
-
-      $('#buttonExportCsv').on('click', function() {
-        $('#inputSourceSubmit').val("exportCsv");
-      });
-      $('#buttonExportXlsx').on('click', function() {
-        $('#inputSourceSubmit').val("exportXlsx");
-      });
-
-      var map = L.map('map').setView([62.47204526039855, 16.149376718556645], 4);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '© OpenStreetMap'
-      }).addTo(map);
-      // FeatureGroup is to store editable layers
-      //var drawnItems = new L.FeatureGroup();
-      //map.addLayer(drawnItems);
-      var drawControl = new L.Control.Draw({
-         draw: {
-             polygon: false,
-             marker: false,
-             polyline: false,
-             circle: false
-         }
-      });
-      map.addControl(drawControl);
-
-      
-      if ($("#inputArea").val()!="") {
-        //alert("yes");
-        var bounds= <%- JSON.stringify(inputArea) %>;
-        //console.log(bounds);
-
-        var rect = L.rectangle(bounds, {color: 'blue', weight: 1}).on('click', function (e) {
-            // There event is event object
-            // there e.type === 'click'
-            // there e.lanlng === L.LatLng on map
-            // there e.target.getLatLngs() - your rectangle coordinates
-            // but e.target !== rect
-            console.info(e);
-        }).addTo(map);
-        //alert("rect");
-
-      }
-      
-
-      // event when object drawn on the map
-      map.on('draw:created', function (e) {
-        var type = e.layerType,
-            layer = e.layer;
-
-        if (type === 'marker') {
-            // Do marker specific actions
-        }
-
-        if (type === 'rectangle' || type === 'polygon') {
-          //layer.on('mouseover', function() {   });
-
-          $('#inputArea').val(layer.getLatLngs());
-        }
-
-        // Do whatever else you need to. (save to db, add to map etc)
-        map.addLayer(layer);
-      });
-
-
-
-      // check if the element exists
-      if ($('#resultTable').length > 0) {
-
-        var filtersConfig = {
-            base_path: 'tablefilter/',
-            paging: {
-              results_per_page: ['Records: ', [10, 25, 50, 100]]
-            },
-            state: {
-              types: ['local_storage'],
-              filters: true,
-              page_number: true,
-              page_length: true,
-              sort: true
-            },
-            alternate_rows: true,
-            btn_reset: true,
-            rows_counter: true,
-            loader: {
-              html: '<div id="lblMsg"></div>',
-              css_class: 'myLoader'
-            },
-            status_bar: {
-              target_id: 'lblMsg',
-              css_class: 'myStatus'
-            },
-            col_0: 'select',
-            col_1: 'select',
-            col_2: 'select',
-            col_types: [
-                'string', 'string', 'number',
-                'number', 'number', 'number',
-                'number', 'number', 'number'
-            ],
-            extensions:[{
-                name: 'sort'
-            }]
-        };
-        var tf = new TableFilter('resultTable', filtersConfig);
-
-
-        tf.init();
-
-      }
-    });
-
-  </script>
 
 </header>
 
@@ -260,10 +111,13 @@
 
           <h3 title="blabla">Data från specifika delprogram <i class="fa-regular fa-circle-info"></i></h3>
           <div class="form-group mb-3">
-            <label>Select 0 to n datasets</label>
+            <label>
+              <span class="all-none-button" id="selectAllDatasets"><i class="fa-regular fa-square-check"></i> av/markera alla</span>
+              <input type="hidden" id="tokenMarkAllDatasets" value=0>
+            </label>
             <% for (var i = 0; i < availableDatasets.length; i++) { %>
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="<%= availableDatasets[i]['datasetID'] %>" id="dataset<%= i %>" name="datasetCheckB" <% if (inputDatasetList.includes(availableDatasets[i]['datasetID'])) { %>checked<% } %> >
+                <input class="form-check-input datasets-list-checkbox" type="checkbox" value="<%= availableDatasets[i]['datasetID'] %>" id="dataset<%= i %>" name="datasetCheckB" <% if (inputDatasetList.includes(availableDatasets[i]['datasetID'])) { %>checked<% } %> >
                 <label class="form-check-label" for="dataset<%= i %>">
                   <%= availableDatasets[i]['displayName'] %>
                 </label>
@@ -273,57 +127,33 @@
 
           <hr>
 
-          <h3>Area</h3>
-          <div class="form-group mb-3">
-            <label>Län</label>
-            <select name="inputCounty" class="form-control selectpicker"  multiple title="Choose one of the following...">
-              <% for (var i = 0; i < tableCounty.length; i++) { %>
-                <option value="<%= tableCounty[i] %>"  <%= (inputCounty.includes(tableCounty[i]) ? "selected" : "") %>><%= tableCounty[i] %></option>
-              <% } %>
-            </select>
-          </div>
-
-          <div id="map"></div>
-          <div class="form-group mb-3">
-            <label>Bounding box</label>
-            <input type="text" class="form-control" name="inputArea" id="inputArea" value="<%= inputArea %>" readOnly=true>
-          </div>
-
-          <hr>
-
-          <h3>Taxon</h3>
+          <h3 title="Använd antingen kryssrutorna eller rullmenyn. Flera grupper respektive arter kan väljas.">Taxon <i class="fa-regular fa-circle-info"></i></h3>
 
           <div class="form-group mb-3">
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonAll" value="taxonAll">
-              <label class="form-check-label" for="radioTaxonAll">All list</label>
+              <label class="form-check-label" for="radioTaxonAll">Alla</label>
             </div>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonBirds" value="taxonBirds">
-              <label class="form-check-label" for="radioTaxonBirds">Birds</label>
+              <label class="form-check-label" for="radioTaxonBirds">Fåglar</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonKrak" value="taxonKrak">
-              <label class="form-check-label" for="radioTaxonKrak">Kråkfåglar</label>
+              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonButterflies" value="taxonButterflies">
+              <label class="form-check-label" for="radioTaxonButterflies">Fjärillar</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonMammals" value="taxonMammals">
+              <label class="form-check-label" for="radioTaxonMammals">Däggdjjur</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonAmphibians" value="taxonAmphibians">
+              <label class="form-check-label" for="radioTaxonAmphibians">Groddjjur</label>
             </div>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonClear" value="taxonClear">
               <label class="form-check-label" for="radioTaxonClear">Clear selection</label>
             </div>
-            <!--
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonButterflies" value="taxonButterflies">
-              <label class="form-check-label" for="radioTaxonButterflies">Butterflies</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonOwls" value="taxonOwls">
-              <label class="form-check-label" for="radioTaxonOwls">Owls</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonMammals" value="taxonMammals">
-              <label class="form-check-label" for="radioTaxonMammals">Mammals</label>
-            </div>
-          -->
           </div>
 
           <div class="form-group mb-3" id="divTaxonList">
@@ -339,13 +169,13 @@
           
           <hr>
 
-          <h3>Dates</h3>
+          <h3 title="blabla">Tidsperiod <i class="fa-regular fa-circle-info"></i></h3>
           <div class="form-group mb-3">
-            <label>Start Date</label>
+            <label>Från datum</label>
             <input type="date" class="form-control" placeholder="YYYY-MM-DD" name="inputStartDate" value="<%= inputStartDate %>">
           </div>
           <div class="form-group mb-3">
-            <label>End Date</label>
+            <label>Till datum</label>
             <input type="date" class="form-control" placeholder="YYYY-MM-DD" name="inputEndDate" value="<%= inputEndDate %>">
           </div>
           <!--
@@ -358,11 +188,36 @@
           </div>
           -->
 
+
           <hr>
+
+          <h3 title="Begränsa din sökning geografiskt genom att antingen välja län eller kommun i rullmenyerna, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.">Geografiskt område <i class="fa-regular fa-circle-info"></i></h3>
+          <div class="form-group mb-3">
+            <label>Välj inget, ett eller flera län</label>
+            <select name="inputCounty" class="form-control selectpicker"  multiple title="Choose one of the following...">
+              <% for (var i = 0; i < tableCounty.length; i++) { %>
+                <option value="<%= tableCounty[i] %>"  <%= (inputCounty.includes(tableCounty[i]) ? "selected" : "") %>><%= tableCounty[i] %></option>
+              <% } %>
+            </select>
+          </div>
+
+          <label>Rita en polygon</label>
+          <div id="map"></div>
+          <div class="form-group mb-3">
+            <label>Bounding box</label>
+            <input type="text" class="form-control" name="inputArea" id="inputArea" value="<%= inputArea %>" readOnly=true>
+          </div>
+
+          <hr>
+
+
+
+          <hr>
+
 
           <input type="hidden" id="inputSourceSubmit" name="inputSourceSubmit" value="">
           <div class="d-grid mt-3">
-            <button type="submit" class="btn btn-danger">View in a table</button>
+            <button type="submit" class="btn btn-primary">View in a table</button>
           </div>
           <!--
           <div class="d-grid mt-3">
@@ -370,10 +225,10 @@
           </div>
         -->
           <div class="d-grid mt-3">
-            <button id="buttonExportCsv" class="btn btn-danger">Generate CSV</button>
+            <button id="buttonExportCsv" class="btn btn-primary">Generate CSV</button>
           </div>
           <div class="d-grid mt-3">
-            <button id="buttonExportXlsx" class="btn btn-danger">Generate XLSX</button>
+            <button id="buttonExportXlsx" class="btn btn-primary">Generate XLSX</button>
           </div>
         </form>
       </div>
@@ -388,6 +243,8 @@
 
     <% if (isDataTable) { %>
       <div class="divTable">
+
+        <h3 title="Här visas bara ett urval av fält från databasen, men i nedladdade filer ingår alla fält som det finns data för.">Resultat och nedladdning <i class="fa-regular fa-circle-info"></i></h3>
         <h3><%= tableData.length %> result(s)</h3>
         <% if (totalResults != tableData.length ) { %>
         <p><%- totalResults %> result(s) obtained but table display limited to <%= maxResults %> results.</p>
