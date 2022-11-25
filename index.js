@@ -297,6 +297,13 @@ function updateToTemplateXlsx (dataInput) {
     templateXlsxHeader["1.eventEndDate_t"] = "inventeringssluttid";
     templateXlsxHeader["1.locationProtected"] = "lokalskyddad";
     //SITE
+    templateXlsxHeader["1.site.locationID"]="lokal-id_1";
+    templateXlsxHeader["1.site.anonymizedId"]="lokal-id_internt_1";
+    templateXlsxHeader["1.site.locationType"]="Lokaltyp_1";
+    templateXlsxHeader["1.site.locationID"]="lokal-id_1";
+    templateXlsxHeader["1.site.emplacement.geometry.coordinates.0"]="lokal:position:punkt 1";
+    templateXlsxHeader["1.site.emplacement.properties.horizontalCoordinateSystem"]="lokal:koordinatsystem_plan";
+
 
     // RE-EVENT
     templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
