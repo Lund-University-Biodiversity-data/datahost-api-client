@@ -286,24 +286,26 @@ function updateToTemplateXlsx (dataInput) {
     templateXlsxHeader["1.hierarchy1"] = "besökshierarki_1";
     templateXlsxHeader["1.hierarchy2"] = "besökshierarki_2";
     templateXlsxHeader["1.eventStartDate"] = "inventeringsstartdatum";
-    templateXlsxHeader["1.eventStartDate_y"] = "inventeringsstartår";
-    templateXlsxHeader["1.eventStartDate_m"] = "inventeringsstartmånad";
-    templateXlsxHeader["1.eventStartDate_d"] = "inventeringsstartdag";
-    templateXlsxHeader["1.eventStartDate_t"] = "inventeringsstarttid";
+    templateXlsxHeader["1.eventStartDate_y"] = "inventeringsstartår"; // don't exist in the csv export, added below
+    templateXlsxHeader["1.eventStartDate_m"] = "inventeringsstartmånad"; // don't exist in the csv export, added below
+    templateXlsxHeader["1.eventStartDate_d"] = "inventeringsstartdag"; // don't exist in the csv export, added below
+    templateXlsxHeader["1.eventStartDate_t"] = "inventeringsstarttid"; // don't exist in the csv export, added below
     templateXlsxHeader["1.eventEndDate"] = "inventeringsslutdatum";
-    templateXlsxHeader["1.eventEndDate_y"] = "inventeringsslutår";
-    templateXlsxHeader["1.eventEndDate_m"] = "inventeringsslutmånad";
-    templateXlsxHeader["1.eventEndDate_d"] = "inventeringsslutdag";
-    templateXlsxHeader["1.eventEndDate_t"] = "inventeringssluttid";
+    templateXlsxHeader["1.eventEndDate_y"] = "inventeringsslutår"; // don't exist in the csv export, added below
+    templateXlsxHeader["1.eventEndDate_m"] = "inventeringsslutmånad"; // don't exist in the csv export, added below
+    templateXlsxHeader["1.eventEndDate_d"] = "inventeringsslutdag"; // don't exist in the csv export, added below
+    templateXlsxHeader["1.eventEndDate_t"] = "inventeringssluttid"; // don't exist in the csv export, added below
     templateXlsxHeader["1.locationProtected"] = "lokalskyddad";
     //SITE
     templateXlsxHeader["1.site.locationID"]="lokal-id_1";
     templateXlsxHeader["1.site.anonymizedId"]="lokal-id_internt_1";
     templateXlsxHeader["1.site.locationType"]="Lokaltyp_1";
     templateXlsxHeader["1.site.locationID"]="lokal-id_1";
-    templateXlsxHeader["1.site.emplacement.geometry.coordinates.0"]="lokal:position:punkt 1";
+    templateXlsxHeader["1.site.emplacement.properties.dimension"]="lokal:dimension";
+    templateXlsxHeader["1.site.emplacement.geometry.point1"]="lokal:position:punkt_1"; // don't exist in the csv export, added below
+    templateXlsxHeader["1.site.emplacement.geometry.coordinates.0"]="lokal:position:punkt:koordinatNS_1";
+    templateXlsxHeader["1.site.emplacement.geometry.coordinates.1"]="lokal:position:punkt:koordinatEW_1";
     templateXlsxHeader["1.site.emplacement.properties.horizontalCoordinateSystem"]="lokal:koordinatsystem_plan";
-
 
     // RE-EVENT
     templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
@@ -359,6 +361,7 @@ function updateToTemplateXlsx (dataInput) {
     var oneDataset=[];
     // check the template header
     Object.entries(templateXlsxHeader).forEach(([key, val]) => {
+
       if (key in datasetI[1]) {
         oneDataset[val]=datasetI[1][key];
       }
@@ -373,7 +376,7 @@ function updateToTemplateXlsx (dataInput) {
         oneDataset[val]="";
       }
 
-
+      // split the startDate/time in colums
       if (key=="1.eventStartDate" && oneDataset[val]!="") {
 
         var splitDate=splitDateInArray(oneDataset[val]);
@@ -390,6 +393,8 @@ function updateToTemplateXlsx (dataInput) {
         }
       }
 
+
+      // split the endDate/time in colums
       if (key=="1.eventEndDate" && oneDataset[val]!="") {
 
         var splitDate=splitDateInArray(oneDataset[val]);
@@ -404,6 +409,25 @@ function updateToTemplateXlsx (dataInput) {
             oneDataset["inventeringssluttid"]=splitDate[3]+":"+splitDate[4]+":"+splitDate[5];
           }
 
+        }
+      }
+
+      // gather the coordinates
+      if (key=="1.site.emplacement.geometry.point1" || key=="1.eventData.1.site.emplacement.geometry.point1") {
+
+        var coordX="";
+        var coordY="";
+        if ("1.site.emplacement.geometry.coordinates.0" in datasetI[1] && datasetI[1]["1.site.emplacement.geometry.coordinates.0"]!="")
+          coordX=datasetI[1]["1.site.emplacement.geometry.coordinates.0"];
+        if ("1.eventData.1.site.emplacement.geometry.coordinates.0" in datasetI[1] && datasetI[1]["1.eventData.1.site.emplacement.geometry.coordinates.0"]!="")
+          coordX=datasetI[1]["1.eventData.1.site.emplacement.geometry.coordinates.0"];
+        if ("1.site.emplacement.geometry.coordinates.1" in datasetI[1] && datasetI[1]["1.site.emplacement.geometry.coordinates.1"]!="")
+          coordY=datasetI[1]["1.site.emplacement.geometry.coordinates.1"];
+        if ("1.eventData.1.site.emplacement.geometry.coordinates.1" in datasetI[1] && datasetI[1]["1.eventData.1.site.emplacement.geometry.coordinates.01"]!="")
+          coordY=datasetI[1]["1.eventData.1.site.emplacement.geometry.coordinates.1"];
+
+        if (coordX!="" && coordY!="") {
+          oneDataset["lokal:position:punkt_1"]=coordX + ", " + coordY;
         }
       }
 
