@@ -72,7 +72,7 @@
     -->
 
     <div class="">
-      <h1>Datahost Client API - Sök och ladda ner data</h1>
+      <h1>Sök och ladda ner data</h1>
 
       <% if (errorMsg != "") { %>
       <div class="alert alert-danger" role="alert">
@@ -80,32 +80,57 @@
       </div>
       <% } %>
 
+
       <div class="">
 
-        <p>Med hjälp av filtren här nedan kan du söka ut data. Gör du inget aktivt val baseras sökningen automatiskt på samtliga valmöjligheter. </p>
-        <p>Resultatet kan laddas ner som en kommaseparerad csv-fil eller en xlsx-fil.</p>
-        <p>Du hittar utförliga instruktioner via den här länken.</p>
+        <p><i class="fa-regular fa-circle-info"></i> Här kan du ladda ner data som färdiga datapaket för respektive delprogram, eller genom att mata in specifika sökkriterier för ett urval av data.<br>
+        Behöver du stora mängder data måste du använda dig av de färdiga datapaketen, alternativt göra flera utsök eftersom sökkapaciteten är begränsad.<br>
+        Oavsett hur du väljer att hitta data så kan resultatet laddas ner som en kommaseparerad csv-fil eller en xlsx-fil.</p>
 
+
+        <hr>
+        <h2>Färdiga datapaket</h2>
+        <p><i class="fa-regular fa-circle-info"></i> Här kan du ladda ner samtliga data som samlats in och finns tillgängliga i en hel datamängd. Du kan ladda ner ett (1) färdigt datapaket åt gången. Det gör du genom att klicka på en av länkarna till höger om namnet för den datamängd du är intresserad av. </p>
+        <div class="form-group mb-3">
+          <ul>
+          <% for (var i = 0; i < availableDatasets.length; i++) { %>
+            <li><a href="<%= availableDatasets[i]['downloadPath'] %>" target="_blank"><%= availableDatasets[i]['displayName'] %></a></li>
+          <% } %>          
+        </div>
+
+        <div class=" border-top border-dark mt-5 py-3">&nbsp</div>
 
         <form action="/" method="POST">
 
-
           <div class="form-group mb-3">
-            <h3 title="”Artobservationer” är det mest informationsrika utsnittet av data du kan få, från t.ex. antal av arten du valt till metadata om delprogrammet som observationen gjorts i. Läs mer om de olika alternativen i instruktionsdokumentet. ">Typ av information <i class="fa-regular fa-circle-info"></i></h3>
-            <select name="inputObject" class="form-control">
-              <option value="Occurrence" <%= (inputObject=="Occurrence" ? "selected" : "") %>>Artobservationer</option>
-              <option value="Event" <%= (inputObject=="Event" ? "selected" : "") %>>Inventeringstillfällen</option>
-              <option value="Dataset" <%= (inputObject=="Dataset" ? "selected" : "") %>>Delprogram/Metadata</option>
-            </select>
+            <h2 title="Med hjälp av sökfunktionerna här nedan kan du göra ett eget urval av data. Gör du inget aktivt val för respektive sökfunktion baseras sökningen automatiskt på samtliga valmöjligheter. Observera att om du inte gör några val alls ger detta sannolikt ett resultat som är för stort för att överhuvudtaget sökas fram eller att laddas ner.">Gör ditt eget urval av data</h2>
+            <p><i class="fa-regular fa-circle-info"></i> Med hjälp av sökfunktionerna här nedan kan du göra ett eget urval av data. Gör du inget aktivt val för respektive sökfunktion baseras sökningen automatiskt på samtliga valmöjligheter. Observera att om du inte gör några val alls ger detta sannolikt ett resultat som är för stort för att överhuvudtaget sökas fram eller att laddas ner.</p>
           </div>
 
-          <hr>
-          <h3>Direct downlad section</h3>
+
           <div class="form-group mb-3">
-            <% for (var i = 0; i < availableDatasets.length; i++) { %>
-              <p><a href="<%= availableDatasets[i]['downloadPath'] %>" target="_blank"><%= availableDatasets[i]['displayName'] %></a></p>
-            <% } %>          
+            <h3 title="Här väljer du vilken typ av information du vill ha.
+”Artobservationer” är det mest informationsrika utsnittet av data du kan få, från antal av arten du valt till metadata om delprogrammet som observationen gjorts i
+”Inventeringstillfällen” ger information om vilka lokaler som inventerats, samt när de inventerats och av vem.
+”Metadata” ger information om själva datamängden från delprogrammet.">Typ av information</h3>
+            <p><i class="fa-regular fa-circle-info"></i> Här väljer du vilken typ av information du vill ha.<br>
+            ”Artobservationer” är det mest informationsrika utsnittet av data du kan få, från antal av arten du valt till metadata om delprogrammet som observationen gjorts i
+            ”Inventeringstillfällen” ger information om vilka lokaler som inventerats, samt när de inventerats och av vem.<br>
+            ”Metadata” ger information om själva datamängden från delprogrammet.</p>
+
+            <div class="custom-control custom-radio">
+              <input type="radio" id="objRecord" name="inputObject" class="custom-control-input" value="Occurrence" <%= (inputObject=="Occurrence" ? "selected" : "") %>><label class="custom-control-label" for="objRecord">Artobservationer</label>
+            </div>
+            <div class="custom-control custom-radio">
+              <input type="radio" id="objEvent" name="inputObject" class="custom-control-input" value="Event" <%= (inputObject=="Event" ? "selected" : "") %>><label class="custom-control-label" for="objEvent">Inventeringstillfällen</label>
+            </div>
+            <div class="custom-control custom-radio">
+              <input type="radio" id="objDataset" name="inputObject" class="custom-control-input" value="Dataset" <%= (inputObject=="Dataset" ? "selected" : "") %>><label class="custom-control-label" for="objDataset">Delprogram/Metadata</label>
+            </div>
           </div>
+          </div>
+
+
 
           <hr>
 
