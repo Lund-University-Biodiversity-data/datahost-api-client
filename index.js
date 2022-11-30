@@ -799,8 +799,7 @@ app.post('/', encodeUrl, (req, res) => {
   if (dataInputLength.length>=1) {
 
     inputObject = req.body.inputObject;
-console.log(inputObject);
-exit();
+
     let apiInstance, opts, getResultsBySearch;
 
     switch(inputObject) {
