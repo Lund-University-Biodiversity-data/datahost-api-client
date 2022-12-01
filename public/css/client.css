@@ -16,3 +16,12 @@ h3 {
 	cursor:pointer;
 	text-decoration:underline;
 }
+
+
+.form-clear-data {
+	text-align: right;
+}
+
+.form-clear-data label {
+	cursor:pointer;
+}

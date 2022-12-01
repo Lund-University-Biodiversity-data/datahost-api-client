@@ -137,9 +137,11 @@
           <h3 title="blabla">Data från specifika delprogram</h3>
           <p><i class="fa-regular fa-circle-info"></i> Välj vilket eller vilka datamängder du vill ha data data från.</p>
           <div class="form-group mb-3">
+            <div  class="form-clear-data" id="clearDatasets">
+              <label><i class="fa-regular fa-trash"></i> Rensa val</label>
+            </div>
             <label>
-              <span class="all-none-button" id="selectAllDatasets"><i class="fa-regular fa-square-check"></i> av/markera alla</span>
-              <input type="hidden" id="tokenMarkAllDatasets" value=0>
+              <span class="all-none-button" id="selectAllDatasets"><i class="fa-regular fa-square-check"></i> Markera alla</span>
             </label>
             <% for (var i = 0; i < availableDatasets.length; i++) { %>
               <div class="form-check">
@@ -157,6 +159,11 @@
           <p><i class="fa-regular fa-circle-info"></i> Använd kryssrutorna och rullistan var för sig eller i kombination för att välja de organismer du är intresserad av. Flera grupper respektive arter kan väljas samtidigt.<br>
 Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funktionella/traditionella grupper.</p>
           <div class="form-group mb-3">
+
+            <div  class="form-clear-data" id="clearTaxon">
+              <label><i class="fa-regular fa-trash"></i> Rensa val</label>
+            </div>
+
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonAll" value="taxonAll">
               <label class="form-check-label" for="radioTaxonAll">Alla</label>
@@ -166,21 +173,19 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
               <label class="form-check-label" for="radioTaxonBirds">Fåglar</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonButterflies" value="taxonButterflies">
-              <label class="form-check-label" for="radioTaxonButterflies">Fjärillar</label>
-            </div>
-            <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonMammals" value="taxonMammals">
-              <label class="form-check-label" for="radioTaxonMammals">Däggdjjur</label>
+              <label class="form-check-label" for="radioTaxonMammals">Däggdjur</label>
+            </div>
+            <!--
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonButterflies" value="taxonButterflies">
+              <label class="form-check-label" for="radioTaxonButterflies">Fjärilar</label>
             </div>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonAmphibians" value="taxonAmphibians">
               <label class="form-check-label" for="radioTaxonAmphibians">Groddjjur</label>
             </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonClear" value="taxonClear">
-              <label class="form-check-label" for="radioTaxonClear">Clear selection</label>
-            </div>
+            -->
           </div>
 
           <div class="form-group mb-3" id="divTaxonList">

@@ -2,16 +2,16 @@
 $(document).ready(function () {
 
   $( "#selectAllDatasets").click(function() {
-    if ($( "#tokenMarkAllDatasets").val()==0) {
-      $( "#tokenMarkAllDatasets").val(1);
-      $('input[name=datasetCheckB]').prop('checked', true); 
-    }
-    else {
-      $( "#tokenMarkAllDatasets").val(0);
-      $('input[name=datasetCheckB]').prop('checked', false); 
-    }
+    $('input[name=datasetCheckB]').prop('checked', true); 
   });
 
+  $( "#clearDatasets").click(function() {
+    $('input[name=datasetCheckB]').prop('checked', false); 
+  });
+
+  $( "#clearTaxon").click(function() {
+    $('select[name=inputTaxon]').val('').selectpicker('deselectAll'); 
+  });
 
   $('input[name="radioTaxon"]').on('click', function() {
     if ($(this).attr('id')!="radioTaxonAll") {
@@ -39,7 +39,7 @@ $(document).ready(function () {
       
     }
     else {
-      //$("#divTaxonList").css("display", "inline");
+      $('select[name=inputTaxon]').val('').selectpicker('deselectAll');
     }
   });
 
