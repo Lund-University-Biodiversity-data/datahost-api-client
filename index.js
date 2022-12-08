@@ -591,7 +591,10 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
 app.get('/about', function(req, res) {
   res.render('pages/about');
 });
-
+// get /testselectpicker
+app.get('/testselectpicker', function(req, res) {
+  res.render('pages/testselectpicker', {tableTaxon: tableTaxon, inputTaxon: inputTaxon});
+});
 
 let encodeUrl = parseUrl.urlencoded({ extended: false });
 
@@ -1115,11 +1118,14 @@ http.get(speciesListUrl,(res) => {
 
       Object.entries(speciesList).forEach(([key, val]) => {
 
+        /*
         var dataChain=val.dyntaxaId + " - " + val.scientificName;
 
         if (val.swedishName != null && val.swedishName!="null") {
           dataChain= dataChain + " - " + val.swedishName;
         }
+        */
+        var dataChain = val.swedishName + " - " + val.scientificName + " - " + val.dyntaxaId;
 
         var obj={
           id: val.dyntaxaId,
@@ -1129,6 +1135,22 @@ http.get(speciesListUrl,(res) => {
 
         tableTaxon.push(obj);
       });
+
+      // sort the tableTaxon array by dataChain, i.e. swedish name (first element)
+      tableTaxon.sort((a, b) => {
+          let fa = a.data.toLowerCase(),
+              fb = b.data.toLowerCase();
+
+          if (fa < fb) {
+              return -1;
+          }
+          if (fa > fb) {
+              return 1;
+          }
+          return 0;
+      });
+
+
 
       console.log(tableTaxon.length+ " element(s) in tableTaxon");
       //resolve(1);

@@ -11,12 +11,14 @@ $(document).ready(function () {
 
   $( "#clearTaxon").click(function() {
     $('select[name=inputTaxon]').val('').selectpicker('deselectAll'); 
+
+    $('select[name=inputTaxon]').selectpicker("refresh");;
+    $('#inputTaxon').selectpicker('destroy').selectpicker();
   });
 
   $('input[name="radioTaxon"]').on('click', function() {
     if ($(this).attr('id')!="radioTaxonAll") {
       //$("#divTaxonList").css("display", "none");
-
       $('select[name=inputTaxon]').val('').selectpicker('deselectAll');
 
       switch ($(this).attr('id')) {
@@ -41,6 +43,10 @@ $(document).ready(function () {
     else {
       $('select[name=inputTaxon]').val('').selectpicker('deselectAll');
     }
+
+    // to avoid the duplicated list when refresh ! bug from selectpicker, no official fix so far
+    $('#inputTaxon').selectpicker('destroy').selectpicker();
+
   });
 
 
