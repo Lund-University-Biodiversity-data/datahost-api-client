@@ -47,24 +47,9 @@ const speciesListUrl= config.speciesListUrl;
 
 app.set('view engine', 'ejs');
 
+// variable for the whole app
 var maxResults = 1000;
 
-var inputObject = "Occurrence";
-var inputSourceSubmit = "submit";
-var inputTaxon = "[100062, 102933]";
-//var inputTaxon = "[]";
-var inputArea = "";
-var inputDatasetList = [];
-//var inputCounty = ["Skåne län"];
-var inputCounty = ["None selected"];
-var inputStartDate = config.defaultStartDate;
-//var inputStartDate = "1995-05-25";
-var inputEndDate = config.defaultEndDate;;
-//var inputEndDate = "1997-05-27";
-var inputDateType = "BetweenStartDateAndEndDate";
-var exportMode = "json";
-var responseCoordinateSystem = "EPSG:4326";
-var errorMsg = "";
 
 const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDate", "occurrenceIds"];
 const datasetColumnsTable = ["identifier", "title", "startDate", "endDate", "eventIds"];
@@ -94,25 +79,25 @@ function renderIndex(res, isDataTable, source) {
   console.log("renderIndex from "+source);
 
   res.render('pages/index', {
-    maxResults: maxResults,
-    availableDatasets: availableDatasets, 
-    tableCounty: tableCounty, 
-    tableTaxon: tableTaxon,
-    errorMsg: errorMsg,
-    inputObject: inputObject,
-    inputDatasetList: inputDatasetList,
-    inputSourceSubmit: inputSourceSubmit,
-    inputTaxon: inputTaxon,
-    inputCounty: inputCounty,
-    inputArea: inputArea,
-    inputStartDate: inputStartDate,
-    inputEndDate: inputEndDate,
-    inputDateType: inputDateType,
-    isDataTable: isDataTable,
-    tableColumns: tableColumns,
-    tableData: tableData,
-    totalResults: totalResults,
-    downloadFile: downloadFile
+    maxResults: maxResults,                 // GLOBAL
+    availableDatasets: availableDatasets,   // GLOBAL
+    tableCounty: tableCounty,               // GLOBAL
+    tableTaxon: tableTaxon,                 // GLOBAL
+    errorMsg: errorMsg,                     // session
+    inputObject: inputObject,               // session, default
+    inputDatasetList: inputDatasetList,     // session, default
+    inputSourceSubmit: inputSourceSubmit,   // session, default
+    inputTaxon: inputTaxon,                 // session, default
+    inputCounty: inputCounty,               // session, default
+    inputArea: inputArea,                   // session, default
+    inputStartDate: inputStartDate,         // session, default
+    inputEndDate: inputEndDate,             // session, default
+    inputDateType: inputDateType,           // session, default
+    isDataTable: isDataTable,               // session, false
+    tableColumns: tableColumns,             // optional
+    tableData: tableData,                   // optional
+    totalResults: totalResults,             // optional
+    downloadFile: downloadFile               // optional
   });
 
 
@@ -163,7 +148,27 @@ function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence
 
         downloadFile = writeXlsxFlattened(host, inputObject, dataDataset, dataEvent, dataOccurrence);
 
-        renderIndex(res, false, "getDatasetDataForXlsx"+inputObject);
+        //renderIndex(res, false, "getDatasetDataForXlsx"+inputObject);
+        console.log("renderIndex from getDatasetDataForXlsx"+inputObject);
+
+        res.render('pages/index', {
+          maxResults: maxResults,                 // GLOBAL
+          availableDatasets: availableDatasets,   // GLOBAL
+          tableCounty: tableCounty,               // GLOBAL
+          tableTaxon: tableTaxon,                 // GLOBAL
+          errorMsg: errorMsg,                     // session
+          inputObject: inputObject,               // session, default
+          inputDatasetList: inputDatasetList,     // session, default
+          inputSourceSubmit: inputSourceSubmit,   // session, default
+          inputTaxon: inputTaxon,                 // session, default
+          inputCounty: inputCounty,               // session, default
+          inputArea: inputArea,                   // session, default
+          inputStartDate: inputStartDate,         // session, default
+          inputEndDate: inputEndDate,             // session, default
+          inputDateType: inputDateType,           // session, default
+          isDataTable: false,               // session, false
+          downloadFile: downloadFile               // optional
+        });
 
       }
     });
@@ -582,8 +587,37 @@ function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccu
 // get /
 app.get('/', (req, res) => {        //get requests to the root ("/") will route here
 
-  renderIndex(res, false, "app.get");
+  var inputObject = config.defaultObject;
+  var inputDatasetList = config.defaultDatasetList;
+  var inputSourceSubmit = config.defaultSourceSubmit;
+  var inputTaxon = config.defaultTaxon;
+  var inputCounty = config.defaultCounty;
+  var inputArea = config.defaultArea;
+  var inputStartDate = config.defaultStartDate;
+  var inputEndDate = config.defaultEndDate;
+  var inputDateType = config.defaultDateType;
 
+  //renderIndex(res, false, "app.get");
+  console.log("renderIndex from app.get");
+
+  res.render('pages/index', {
+    maxResults: maxResults,                 // GLOBAL
+    availableDatasets: availableDatasets,   // GLOBAL
+    tableCounty: tableCounty,               // GLOBAL
+    tableTaxon: tableTaxon,                 // GLOBAL
+    errorMsg: "",                     // session
+    inputObject: inputObject,               // session, default
+    inputDatasetList: inputDatasetList,     // session, default
+    inputSourceSubmit: inputSourceSubmit,   // session, default
+    inputTaxon: inputTaxon,                 // session, default
+    inputCounty: inputCounty,               // session, default
+    inputArea: inputArea,                   // session, default
+    inputStartDate: inputStartDate,         // session, default
+    inputEndDate: inputEndDate,             // session, default
+    inputDateType: inputDateType,           // session, default
+    isDataTable: false,               // session, false
+    downloadFile: ""               // optional
+  });
 });
 
 
@@ -601,12 +635,17 @@ let encodeUrl = parseUrl.urlencoded({ extended: false });
 app.post('/', encodeUrl, (req, res) => {
   console.log('Form request:', req.body);
 
+
+  var exportMode = "";
+  var responseCoordinateSystem = "EPSG:4326";
+  var errorMsg = "";
+
   const dataInput = {};
 
   // CREATE THE dataInput based on the form
 
   // get the export Mode based on the clicked button
-  inputSourceSubmit = req.body.inputSourceSubmit;
+  var inputSourceSubmit = req.body.inputSourceSubmit;
         
 
   if (inputSourceSubmit=="exportCsv") {
@@ -623,7 +662,7 @@ app.post('/', encodeUrl, (req, res) => {
 
 
   // reinit
-  inputTaxon=[];
+  var inputTaxon=[];
   if (typeof req.body.inputTaxon !== 'undefined' && req.body.inputTaxon!="") {
 
     let taxonIds= [];
@@ -658,7 +697,7 @@ app.post('/', encodeUrl, (req, res) => {
 
 
   // reinit
-  inputCounty=["None selected"];
+  var inputCounty=["None selected"];
   if (typeof req.body.inputCounty !== 'undefined' && req.body.inputCounty!="") {
 
     let countyNames= [];
@@ -689,7 +728,7 @@ app.post('/', encodeUrl, (req, res) => {
   }
 
   // reinit
-  inputArea="";
+  var inputArea="";
   if (typeof req.body.inputArea !== 'undefined' && req.body.inputArea!="") {
 
     var coordinates = req.body.inputArea;
@@ -756,8 +795,10 @@ app.post('/', encodeUrl, (req, res) => {
 
 
   // reinit
-  inputStartDate="";
-  inputEndDate="";    
+  var inputStartDate="";
+  var inputEndDate="";  
+  var inputDateType= config.defaultDateType;
+ 
   if ( (typeof req.body.inputStartDate !== 'undefined' && req.body.inputStartDate !="")
    || (typeof req.body.inputEndDate !== 'undefined' && req.body.inputEndDate !="")) {
 
@@ -779,7 +820,7 @@ app.post('/', encodeUrl, (req, res) => {
 
   }
 
-  inputDatasetList = []; // reinit
+  var inputDatasetList = []; // reinit
   if (typeof req.body.datasetCheckB !== 'undefined' && req.body.datasetCheckB.length>=1) {
 
     if (typeof req.body.datasetCheckB == "string") {
@@ -801,7 +842,7 @@ app.post('/', encodeUrl, (req, res) => {
 
   if (dataInputLength.length>=1) {
 
-    inputObject = req.body.inputObject;
+    var inputObject = req.body.inputObject;
 
     let apiInstance, opts, getResultsBySearch;
 
@@ -843,7 +884,7 @@ app.post('/', encodeUrl, (req, res) => {
           'take': 100, // Number | Number of items to return. 1000 items is the max to return in one call.
           'exportMode': exportMode
         };
-console.log(opts);
+
         getResultsBySearch="getEventsBySearch";
 
         break;
@@ -857,7 +898,26 @@ console.log(opts);
 
         errorMsg="Error received from the server";
 
-        renderIndex(res, false, "error apiInstance");
+        //renderIndex(res, false, "error apiInstance");
+        console.log("renderIndex from error apiInstance");
+        res.render('pages/index', {
+          maxResults: maxResults,                 // GLOBAL
+          availableDatasets: availableDatasets,   // GLOBAL
+          tableCounty: tableCounty,               // GLOBAL
+          tableTaxon: tableTaxon,                 // GLOBAL
+          errorMsg: errorMsg,                     // session
+          inputObject: inputObject,               // session, default
+          inputDatasetList: inputDatasetList,     // session, default
+          inputSourceSubmit: inputSourceSubmit,   // session, default
+          inputTaxon: inputTaxon,                 // session, default
+          inputCounty: inputCounty,               // session, default
+          inputArea: inputArea,                   // session, default
+          inputStartDate: inputStartDate,         // session, default
+          inputEndDate: inputEndDate,             // session, default
+          inputDateType: inputDateType,           // session, default
+          isDataTable: false,               // session, false
+          downloadFile: ""               // optional
+        });
 
       } else {
 
@@ -896,7 +956,27 @@ console.log(opts);
             //console.log(await csv.toString());
             console.log("Data saved in "+csvPath+" ("+totalResults+" row(s))");
 
-            renderIndex(res, false, "exportCsv");
+            //renderIndex(res, false, "exportCsv");
+            console.log("renderIndex from exportCsv");
+            res.render('pages/index', {
+              maxResults: maxResults,                 // GLOBAL
+              availableDatasets: availableDatasets,   // GLOBAL
+              tableCounty: tableCounty,               // GLOBAL
+              tableTaxon: tableTaxon,                 // GLOBAL
+              errorMsg: "",                     // session
+              inputObject: inputObject,               // session, default
+              inputDatasetList: inputDatasetList,     // session, default
+              inputSourceSubmit: inputSourceSubmit,   // session, default
+              inputTaxon: inputTaxon,                 // session, default
+              inputCounty: inputCounty,               // session, default
+              inputArea: inputArea,                   // session, default
+              inputStartDate: inputStartDate,         // session, default
+              inputEndDate: inputEndDate,             // session, default
+              inputDateType: inputDateType,           // session, default
+              isDataTable: false,               // session, false
+              downloadFile: downloadFile               // optional
+            });
+
 
           })();
           // end async create csv file
@@ -921,7 +1001,26 @@ console.log(opts);
               
               downloadFile = writeXlsxFlattened(req.get('host'), inputObject, dataDataset, null, null);
 
-              renderIndex(res, false, "xlsxdataset");
+              //renderIndex(res, false, "xlsxdataset");
+              console.log("renderIndex from error xlsxdataset");
+              res.render('pages/index', {
+                maxResults: maxResults,                 // GLOBAL
+                availableDatasets: availableDatasets,   // GLOBAL
+                tableCounty: tableCounty,               // GLOBAL
+                tableTaxon: tableTaxon,                 // GLOBAL
+                errorMsg: "",                     // session
+                inputObject: inputObject,               // session, default
+                inputDatasetList: inputDatasetList,     // session, default
+                inputSourceSubmit: inputSourceSubmit,   // session, default
+                inputTaxon: inputTaxon,                 // session, default
+                inputCounty: inputCounty,               // session, default
+                inputArea: inputArea,                   // session, default
+                inputStartDate: inputStartDate,         // session, default
+                inputEndDate: inputEndDate,             // session, default
+                inputDateType: inputDateType,           // session, default
+                isDataTable: false,               // session, false
+                downloadFile: ""               // optional
+              });
 
               break;
 
@@ -1054,13 +1153,54 @@ console.log(opts);
 
             });
 
-            renderIndex(res, true, "tableviewOK");
+            //renderIndex(res, true, "tableviewOK");
+            console.log("renderIndex from tableviewOK");
 
+            res.render('pages/index', {
+              maxResults: maxResults,                 // GLOBAL
+              availableDatasets: availableDatasets,   // GLOBAL
+              tableCounty: tableCounty,               // GLOBAL
+              tableTaxon: tableTaxon,                 // GLOBAL
+              errorMsg: errorMsg,                     // session
+              inputObject: inputObject,               // session, default
+              inputDatasetList: inputDatasetList,     // session, default
+              inputSourceSubmit: inputSourceSubmit,   // session, default
+              inputTaxon: inputTaxon,                 // session, default
+              inputCounty: inputCounty,               // session, default
+              inputArea: inputArea,                   // session, default
+              inputStartDate: inputStartDate,         // session, default
+              inputEndDate: inputEndDate,             // session, default
+              inputDateType: inputDateType,           // session, default
+              isDataTable: true,               // session, false
+              tableColumns: tableColumns,             // optional
+              tableData: tableData,                   // optional
+              totalResults: totalResults,             // optional
+              downloadFile: ""               // optional
+            });
           }     
           else {
 
-            renderIndex(res, true, "tableviewERROR");
+            //renderIndex(res, true, "tableviewERROR");
+            console.log("renderIndex from tableviewERROR");
 
+            res.render('pages/index', {
+              maxResults: maxResults,                 // GLOBAL
+              availableDatasets: availableDatasets,   // GLOBAL
+              tableCounty: tableCounty,               // GLOBAL
+              tableTaxon: tableTaxon,                 // GLOBAL
+              errorMsg: "no data",                     // session
+              inputObject: inputObject,               // session, default
+              inputDatasetList: inputDatasetList,     // session, default
+              inputSourceSubmit: inputSourceSubmit,   // session, default
+              inputTaxon: inputTaxon,                 // session, default
+              inputCounty: inputCounty,               // session, default
+              inputArea: inputArea,                   // session, default
+              inputStartDate: inputStartDate,         // session, default
+              inputEndDate: inputEndDate,             // session, default
+              inputDateType: inputDateType,           // session, default
+              isDataTable: true,               // session, false
+              downloadFile: ""               // optional
+            });
           }
 
           // END IF NOT DOWNLOAD
