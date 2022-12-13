@@ -1205,7 +1205,7 @@ console.log("radioGeography:"+req.body.radioGeography);
               inputStartDate: inputStartDate,         // session, default
               inputEndDate: inputEndDate,             // session, default
               inputDateType: inputDateType,           // session, default
-              isDataTable: true,               // session, false
+              isDataTable: false,               // session, false
               downloadFile: ""               // optional
             });
           }
