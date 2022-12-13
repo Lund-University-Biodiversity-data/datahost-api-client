@@ -25,3 +25,10 @@ h3 {
 .form-clear-data label {
 	cursor:pointer;
 }
+
+
+
+.disabledsection {
+    pointer-events: none;
+    opacity: 0.4;
+}

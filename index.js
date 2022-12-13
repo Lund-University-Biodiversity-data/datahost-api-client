@@ -695,81 +695,73 @@ app.post('/', encodeUrl, (req, res) => {
 
   }
 
+console.log("radioGeography:"+req.body.radioGeography);
 
-  // reinit
   var inputCounty=["None selected"];
-  if (typeof req.body.inputCounty !== 'undefined' && req.body.inputCounty!="") {
+  if (req.body.radioGeography=="lanmun") {
+    // reinit
+    if (typeof req.body.inputCounty !== 'undefined' && req.body.inputCounty!="") {
 
-    let countyNames= [];
+      let countyNames= [];
 
-    // several items selected
-    if (req.body.inputCounty instanceof Array) {
-      countyNames = req.body.inputCounty;
-    }
-    // only one item
-    else {
-      if (req.body.inputCounty != "None selected")
-        countyNames.push(req.body.inputCounty);
-    }
+      // several items selected
+      if (req.body.inputCounty instanceof Array) {
+        countyNames = req.body.inputCounty;
+      }
+      // only one item
+      else {
+        if (req.body.inputCounty != "None selected")
+          countyNames.push(req.body.inputCounty);
+      }
 
-    if (countyNames.length>=1) {
+      if (countyNames.length>=1) {
 
-      dataInput.area = {
-        county : []
-      };
-      countyNames.forEach((element) => {
-        if (element!="None selected")
-          dataInput.area.county.push(element.trim());
-      });
+        dataInput.area = {
+          county : []
+        };
+        countyNames.forEach((element) => {
+          if (element!="None selected")
+            dataInput.area.county.push(element.trim());
+        });
 
-    }
+      }
 
-    inputCounty = req.body.inputCounty;
+      inputCounty = req.body.inputCounty;
+    } 
   }
 
-  // reinit
   var inputArea="";
-  if (typeof req.body.inputArea !== 'undefined' && req.body.inputArea!="") {
+  if (req.body.radioGeography=="karta") {
 
-    var coordinates = req.body.inputArea;
-    console.log("coordinates avant "+coordinates);
+    // reinit
+    if (typeof req.body.inputArea !== 'undefined' && req.body.inputArea!="") {
 
-    coordinates = coordinates.replace(new RegExp('LatLng\\(', 'g'), "");
-    coordinates = coordinates.replace(new RegExp('\\),', 'g'), "#");
-    coordinates = coordinates.replace(new RegExp('\\)', 'g'), "");
-    coordinates = coordinates.replace(new RegExp('\\, ', 'g'), ",");
+      var coordinates = req.body.inputArea;
+      console.log("coordinates avant "+coordinates);
+
+      coordinates = coordinates.replace(new RegExp('LatLng\\(', 'g'), "");
+      coordinates = coordinates.replace(new RegExp('\\),', 'g'), "#");
+      coordinates = coordinates.replace(new RegExp('\\)', 'g'), "");
+      coordinates = coordinates.replace(new RegExp('\\, ', 'g'), ",");
 
 
-    console.log("coordinates apres "+coordinates);
+      console.log("coordinates apres "+coordinates);
 
-    const coordArrSplit = coordinates.split("#");
+      const coordArrSplit = coordinates.split("#");
 
-    if (coordArrSplit.length>1 ) {
-      const coordArr=[];
-      coordArrSplit.forEach(elt => {
+      if (coordArrSplit.length>1 ) {
+        const coordArr=[];
+        coordArrSplit.forEach(elt => {
 
-       var point=elt.split(",");
+         var point=elt.split(",");
 
-       coordArr.push([
-          parseFloat(point[0]), parseFloat(point[1])
-        ]);
-      });
+         coordArr.push([
+            parseFloat(point[0]), parseFloat(point[1])
+          ]);
+        });
 
-      if (typeof dataInput.area !== 'undefined' ){
-        dataInput.area.area ={
-          geographicArea: {
-            featureLP: {
-              geometry: {
-                type:"Polygon",
-                coordinates: coordArr
-              }
-            }
-          }
-        };
-      }
-      else {
-        dataInput.area = {
-          area: {
+        if (typeof dataInput.area !== 'undefined' ){
+          dataInput.area.area ={
             geographicArea: {
               featureLP: {
                 geometry: {
@@ -778,21 +770,36 @@ app.post('/', encodeUrl, (req, res) => {
                 }
               }
             }
-          } 
-        };
+          };
+        }
+        else {
+          dataInput.area = {
+            area: {
+              geographicArea: {
+                featureLP: {
+                  geometry: {
+                    type:"Polygon",
+                    coordinates: coordArr
+                  }
+                }
+              }
+            } 
+          };
+        }
+
+        console.log(dataInput.area);
+
+        //inputArea = coordArr;
+        inputArea = coordinates;
+        //inputArea = req.body.inputArea;
+      }
+      else {
+        console.log("Error, only "+coordArrSplit.length+" points in the bounding box");
+        inputArea="";
       }
 
-      console.log(dataInput.area);
-
-      inputArea = coordArr;
     }
-    else {
-      console.log("Error, only "+coordArrSplit.length+" points in the bounding box");
-      inputArea="";
-    }
-
   }
-
 
   // reinit
   var inputStartDate="";

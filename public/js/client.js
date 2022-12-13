@@ -1,12 +1,28 @@
 
 $(document).ready(function () {
 
+  // initiate the different selectpickers
+  $('.selectpicker').selectpicker();
+
+  $('.datepicker').datepicker({
+    format: 'yyyy-mm-dd'
+  });
+
   $( "#selectAllDatasets").click(function() {
     $('input[name=datasetCheckB]').prop('checked', true); 
   });
 
   $( "#clearDatasets").click(function() {
     $('input[name=datasetCheckB]').prop('checked', false); 
+  });
+
+  $( "#clearCounties").click(function() {
+    $('select[name=inputCounty]').val('').selectpicker('deselectAll');  
+  });
+
+  $( "#clearDates").click(function() {
+    $('input[name=inputStartDate]').val(""); 
+    $('input[name=inputEndDate]').val(""); 
   });
 
   $( "#clearTaxon").click(function() {
@@ -49,10 +65,35 @@ $(document).ready(function () {
 
   });
 
+  $('input[name="radioGeography"]').on('click', function() {
+    if ($(this).val()=="lanmun") {
+      $("#mapSection").addClass("disabledsection");
+      $("#lanmunSection").removeClass("disabledsection");
 
-  $(function () {
-    $('.selectpicker').selectpicker();
+    }
+    else {
+      $("#lanmunSection").addClass("disabledsection");
+      $('select[name=inputCounty]').val('').selectpicker('deselectAll');  
+      //$('select[name=inputMunicipality]').val('').selectpicker('deselectAll');  
+
+      $("#mapSection").removeClass("disabledsection");
+    }
   });
+
+  $('#lanmunSection').on('click', function() {
+    $('#radioGeographyLanmun').prop('checked', true);
+    $("#mapSection").addClass("disabledsection");
+    $("#lanmunSection").removeClass("disabledsection");
+  });
+  $('#mapSection').on('click', function() {
+    $('#radioGeographyKarta').prop('checked', true);
+    $("#lanmunSection").addClass("disabledsection");
+    $('select[name=inputCounty]').val('').selectpicker('deselectAll');  
+    //$('select[name=inputMunicipality]').val('').selectpicker('deselectAll');  
+
+    $("#mapSection").removeClass("disabledsection");
+  });
+
 
   /*
   $('#downloadButton').on('click', function() {
@@ -77,32 +118,59 @@ $(document).ready(function () {
   //map.addLayer(drawnItems);
   var drawControl = new L.Control.Draw({
      draw: {
-         polygon: false,
-         marker: false,
-         polyline: false,
-         circle: false
+        rectangle:false,
+        polygon: true,
+        marker: false,
+        polyline: false,
+        circle: false
      }
   });
   map.addControl(drawControl);
 
   
   if ($("#inputArea").val()!="") {
-    //alert("yes");
+    
+    $('#radioGeographyKarta').prop('checked', true);
+    $("#lanmunSection").addClass("disabledsection");
+    $('select[name=inputCounty]').val('').selectpicker('deselectAll');  
+    //$('select[name=inputMunicipality]').val('').selectpicker('deselectAll');  
 
-    // A RETESTER CA !!
-    //var bounds= <%- JSON.stringify(inputArea) %>;
-    var bounds= $("#inputArea").val(); // faut le re-de-jsoninser lui
-    //console.log(bounds);
+    $("#mapSection").removeClass("disabledsection");
 
-    var rect = L.rectangle(bounds, {color: 'blue', weight: 1}).on('click', function (e) {
-        // There event is event object
-        // there e.type === 'click'
-        // there e.lanlng === L.LatLng on map
-        // there e.target.getLatLngs() - your rectangle coordinates
-        // but e.target !== rect
-        console.info(e);
-    }).addTo(map);
-    //alert("rect");
+
+    var boundsArr = $("#inputArea").val().split("#");
+    var onePoint;
+    if (boundsArr.length > 2) {
+      var arrBounds=[];
+      boundsArr.forEach(elt => {
+        onePoint = elt.split(",");
+        arrBounds.push(L.latLng(onePoint[0], onePoint[1]));
+      });
+      //console.log(arrBounds);
+
+      var polyg = L.polygon(arrBounds, {color: 'green', weight: 1}).addTo(map);
+
+    }
+
+    /*
+    // rectangle
+    if (boundsArr.length == 8) {
+      var bounds = L.latLngBounds(L.latLng(boundsArr[0], boundsArr[1]), L.latLng(boundsArr[4], boundsArr[5]));    
+      console.log(bounds);
+
+      var rect = L.rectangle(bounds, {color: 'blue', weight: 1}).on('click', function (e) {
+          // There event is event object
+          // there e.type === 'click'
+          // there e.lanlng === L.LatLng on map
+          // there e.target.getLatLngs() - your rectangle coordinates
+          // but e.target !== rect
+          console.info(e);
+      }).addTo(map);
+      //alert("rect");
+    }
+    */
+
+    
 
   }
   

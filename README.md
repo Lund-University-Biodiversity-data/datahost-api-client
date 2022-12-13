@@ -57,7 +57,7 @@ npm install tablefilter
 
 npm install objects-to-csv
 
-
+npm install bootstrap-datepicker
 
 
 ## for xlsx

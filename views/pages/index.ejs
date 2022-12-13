@@ -14,6 +14,9 @@
   </style>
 
   <script src="tablefilter/dist/tablefilter/tablefilter.js"></script>
+  <script src="bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+  <link rel="stylesheet" href="bootstrap-datepicker/dist/css/bootstrap-datepicker.css">
+
 
   <!-- Add icon library -->
   <link href="@fortawesome/fontawesome-free/css/fontawesome.css" rel="stylesheet">
@@ -191,7 +194,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
           </div>
 
           <div class="form-group mb-3" id="divTaxonList">
-            <select id="inputTaxon" name="inputTaxon" class="form-control selectpicker" multiple title="Choose one of the following..." data-live-search="true">
+            <select id="inputTaxon" name="inputTaxon" class="form-control selectpicker" multiple title="Välj ett eller flera..." data-live-search="true">
 
               <% Object.entries(tableTaxon).forEach(function([key, val]) { %>
                   <option value="<%= tableTaxon[key].id %>"  <%= (inputTaxon.includes(tableTaxon[key].id) ? "selected" : "") %>><%- tableTaxon[key].data %></option>
@@ -204,13 +207,22 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
           <hr>
 
           <h3 title="blabla">Tidsperiod <i class="fa-regular fa-circle-info"></i></h3>
+
           <div class="form-group mb-3">
+            <div  class="form-clear-data" id="clearDates">
+              <label><i class="fa-regular fa-trash"></i> Rensa val</label>
+            </div>
+
             <label>Från datum</label>
-            <input type="date" class="form-control" placeholder="YYYY-MM-DD" name="inputStartDate" value="<%= inputStartDate %>">
-          </div>
-          <div class="form-group mb-3">
+            <input class="datepicker form-control" placeholder="YYYY-MM-DD" name="inputStartDate" value="<%= inputStartDate %>">
+            <!--
+            <input type="date" data-date-format="DD MMMM YYYY" class="form-control" placeholder="YYYY-MM-DD" name="inputStartDate" value="<%= inputStartDate %>">-->
+
             <label>Till datum</label>
-            <input type="date" class="form-control" placeholder="YYYY-MM-DD" name="inputEndDate" value="<%= inputEndDate %>">
+            <input class="datepicker form-control" placeholder="YYYY-MM-DD" name="inputEndDate" value="<%= inputEndDate %>">
+            <!--
+            <input type="date" class="form-control" placeholder="YYYY-MM-DD" name="inputEndDate" value="<%= inputEndDate %>">-->
+            
           </div>
           <!--
           <div class="form-group mb-3">
@@ -226,25 +238,42 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
           <hr>
 
           <h3 title="Begränsa din sökning geografiskt genom att antingen välja län eller kommun i rullmenyerna, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.">Geografiskt område <i class="fa-regular fa-circle-info"></i></h3>
+
           <div class="form-group mb-3">
+
+            <div class="custom-control custom-radio">
+              <input type="radio" name="radioGeography" class="form-check-input" value="lanmun" id="radioGeographyLanmun">
+              <label class="form-check-label" for="radioModeGeographyLanmun">Län</label>
+            </div>
+            <div class="custom-control custom-radio">
+              <input type="radio" name="radioGeography" class="form-check-input" value="karta" id="radioGeographyKarta">
+              <label class="form-check-label" for="radioModeGeographyKarta  ">Karta</label>
+            </div>
+          </div>
+
+          <div class="form-group mb-3" id="lanmunSection">
+
+            <div  class="form-clear-data" id="clearCounties">
+              <label><i class="fa-regular fa-trash"></i> Rensa val</label>
+            </div>
+
             <label>Välj inget, ett eller flera län</label>
-            <select name="inputCounty" class="form-control selectpicker"  multiple title="Choose one of the following...">
+            <select id="inputCounty" name="inputCounty" class="form-control selectpicker"  multiple title="Välj ett eller flera...">
               <% for (var i = 0; i < tableCounty.length; i++) { %>
                 <option value="<%= tableCounty[i] %>"  <%= (inputCounty.includes(tableCounty[i]) ? "selected" : "") %>><%= tableCounty[i] %></option>
               <% } %>
             </select>
           </div>
 
-          <label>Rita en polygon</label>
-          <div id="map"></div>
-          <div class="form-group mb-3">
-            <label>Bounding box</label>
-            <input type="text" class="form-control" name="inputArea" id="inputArea" value="<%= inputArea %>" readOnly=true>
+
+          <div class="form-group mb-3" id="mapSection">
+            <label>Rita en polygon</label>
+            <div id="map"></div>
+            <div class="form-group mb-3">
+              <input type="hidden" class="form-control" name="inputArea" id="inputArea" value="<%= inputArea %>" readOnly=false>
+            </div>
           </div>
-
           <hr>
-
-
 
           <hr>
 
