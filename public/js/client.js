@@ -194,8 +194,6 @@ $(document).ready(function () {
     map.addLayer(layer);
   });
 
-
-
   // check if the element exists
   if ($('#resultTable').length > 0) {
 
