@@ -258,7 +258,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
             </div>
 
             <label>Välj inget, ett eller flera län</label>
-            <select id="inputCounty" name="inputCounty" class="form-control selectpicker"  multiple title="Välj ett eller flera...">
+            <select id="inputCounty" name="inputCounty" class="form-control selectpicker"  multiple title="Välj ett eller flera..." data-live-search="true">
               <% for (var i = 0; i < tableCounty.length; i++) { %>
                 <option value="<%= tableCounty[i] %>"  <%= (inputCounty.includes(tableCounty[i]) ? "selected" : "") %>><%= tableCounty[i] %></option>
               <% } %>
@@ -277,21 +277,22 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
           <hr>
 
-
-          <input type="hidden" id="inputSourceSubmit" name="inputSourceSubmit" value="">
-          <div class="d-grid mt-3">
-            <button type="submit" class="btn btn-primary">View in a table</button>
-          </div>
-          <!--
-          <div class="d-grid mt-3">
-            <button id="downloadButton" class="btn btn-danger">Generate CSV (OLD)</button>
-          </div>
-        -->
-          <div class="d-grid mt-3">
-            <button id="buttonExportCsv" class="btn btn-primary">Generate CSV</button>
-          </div>
-          <div class="d-grid mt-3">
-            <button id="buttonExportXlsx" class="btn btn-primary">Generate XLSX</button>
+          <div id="resultSection">
+            <input type="hidden" id="inputSourceSubmit" name="inputSourceSubmit" value="">
+            <div class="d-grid mt-3">
+              <button type="submit" class="btn btn-primary">View in a table</button>
+            </div>
+            <!--
+            <div class="d-grid mt-3">
+              <button id="downloadButton" class="btn btn-danger">Generate CSV (OLD)</button>
+            </div>
+          -->
+            <div class="d-grid mt-3">
+              <button id="buttonExportCsv" class="btn btn-primary">Generate CSV</button>
+            </div>
+            <div class="d-grid mt-3">
+              <button id="buttonExportXlsx" class="btn btn-primary">Generate XLSX</button>
+            </div>
           </div>
         </form>
       </div>
@@ -300,7 +301,9 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
           <hr>
 
     <% if (locals.downloadFile && downloadFile != "") { %>
-      <a href="<%- downloadFile %>" class="btn"><i class="fa fa-download"></i> Download</a>
+      <div id="downloadSection">
+        <a href="<%- downloadFile %>" class="btn"><i class="fa fa-download"></i> Download</a>
+      </div>
     <% } %>
     <br>
 
