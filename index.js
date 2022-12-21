@@ -695,7 +695,7 @@ app.post('/', encodeUrl, (req, res) => {
 
   }
 
-console.log("radioGeography:"+req.body.radioGeography);
+  //console.log("radioGeography:"+req.body.radioGeography);
 
   var inputCounty=["None selected"];
   if (req.body.radioGeography=="lanmun") {
@@ -902,8 +902,15 @@ console.log("radioGeography:"+req.body.radioGeography);
     apiInstance[getResultsBySearch](opts, (error, data, response) => {
       if (error) {
         console.error(error);
+        console.error(error.code);
 
-        errorMsg="Error received from the server";
+        if (error.code=="ETOOLARGE") {
+          // Maximum response size reached 
+          errorMsg="[Maximum response size reached] Förfina din sökning för att minska urvalet. För hjälp med större datauttag kontakta datavärden på naturdatavardskap@biol.lu.se.";
+        }
+        else {
+          errorMsg="Error received from the server";
+        }
 
         //renderIndex(res, false, "error apiInstance");
         console.log("renderIndex from error apiInstance");
@@ -1075,7 +1082,7 @@ console.log("radioGeography:"+req.body.radioGeography);
           }
 
         } // end if EXPORTXLSX
-        else {
+        else { // view table
 
           totalResults = data.totalCount;
           console.log(totalResults+" result(s) in json");
@@ -1188,14 +1195,14 @@ console.log("radioGeography:"+req.body.radioGeography);
           else {
 
             //renderIndex(res, true, "tableviewERROR");
-            console.log("renderIndex from tableviewERROR");
+            console.log("renderIndex from tableviewERROR-nodata");
 
             res.render('pages/index', {
               maxResults: maxResults,                 // GLOBAL
               availableDatasets: availableDatasets,   // GLOBAL
               tableCounty: tableCounty,               // GLOBAL
               tableTaxon: tableTaxon,                 // GLOBAL
-              errorMsg: "no data",                     // session
+              errorMsg: "",                     // session
               inputObject: inputObject,               // session, default
               inputDatasetList: inputDatasetList,     // session, default
               inputSourceSubmit: inputSourceSubmit,   // session, default
@@ -1205,7 +1212,10 @@ console.log("radioGeography:"+req.body.radioGeography);
               inputStartDate: inputStartDate,         // session, default
               inputEndDate: inputEndDate,             // session, default
               inputDateType: inputDateType,           // session, default
-              isDataTable: false,               // session, false
+              isDataTable: true,               // session, false
+              tableColumns: {},             // optional
+              tableData: {},                   // optional
+              totalResults: 0,             // optional
               downloadFile: ""               // optional
             });
           }
@@ -1219,6 +1229,30 @@ console.log("radioGeography:"+req.body.radioGeography);
 
   }
 
+  else { // empty request, dataInput.length = 0
+    //renderIndex(res, true, "tableviewERROR");
+    console.log("renderIndex from tableviewERROR-dataInput.length 0");
+
+    res.render('pages/index', {
+      maxResults: maxResults,                 // GLOBAL
+      availableDatasets: availableDatasets,   // GLOBAL
+      tableCounty: tableCounty,               // GLOBAL
+      tableTaxon: tableTaxon,                 // GLOBAL
+      errorMsg: "Inget filter",                     // session
+      inputObject: inputObject,               // session, default
+      inputDatasetList: inputDatasetList,     // session, default
+      inputSourceSubmit: inputSourceSubmit,   // session, default
+      inputTaxon: inputTaxon,                 // session, default
+      inputCounty: inputCounty,               // session, default
+      inputArea: inputArea,                   // session, default
+      inputStartDate: inputStartDate,         // session, default
+      inputEndDate: inputEndDate,             // session, default
+      inputDateType: inputDateType,           // session, default
+      isDataTable: false,               // session, false
+      downloadFile: ""               // optional
+    });
+
+  }
   //res.sendStatus(200)
 })
 

@@ -127,7 +127,10 @@ $(document).ready(function () {
   });
   map.addControl(drawControl);
 
-  
+  if ($("#inputCounty").val()!="") {
+    $('#radioGeographyLanmun').prop('checked', true);
+  }
+
   if ($("#inputArea").val()!="") {
     
     $('#radioGeographyKarta').prop('checked', true);

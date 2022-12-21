@@ -278,6 +278,14 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
           <hr>
 
           <div id="resultSection">
+
+            <% if (errorMsg != "") { %>
+              <div class="alert alert-danger" role="alert">
+                <%= errorMsg %>
+              </div>
+            <% } %>
+
+
             <input type="hidden" id="inputSourceSubmit" name="inputSourceSubmit" value="">
             <div class="d-grid mt-3">
               <button type="submit" class="btn btn-primary">View in a table</button>
@@ -309,30 +317,39 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
     <% if (isDataTable) { %>
       <div class="divTable">
+        
+        <% if (totalResults == 0 ) { %>
 
-        <h3 title="Här visas bara ett urval av fält från databasen, men i nedladdade filer ingår alla fält som det finns data för.">Resultat och nedladdning <i class="fa-regular fa-circle-info"></i></h3>
-        <h3><%= tableData.length %> result(s)</h3>
-        <% if (totalResults != tableData.length ) { %>
-        <p><%- totalResults %> result(s) obtained but table display limited to <%= maxResults %> results.</p>
-        <% } %>
-        <table id="resultTable">
-          <thead>
-              <tr>
-                <% for (var i = 0; i < tableColumns.length; i++) { %>
-                  <th><%= tableColumns[i] %></th>
-                <% } %>
-              </tr>
-          </thead>
-          <tbody>
-            <% for (var i = 0; i < tableData.length; i++) { %>
-              <tr>
-                <% Object.keys(tableData[i]).forEach(function(key) { %>
-                 <td><%= tableData[i][key] %></td>
-                <% }); %>    
-              </tr>
-            <% } %>
-          </tbody>
-        </table>
+          <p>Det finns inga data som matchar ditt urval.</p>
+
+        <% } else { %>
+
+          <h3 title="Här visas bara ett urval av fält från databasen, men i nedladdade filer ingår alla fält som det finns data för.">Resultat och nedladdning <i class="fa-regular fa-circle-info"></i></h3>
+
+          <% if (totalResults != tableData.length ) { %>
+          <h3>Ditt urval ger <%- totalResults %> rad(er) men tabellvyn är begränsad till <%= maxResults %> rader.</h3>
+          <% } else { %>
+          <h3>Ditt urval ger <%= tableData.length %> rad(er).</h3>
+          <% }  %>
+          <table id="resultTable">
+            <thead>
+                <tr>
+                  <% for (var i = 0; i < tableColumns.length; i++) { %>
+                    <th><%= tableColumns[i] %></th>
+                  <% } %>
+                </tr>
+            </thead>
+            <tbody>
+              <% for (var i = 0; i < tableData.length; i++) { %>
+                <tr>
+                  <% Object.keys(tableData[i]).forEach(function(key) { %>
+                   <td><%= tableData[i][key] %></td>
+                  <% }); %>    
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        <% }  %>
 
       </div>
     <% } %>
