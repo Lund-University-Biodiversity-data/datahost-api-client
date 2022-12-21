@@ -908,6 +908,10 @@ app.post('/', encodeUrl, (req, res) => {
           // Maximum response size reached 
           errorMsg="[Maximum response size reached] Förfina din sökning för att minska urvalet. För hjälp med större datauttag kontakta datavärden på naturdatavardskap@biol.lu.se.";
         }
+        else if (error.code=="ECONNABORTED") {
+          // Timeout as specified in luApiDocumentationTemplate, src/ApiClient.js
+          errorMsg="[Timeout] Förfina din sökning för att minska urvalet. För hjälp med större datauttag kontakta datavärden på naturdatavardskap@biol.lu.se.";
+        }
         else {
           errorMsg="Error received from the server";
         }
