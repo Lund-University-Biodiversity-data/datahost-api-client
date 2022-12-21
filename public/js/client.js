@@ -32,25 +32,25 @@ $(document).ready(function () {
     $('#inputTaxon').selectpicker('destroy').selectpicker();
   });
 
-  $('input[name="radioTaxon"]').on('click', function() {
-    if ($(this).attr('id')!="radioTaxonAll") {
+  $('.taxonListButtons').on('click', function() {
+    if ($(this).attr('id')!="taxonAll") {
       //$("#divTaxonList").css("display", "none");
       $('select[name=inputTaxon]').val('').selectpicker('deselectAll');
 
       switch ($(this).attr('id')) {
-        case "radioTaxonBirds":   
+        case "taxonBirds":   
           $('select[name=inputTaxon]').val(4000104).selectpicker("refresh");;
           break;
-        case "radioTaxonButterflies":
+        case "taxonButterflies":
           $('select[name=inputTaxon]').val(3000188).selectpicker("refresh");;
           break;
-        case "radioTaxonMammals":
+        case "taxonMammals":
           $('select[name=inputTaxon]').val(4000107).selectpicker("refresh");;
           break;
-        case "radioTaxonAmphibians":
+        case "taxonAmphibians":
           $('select[name=inputTaxon]').val(4000105).selectpicker("refresh");;
           break;
-        case "radioTaxonKrak":
+        case "taxonKrak":
           $('select[name=inputTaxon]').val(2002118).selectpicker("refresh");;
           break;
       }
