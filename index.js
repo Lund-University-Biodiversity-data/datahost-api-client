@@ -625,10 +625,6 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
 app.get('/about', function(req, res) {
   res.render('pages/about');
 });
-// get /testselectpicker
-app.get('/testselectpicker', function(req, res) {
-  res.render('pages/testselectpicker', {tableTaxon: tableTaxon, inputTaxon: inputTaxon});
-});
 
 let encodeUrl = parseUrl.urlencoded({ extended: false });
 
