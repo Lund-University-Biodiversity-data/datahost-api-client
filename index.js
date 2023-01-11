@@ -73,6 +73,7 @@ tableCounty.sort(); // alphaebetical sort
 var downloadFile = "";
 
 
+/*
 // render the index page with all the global variable
 function renderIndex(res, isDataTable, source) {
 
@@ -102,10 +103,11 @@ function renderIndex(res, isDataTable, source) {
 
 
 }
+*/
 
 
 
-function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence){
+function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType){
 
   //console.log("function getDatasetDataForXlsx "+inputObject);
 
@@ -156,7 +158,7 @@ function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence
           availableDatasets: availableDatasets,   // GLOBAL
           tableCounty: tableCounty,               // GLOBAL
           tableTaxon: tableTaxon,                 // GLOBAL
-          errorMsg: errorMsg,                     // session
+          errorMsg: "",                     // session
           inputObject: inputObject,               // session, default
           inputDatasetList: inputDatasetList,     // session, default
           inputSourceSubmit: inputSourceSubmit,   // session, default
@@ -248,7 +250,7 @@ function splitDateInArray (dateToSplit) {
 }
 
 
-function updateToTemplateXlsx (dataInput) {
+function updateToTemplateXlsx (dataInput, inputObject) {
 
   var dataTemplateOk=[];
 
@@ -541,7 +543,7 @@ function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccu
   }
 
 
-  dataFinal = updateToTemplateXlsx(dataFinal);
+  dataFinal = updateToTemplateXlsx(dataFinal, inputObject);
 
 
   if (okCreate) {
@@ -1041,7 +1043,7 @@ app.post('/', encodeUrl, (req, res) => {
             case "Event":
               var dataEvent=data.results;
 
-              downloadFile = getDatasetDataForXlsx(res, req.get('host'), inputObject, dataEvent, null);
+              downloadFile = getDatasetDataForXlsx(res, req.get('host'), inputObject, dataEvent, null, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType);
 
               break;
             case "Occurrence":
@@ -1073,7 +1075,7 @@ app.post('/', encodeUrl, (req, res) => {
 
                   //console.log("data event obtained !");
 
-                  getDatasetDataForXlsx(res, req.get('host'), inputObject, dataEvent, dataOccurrence);
+                  getDatasetDataForXlsx(res, req.get('host'), inputObject, dataEvent, dataOccurrence, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType);
                   
                 }
               });
