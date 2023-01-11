@@ -1,5 +1,24 @@
 
+
+function clearPolygonMap (map) {
+
+  map.eachLayer(function (layer) {
+    if (layer instanceof L.Polygon) {
+      map.removeLayer(layer);
+      $("#inputArea").val("");
+    }
+  });
+
+}
+
+
+
+
 $(document).ready(function () {
+
+  // set thte map
+  var map = L.map('map').setView([62.47204526039855, 16.149376718556645], 4);
+
 
   // initiate the different selectpickers
   $('.selectpicker').selectpicker();
@@ -16,8 +35,9 @@ $(document).ready(function () {
     $('input[name=datasetCheckB]').prop('checked', false); 
   });
 
-  $( "#clearCounties").click(function() {
+  $( "#clearGeographic").click(function() {
     $('select[name=inputCounty]').val('').selectpicker('deselectAll');  
+    clearPolygonMap(map);
   });
 
   $( "#clearDates").click(function() {
@@ -108,7 +128,6 @@ $(document).ready(function () {
     $('#inputSourceSubmit').val("exportXlsx");
   });
 
-  var map = L.map('map').setView([62.47204526039855, 16.149376718556645], 4);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
@@ -177,6 +196,10 @@ $(document).ready(function () {
 
   }
   
+  // clean the map when starts drawing
+  map.on('draw:drawstart', function (e)  {
+    clearPolygonMap(map);
+  });
 
   // event when object drawn on the map
   map.on('draw:created', function (e) {
