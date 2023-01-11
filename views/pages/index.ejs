@@ -98,12 +98,12 @@
         <div class="form-group mb-3">
           <ul>
           <% for (var i = 0; i < availableDatasets.length; i++) { %>
-            <li><a href="<%= availableDatasets[i]['downloadPath'] %>" target="_blank"><%= availableDatasets[i]['displayName'] %></a></li>
+            <li><%= availableDatasets[i]['displayName'] %> <a href="<%= availableDatasets[i]['downloadPathCsv'] %>" target="_blank"><i class="fa fa-download"></i> csv (xxMb??)</a> <a href="<%= availableDatasets[i]['downloadPathXls'] %>" target="_blank"><i class="fa fa-download"></i> xlsx (xxMb??)</a></li>
           <% } %>    
           </ul>      
         </div>
 
-        <div class=" border-top border-dark mt-5 py-3">&nbsp</div>
+        <hr class="border-dark">
 
         <form action="/#resultSection" method="POST" >
 
@@ -116,11 +116,11 @@
 
           <div class="form-group mb-3">
             <h3 title="Här väljer du vilken typ av information du vill ha.
-”Artobservationer” är det mest informationsrika utsnittet av data du kan få, från antal av arten du valt till metadata om delprogrammet som observationen gjorts i
+”Artobservationer” är det mest informationsrika utsnittet av data du kan få, från antal av arten du valt till metadata om delprogrammet som observationen gjorts i.
 ”Inventeringstillfällen” ger information om vilka lokaler som inventerats, samt när de inventerats och av vem.
 ”Metadata” ger information om själva datamängden från delprogrammet.">Typ av information</h3>
             <p><i class="fa-regular fa-circle-info"></i> Här väljer du vilken typ av information du vill ha.<br>
-            ”Artobservationer” är det mest informationsrika utsnittet av data du kan få, från antal av arten du valt till metadata om delprogrammet som observationen gjorts i
+            ”Artobservationer” är det mest informationsrika utsnittet av data du kan få, från antal av arten du valt till metadata om delprogrammet som observationen gjorts i.<br>
             ”Inventeringstillfällen” ger information om vilka lokaler som inventerats, samt när de inventerats och av vem.<br>
             ”Metadata” ger information om själva datamängden från delprogrammet.</p>
 
@@ -131,7 +131,7 @@
               <input type="radio" id="objEvent" name="inputObject" class="custom-control-input" value="Event" <%= (inputObject=="Event" ? "checked" : "") %>><label class="custom-control-label" for="objEvent">Inventeringstillfällen</label>
             </div>
             <div class="custom-control custom-radio">
-              <input type="radio" id="objDataset" name="inputObject" class="custom-control-input" value="Dataset" <%= (inputObject=="Dataset" ? "checked" : "") %>><label class="custom-control-label" for="objDataset">Delprogram/Metadata</label>
+              <input type="radio" id="objDataset" name="inputObject" class="custom-control-input" value="Dataset" <%= (inputObject=="Dataset" ? "checked" : "") %>><label class="custom-control-label" for="objDataset">Metadata</label>
             </div>
           </div>
 
@@ -142,9 +142,6 @@
           <h3 title="blabla">Data från specifika delprogram</h3>
           <p><i class="fa-regular fa-circle-info"></i> Välj vilket eller vilka datamängder du vill ha data data från.</p>
           <div class="form-group mb-3">
-            <div  class="form-clear-data" id="clearDatasets">
-              <label><i class="fa-regular fa-trash"></i> Rensa val</label>
-            </div>
             <label>
               <span class="all-none-button" id="selectAllDatasets"><i class="fa-regular fa-square-check"></i> Markera alla</span>
             </label>
@@ -156,6 +153,9 @@
                 </label>
               </div>
             <% } %>
+            <div  class="form-clear-data" id="clearDatasets">
+              <label><i class="fa-regular fa-trash"></i> Rensa val</label>
+            </div>
           </div>        
 
           <hr>
@@ -215,12 +215,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
           <h3 title="blabla">Tidsperiod </h3>
 
-          <p><i class="fa-regular fa-circle-info"></i> blabla ?</p>
-
           <div class="form-group mb-3">
-            <div  class="form-clear-data" id="clearDates">
-              <label><i class="fa-regular fa-trash"></i> Rensa val</label>
-            </div>
 
             <label>Från datum</label>
             <input class="datepicker form-control" placeholder="YYYY-MM-DD" name="inputStartDate" value="<%= inputStartDate %>">
@@ -231,7 +226,10 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
             <input class="datepicker form-control" placeholder="YYYY-MM-DD" name="inputEndDate" value="<%= inputEndDate %>">
             <!--
             <input type="date" class="form-control" placeholder="YYYY-MM-DD" name="inputEndDate" value="<%= inputEndDate %>">-->
-            
+            <br>
+            <div  class="form-clear-data" id="clearDates">
+              <label><i class="fa-regular fa-trash"></i> Rensa val</label>
+            </div>            
           </div>
           <!--
           <div class="form-group mb-3">
@@ -246,9 +244,9 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
           <hr>
 
-          <h3 title="Begränsa din sökning geografiskt genom att antingen välja län eller kommun i rullmenyerna, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.">Geografiskt område </h3>
+          <h3 title="Begränsa din sökning geografiskt genom att antingen välja län i rullistan, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.">Geografiskt område </h3>
 
-          <p><i class="fa-regular fa-circle-info"></i> Begränsa din sökning geografiskt genom att antingen välja län eller kommun i rullmenyerna, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.</p>
+          <p><i class="fa-regular fa-circle-info"></i> Begränsa din sökning geografiskt genom att antingen välja län i rullistan, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.</p>
 
           <div class="form-group mb-3">
 
@@ -268,8 +266,8 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
               <label><i class="fa-regular fa-trash"></i> Rensa val</label>
             </div>
 
-            <label>Välj inget, ett eller flera län</label>
-            <select id="inputCounty" name="inputCounty" class="form-control selectpicker"  multiple title="Välj ett eller flera..." data-live-search="true">
+            <h4>Välj län</h4>
+            <select id="inputCounty" name="inputCounty" class="form-control selectpicker"  multiple title="Välj ett eller flera län" data-live-search="true">
               <% for (var i = 0; i < tableCounty.length; i++) { %>
                 <option value="<%= tableCounty[i] %>"  <%= (inputCounty.includes(tableCounty[i]) ? "selected" : "") %>><%= tableCounty[i] %></option>
               <% } %>
@@ -278,7 +276,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
 
           <div class="form-group mb-3" id="mapSection">
-            <label>Rita en polygon</label>
+            <h4>Rita en polygon</h4>
             <div id="map"></div>
             <div class="form-group mb-3">
               <input type="hidden" class="form-control" name="inputArea" id="inputArea" value="<%= inputArea %>" readOnly=false>
