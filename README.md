@@ -1,12 +1,3 @@
-*** PROD ***
-
-mkdir public/speciesFile/
-
-npm install
-
-// create the species list based on the lists module
-
-npm species 
 
 // run the app 
 npm start

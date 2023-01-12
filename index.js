@@ -1300,23 +1300,40 @@ http.get(speciesListUrl,(res) => {
       let speciesList = JSON.parse(body);
 
       Object.entries(speciesList).forEach(([key, val]) => {
+          /*
+          var dataChain=val.dyntaxaId + " - " + val.scientificName;
 
-        /*
-        var dataChain=val.dyntaxaId + " - " + val.scientificName;
+          if (val.swedishName != null && val.swedishName!="null") {
+            dataChain= dataChain + " - " + val.swedishName;
+          }
+          */
 
-        if (val.swedishName != null && val.swedishName!="null") {
-          dataChain= dataChain + " - " + val.swedishName;
+        if (!isNaN(parseInt(val.dyntaxaId))) {
+
+          var dataChain="";
+
+          if (val.swedishName!= null) {
+            dataChain=dataChain + val.swedishName + " - ";
+          }
+          if (val.scientificName!= null) {
+            dataChain=dataChain + val.scientificName + " - ";
+          }
+
+          dataChain = dataChain + val.dyntaxaId + " " ;
+
+          var obj={
+            id: parseInt(val.dyntaxaId),
+            data: dataChain
+          };
+          //console.log(obj);
+
+          tableTaxon.push(obj);
         }
-        */
-        var dataChain = val.swedishName + " - " + val.scientificName + " - " + val.dyntaxaId;
+        else {
+          //console.log("error with taxon "+val.dyntaxaId+", not a number");
+        }
 
-        var obj={
-          id: val.dyntaxaId,
-          data: dataChain
-        };
-        //console.log(obj);
 
-        tableTaxon.push(obj);
       });
 
       // sort the tableTaxon array by dataChain, i.e. swedish name (first element)
@@ -1336,6 +1353,7 @@ http.get(speciesListUrl,(res) => {
 
 
       console.log(tableTaxon.length+ " element(s) in tableTaxon");
+//console.log(tableTaxon);
       //resolve(1);
 
       startApp();

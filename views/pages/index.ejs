@@ -201,7 +201,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
           </div>
 
           <div class="form-group mb-3" id="divTaxonList">
-            <select id="inputTaxon" name="inputTaxon" class="form-control selectpicker" multiple title="Välj ett eller flera..." data-live-search="true">
+            <select id="inputTaxon" name="inputTaxon" class="form-control selectpicker" multiple title="Välj en eller flera arter" data-live-search="true">
 
               <% Object.entries(tableTaxon).forEach(function([key, val]) { %>
                   <option value="<%= tableTaxon[key].id %>"  <%= (inputTaxon.includes(tableTaxon[key].id) ? "selected" : "") %>><%- tableTaxon[key].data %></option>

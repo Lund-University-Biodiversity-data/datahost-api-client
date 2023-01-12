@@ -90,11 +90,11 @@ $(document).ready(function () {
         case "taxonBirds":   
           $('select[name=inputTaxon]').val(4000104).selectpicker("refresh");;
           break;
-        case "taxonButterflies":
-          $('select[name=inputTaxon]').val(3000188).selectpicker("refresh");;
-          break;
         case "taxonMammals":
           $('select[name=inputTaxon]').val(4000107).selectpicker("refresh");;
+          break;
+        case "taxonButterflies":
+          $('select[name=inputTaxon]').val(3000188).selectpicker("refresh");;
           break;
         case "taxonAmphibians":
           $('select[name=inputTaxon]').val(4000105).selectpicker("refresh");;
