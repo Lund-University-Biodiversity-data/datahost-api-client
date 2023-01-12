@@ -32,3 +32,12 @@ h3 {
     pointer-events: none;
     opacity: 0.4;
 }
+
+.helpText{
+	font-style:italic;
+}
+
+.helpTextHidden{
+	font-style:italic;
+	display:none;
+}

@@ -12,9 +12,38 @@ function clearPolygonMap (map) {
 }
 
 
+function fadeInOutElt(idElt){
+  if ($(idElt).css("display")=="none"){
+    $(idElt).fadeIn();
+  }
+  else {
+    $(idElt).fadeOut();
+  }
+}
 
 
 $(document).ready(function () {
+
+  /* help boxes */
+  $('#helpReadyPackagesButton').on('click', function() {
+    fadeInOutElt("#helpReadyPackages");
+  });
+  $('#helpOwnSelectionButton').on('click', function() {
+    fadeInOutElt("#helpOwnSelection");
+  });
+  $('#helpTypeInfoButton').on('click', function() {
+    fadeInOutElt("#helpTypeInfo");
+  });
+  $('#helpDataProgramButton').on('click', function() {
+    fadeInOutElt("#helpDataProgram");
+  });
+  $('#helpTaxonButton').on('click', function() {
+    fadeInOutElt("#helpTaxon");
+  });
+    $('#helpGeographicButton').on('click', function() {
+    fadeInOutElt("#helpGeographic");
+  });
+/* end help boxes */
 
   // set thte map
   var map = L.map('map').setView([62.47204526039855, 16.149376718556645], 4);
