@@ -77,6 +77,11 @@ $(document).ready(function () {
   $( "#clearTaxon").click(function() {
     $('select[name=inputTaxon]').val('').selectpicker('deselectAll'); 
 
+    $( ".taxonListButtons" ).each(function() {
+      $(this).removeClass("btn-primary");
+      $(this).addClass("btn-outline-primary");
+    });
+
     $('select[name=inputTaxon]').selectpicker("refresh");;
     $('#inputTaxon').selectpicker('destroy').selectpicker();
   });
@@ -84,29 +89,49 @@ $(document).ready(function () {
   $('.taxonListButtons').on('click', function() {
     if ($(this).attr('id')!="taxonAll") {
       //$("#divTaxonList").css("display", "none");
-      $('select[name=inputTaxon]').val('').selectpicker('deselectAll');
+      //$('select[name=inputTaxon]').val('').selectpicker('deselectAll');
 
-      switch ($(this).attr('id')) {
-        case "taxonBirds":   
-          $('select[name=inputTaxon]').val(4000104).selectpicker("refresh");;
-          break;
-        case "taxonMammals":
-          $('select[name=inputTaxon]').val(4000107).selectpicker("refresh");;
-          break;
-        case "taxonButterflies":
-          $('select[name=inputTaxon]').val(3000188).selectpicker("refresh");;
-          break;
-        case "taxonAmphibians":
-          $('select[name=inputTaxon]').val(4000105).selectpicker("refresh");;
-          break;
-        case "taxonKrak":
-          $('select[name=inputTaxon]').val(2002118).selectpicker("refresh");;
-          break;
+      // if button already clicked, remove item
+      if ($(this).hasClass("btn-primary")) {
+        $(this).removeClass("btn-primary");
+        $(this).addClass("btn-outline-primary");
+      }
+      else {
+
+        $(this).removeClass("btn-outline-primary");
+        $(this).addClass("btn-primary");
+
       }
       
+
+      var valSelected=[];
+
+      if ($("#taxonBirds").hasClass("btn-primary")) {
+        valSelected.push(4000104);
+      }
+      if ($("#taxonMammals").hasClass("btn-primary")) {
+        valSelected.push(4000107);
+      }
+      if ($("#taxonButterflies").hasClass("btn-primary")) {
+        valSelected.push(3000188);
+      }
+      if ($("#taxonAmphibians").hasClass("btn-primary")) {
+        valSelected.push(4000105);
+      }
+      if ($("#taxonKrak").hasClass("btn-primary")) {
+        valSelected.push(2002118);
+      }
+      //console.log(valSelected);
+      $('select[name=inputTaxon]').val(valSelected).selectpicker("refresh");
+
     }
     else {
       $('select[name=inputTaxon]').val('').selectpicker('deselectAll');
+
+      $( ".taxonListButtons" ).each(function() {
+        $(this).removeClass("btn-primary");
+        $(this).addClass("btn-outline-primary");
+      });
     }
 
     // to avoid the duplicated list when refresh ! bug from selectpicker, no official fix so far

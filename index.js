@@ -105,6 +105,10 @@ function renderIndex(res, isDataTable, source) {
 }
 */
 
+function capitalizeFirstLetter(string){
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 
 
 function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType){
@@ -662,17 +666,21 @@ app.post('/', encodeUrl, (req, res) => {
   // reinit
   var inputTaxon=[];
   if (typeof req.body.inputTaxon !== 'undefined' && req.body.inputTaxon!="") {
-
+console.log
     let taxonIds= [];
 
     // several items selected
     if (req.body.inputTaxon instanceof Array) {
-      taxonIds = req.body.inputTaxon;
+
+      req.body.inputTaxon.forEach((element) => {
+        taxonIds.push(parseInt(element));
+      });
+//      taxonIds = req.body.inputTaxon;
     }
     // only one item
     else {
       if (req.body.inputTaxon != "None selected")
-        taxonIds.push(req.body.inputTaxon);
+        taxonIds.push(parseInt(req.body.inputTaxon));
     }
 
     if (taxonIds.length>=1) {
@@ -684,13 +692,14 @@ app.post('/', encodeUrl, (req, res) => {
         if (element!="None selected") {
 
           // the taxon hierarchy is managed from the server side 
-          dataInput.taxon.ids.push(parseInt(element.trim()));
+          dataInput.taxon.ids.push(parseInt(element));
         }
       });
     }
 
-    inputTaxon = req.body.inputTaxon;
-
+    //inputTaxon = req.body.inputTaxon;
+    inputTaxon = taxonIds;
+//console.log("new inputTaon is ");
   }
 
   //console.log("radioGeography:"+req.body.radioGeography);
@@ -1313,10 +1322,10 @@ http.get(speciesListUrl,(res) => {
           var dataChain="";
 
           if (val.swedishName!= null) {
-            dataChain=dataChain + val.swedishName + " - ";
+            dataChain=dataChain + capitalizeFirstLetter(val.swedishName) + " - ";
           }
           if (val.scientificName!= null) {
-            dataChain=dataChain + val.scientificName + " - ";
+            dataChain=dataChain + capitalizeFirstLetter(val.scientificName) + " - ";
           }
 
           dataChain = dataChain + val.dyntaxaId + " " ;
