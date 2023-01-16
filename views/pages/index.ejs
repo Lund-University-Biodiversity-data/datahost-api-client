@@ -345,17 +345,19 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
           <table id="resultTable">
             <thead>
                 <tr>
-                  <% for (var i = 0; i < tableColumns.length; i++) { %>
+                  <% for (var i = 0; i < tableColumns.length; i++) { 
+                    if (tableColumns[i] != "taxon") { %>
                     <th><%= tableColumns[i] %></th>
-                  <% } %>
+                  <% }} %>
                 </tr>
             </thead>
             <tbody>
               <% for (var i = 0; i < tableData.length; i++) { %>
                 <tr>
-                  <% Object.keys(tableData[i]).forEach(function(key) { %>
+                  <% Object.keys(tableData[i]).forEach(function(key) {  
+                    if (key != "taxon") { %>
                    <td><%= tableData[i][key] %></td>
-                  <% }); %>    
+                  <% }}); %>    
                 </tr>
               <% } %>
             </tbody>

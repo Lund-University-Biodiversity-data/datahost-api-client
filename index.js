@@ -1174,6 +1174,7 @@ console.log
             
                 }
               });
+
               tableData.push(row);
 
             });
