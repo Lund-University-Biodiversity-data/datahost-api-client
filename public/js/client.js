@@ -46,7 +46,7 @@ $(document).ready(function () {
 /* end help boxes */
 
   // set thte map
-  var map = L.map('map').setView([62.47204526039855, 16.149376718556645], 4);
+  var map = L.map('map').setView([62.47204526039855, 16.149376718556645], 5);
 
 
   // initiate the different selectpickers

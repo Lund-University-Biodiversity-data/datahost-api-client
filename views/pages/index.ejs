@@ -9,10 +9,6 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-  <style>
-    #map { height: 360px; }
-  </style>
-
   <script src="tablefilter/dist/tablefilter/tablefilter.js"></script>
   <script src="bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
   <link rel="stylesheet" href="bootstrap-datepicker/dist/css/bootstrap-datepicker.css">
@@ -28,7 +24,7 @@
   <!-- LEAFLET -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
      integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
-     crossorigin=""/>
+     crossorigin=""/> 
   <!-- Make sure you put this AFTER Leaflet's CSS -->
   <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
@@ -87,14 +83,14 @@
 
       <div class="">
 
-        <p class="helpText"><i class="fa-regular fa-circle-info"></i> Här kan du ladda ner data som färdiga datapaket för respektive delprogram, eller genom att mata in specifika sökkriterier för ett urval av data.<br>
+        <p class="helpText">Här kan du ladda ner data som färdiga datapaket för respektive delprogram, eller genom att mata in specifika sökkriterier för ett urval av data.<br>
         Behöver du stora mängder data måste du använda dig av de färdiga datapaketen, alternativt göra flera utsök eftersom sökkapaciteten är begränsad.<br>
         Oavsett hur du väljer att hitta data så kan resultatet laddas ner som en kommaseparerad csv-fil eller en xlsx-fil.</p>
 
 
         <hr>
         <h2>Färdiga datapaket <i class="fa-regular fa-circle-info" id="helpReadyPackagesButton"></i></h2>
-        <p class="helpTextHidden" id="helpReadyPackages"><i class="fa-regular fa-circle-info"></i> Här kan du ladda ner samtliga data som samlats in och finns tillgängliga i en hel datamängd. Du kan ladda ner ett (1) färdigt datapaket åt gången. Det gör du genom att klicka på en av länkarna till höger om namnet för den datamängd du är intresserad av. </p>
+        <p class="helpTextHidden" id="helpReadyPackages">Här kan du ladda ner samtliga data som samlats in och finns tillgängliga i en hel datamängd. Du kan ladda ner ett (1) färdigt datapaket åt gången. Det gör du genom att klicka på en av länkarna till höger om namnet för den datamängd du är intresserad av. </p>
         <div class="form-group mb-3">
           <ul>
           <% for (var i = 0; i < availableDatasets.length; i++) { %>
@@ -109,7 +105,7 @@
 
           <div class="form-group mb-3">
             <h2 title="Med hjälp av sökfunktionerna här nedan kan du göra ett eget urval av data. Gör du inget aktivt val för respektive sökfunktion baseras sökningen automatiskt på samtliga valmöjligheter. Observera att om du inte gör några val alls ger detta sannolikt ett resultat som är för stort för att överhuvudtaget sökas fram eller att laddas ner.">Gör ditt eget urval av data <i class="fa-regular fa-circle-info" id="helpOwnSelectionButton"></i></h2>
-            <p class="helpTextHidden" id="helpOwnSelection"><i class="fa-regular fa-circle-info"></i> Med hjälp av sökfunktionerna här nedan kan du göra ett eget urval av data. Gör du inget aktivt val för respektive sökfunktion baseras sökningen automatiskt på samtliga valmöjligheter. Observera att om du inte gör några val alls ger detta sannolikt ett resultat som är för stort för att överhuvudtaget sökas fram eller att laddas ner.</p>
+            <p class="helpTextHidden" id="helpOwnSelection">Med hjälp av sökfunktionerna här nedan kan du göra ett eget urval av data. Gör du inget aktivt val för respektive sökfunktion baseras sökningen automatiskt på samtliga valmöjligheter. Observera att om du inte gör några val alls ger detta sannolikt ett resultat som är för stort för att överhuvudtaget sökas fram eller att laddas ner.</p>
           </div>
 
           <hr>
@@ -119,19 +115,19 @@
 ”Artobservationer” är det mest informationsrika utsnittet av data du kan få, från antal av arten du valt till metadata om delprogrammet som observationen gjorts i.
 ”Inventeringstillfällen” ger information om vilka lokaler som inventerats, samt när de inventerats och av vem.
 ”Metadata” ger information om själva datamängden från delprogrammet.">Typ av information <i class="fa-regular fa-circle-info" id="helpTypeInfoButton"></i></h3>
-            <p class="helpTextHidden" id="helpTypeInfo"><i class="fa-regular fa-circle-info"></i> Här väljer du vilken typ av information du vill ha.<br>
+            <p class="helpTextHidden" id="helpTypeInfo">Här väljer du vilken typ av information du vill ha.<br>
             ”Artobservationer” är det mest informationsrika utsnittet av data du kan få, från antal av arten du valt till metadata om delprogrammet som observationen gjorts i.<br>
             ”Inventeringstillfällen” ger information om vilka lokaler som inventerats, samt när de inventerats och av vem.<br>
             ”Metadata” ger information om själva datamängden från delprogrammet.</p>
 
             <div class="custom-control custom-radio">
-              <input type="radio" id="objRecord" name="inputObject" class="custom-control-input" value="Occurrence" <%= (inputObject=="Occurrence" ? "checked" : "") %>><label class="custom-control-label" for="objRecord">Artobservationer</label>
+              <input type="radio" id="objRecord" name="inputObject" class="form-check-input" value="Occurrence" <%= (inputObject=="Occurrence" ? "checked" : "") %>><label class="custom-control-label" for="objRecord">&nbsp;Artobservationer</label>
             </div>
             <div class="custom-control custom-radio">
-              <input type="radio" id="objEvent" name="inputObject" class="custom-control-input" value="Event" <%= (inputObject=="Event" ? "checked" : "") %>><label class="custom-control-label" for="objEvent">Inventeringstillfällen</label>
+              <input type="radio" id="objEvent" name="inputObject" class="form-check-input" value="Event" <%= (inputObject=="Event" ? "checked" : "") %>><label class="custom-control-label" for="objEvent">&nbsp;Inventeringstillfällen</label>
             </div>
             <div class="custom-control custom-radio">
-              <input type="radio" id="objDataset" name="inputObject" class="custom-control-input" value="Dataset" <%= (inputObject=="Dataset" ? "checked" : "") %>><label class="custom-control-label" for="objDataset">Metadata</label>
+              <input type="radio" id="objDataset" name="inputObject" class="form-check-input" value="Dataset" <%= (inputObject=="Dataset" ? "checked" : "") %>><label class="custom-control-label" for="objDataset">&nbsp;Metadata</label>
             </div>
           </div>
 
@@ -140,7 +136,7 @@
           <hr>
 
           <h3 title="Välj vilket eller vilka datamängder du vill ha data data från.">Data från specifika delprogram <i class="fa-regular fa-circle-info" id="helpDataProgramButton"></i></h3>
-          <p class="helpTextHidden" id="helpDataProgram"><i class="fa-regular fa-circle-info"></i> Välj vilket eller vilka datamängder du vill ha data data från.</p>
+          <p class="helpTextHidden" id="helpDataProgram">Välj vilket eller vilka datamängder du vill ha data data från.</p>
           <div class="form-group mb-3">
             <label>
               <span class="all-none-button" id="selectAllDatasets"><i class="fa-regular fa-square-check"></i> Markera alla</span>
@@ -161,7 +157,7 @@
           <hr>
 
           <h3 title=" Använd kryssrutorna och rullistan var för sig eller i kombination för att välja de organismer du är intresserad av. Flera grupper respektive arter kan väljas samtidigt.">Taxon <i class="fa-regular fa-circle-info" id="helpTaxonButton"></i></h3>
-          <p class="helpTextHidden" id="helpTaxon"><i class="fa-regular fa-circle-info"></i> Använd kryssrutorna och rullistan var för sig eller i kombination för att välja de organismer du är intresserad av. Flera grupper respektive arter kan väljas samtidigt.<br>
+          <p class="helpTextHidden" id="helpTaxon">Använd kryssrutorna och rullistan var för sig eller i kombination för att välja de organismer du är intresserad av. Flera grupper respektive arter kan väljas samtidigt.<br>
 Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funktionella/traditionella grupper.</p>
           <div class="form-group mb-3">
 
@@ -247,7 +243,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
           <h3 title="Begränsa din sökning geografiskt genom att antingen välja län i rullistan, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.">Geografiskt område <i class="fa-regular fa-circle-info" id="helpGeographicButton"></i></h3>
 
-          <p class="helpTextHidden" id="helpGeographic"><i class="fa-regular fa-circle-info"></i> Begränsa din sökning geografiskt genom att antingen välja län i rullistan, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.</p>
+          <p class="helpTextHidden" id="helpGeographic">Begränsa din sökning geografiskt genom att antingen välja län i rullistan, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.</p>
 
           <div class="form-group mb-3">
 
@@ -257,11 +253,11 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
             <div class="custom-control custom-radio">
               <input type="radio" name="radioGeography" class="form-check-input" value="lanmun" id="radioGeographyLanmun">
-              <label class="form-check-label" for="radioModeGeographyLanmun">Län</label>
+              <label class="custom-control-label" for="radioModeGeographyLanmun">Län</label>
             </div>
             <div class="custom-control custom-radio">
               <input type="radio" name="radioGeography" class="form-check-input" value="karta" id="radioGeographyKarta">
-              <label class="form-check-label" for="radioModeGeographyKarta  ">Karta</label>
+              <label class="custom-control-label" for="radioModeGeographyKarta  ">Karta</label>
             </div>
           </div>
 

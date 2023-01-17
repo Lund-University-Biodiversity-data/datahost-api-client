@@ -10,7 +10,9 @@ h3 {
 	font-family: Georgia, Times, Times New Roman, serif; 
 }
 
-
+#map { 
+	height: 480px; 
+}
 
 .all-none-button {
 	cursor:pointer;
@@ -42,3 +44,13 @@ h3 {
 	display:none;
 }
 
+
+/* MISSING FROM STYLEGUIDE.LU.SE ?? */
+.mw-xl {
+	max-width: 1320px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.nav-link{
+	padding: .5rem 1rem;
+}
