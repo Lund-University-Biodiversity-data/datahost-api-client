@@ -262,26 +262,26 @@ function updateToTemplateXlsx (dataInput, inputObject) {
 
   //DATASET
   templateXlsxHeader["1.title"] = "datamängdnamn";
-  templateXlsxHeader["1.projectID"] = "Projekt-id";
+  templateXlsxHeader["1.projectID"] = "projekt-id";
   templateXlsxHeader["1.projetCode"] = "projektnamn";
   templateXlsxHeader["1.assigner.organisationCode"] = "beställare:organisationsnamn";
   templateXlsxHeader["1.assigner.organisationID"] = "beställare:organisationsnummer";
   templateXlsxHeader["1.creator.organisationCode"] = "utförare:organisationsnamn";
   templateXlsxHeader["1.creator.organisationID"] = "utförare:organisationsnummer";
-  templateXlsxHeader["1.ownerinstitutionCode.organisationCode"] = "Informationsansvarig myndighet:organisationsnamn";
-  templateXlsxHeader["1.ownerinstitutionCode.organisationID"] = "Informationsansvarig myndighet:organisationsnummer";
+  templateXlsxHeader["1.ownerinstitutionCode.organisationCode"] = "informationsansvarig myndighet:organisationsnamn";
+  templateXlsxHeader["1.ownerinstitutionCode.organisationID"] = "informationsansvarig myndighet:organisationsnummer";
   templateXlsxHeader["1.publisher.organisationCode"] = "datavärd:organisationsnamn";
   templateXlsxHeader["1.publisher.organisationID"] = "datavärd:organisationsnummer";
   templateXlsxHeader["1.dateStewardship"] = "datavärdskap";
   templateXlsxHeader["1.purpose"] = "syfte";
   templateXlsxHeader["1.description"] = "datamängdbeskrivning";
-  templateXlsxHeader["1.methodology.methodologyName"] = "";
+  templateXlsxHeader["1.methodology.methodologyName"] = "metodiknamn";
   templateXlsxHeader["1.methodology.methodologyDescription"] = "metodikbeskrivning";
   templateXlsxHeader["1.methodology.methodologyLink"] = "metodiklänk";
   templateXlsxHeader["1.methodology.speciesList"] = "artlista";
   templateXlsxHeader["1.startDate"] = "startdatum";
   templateXlsxHeader["1.endDate"] = "slutdatum";
-  templateXlsxHeader["1.latestDate"] = "senaste datum";
+  //templateXlsxHeader["1.latestDate"] = "senaste datum";
   templateXlsxHeader["1.spatial"] = "land";
   templateXlsxHeader["1.accessRights"] = "åtkomsträttigheter";
   templateXlsxHeader["1.accessRightsDescription"] = "beskrivning-åtkomsträttigheter";
@@ -291,8 +291,8 @@ function updateToTemplateXlsx (dataInput, inputObject) {
   if (inputObject!="Dataset") {
 
     //EVENT
-    templateXlsxHeader["1.eventID"] = "besöks-id_1";
-    templateXlsxHeader["1.eventType"] = "besökstyp";
+    //templateXlsxHeader["1.eventID"] = "besöks-id";
+    //templateXlsxHeader["1.eventType"] = "besökstyp";
     templateXlsxHeader["1.parentEventID"] = "grupperingsbesöks-id";
     templateXlsxHeader["1.hierarchy1"] = "besökshierarki_1";
     templateXlsxHeader["1.hierarchy2"] = "besökshierarki_2";
@@ -306,17 +306,17 @@ function updateToTemplateXlsx (dataInput, inputObject) {
     templateXlsxHeader["1.eventEndDate_m"] = "inventeringsslutmånad"; // don't exist in the csv export, added below
     templateXlsxHeader["1.eventEndDate_d"] = "inventeringsslutdag"; // don't exist in the csv export, added below
     templateXlsxHeader["1.eventEndDate_t"] = "inventeringssluttid"; // don't exist in the csv export, added below
-    templateXlsxHeader["1.locationProtected"] = "lokalskyddad";
+    templateXlsxHeader["1.locationProtected"] = "lokal skyddad";
     //SITE
     templateXlsxHeader["1.site.locationID"]="lokal-id_1";
     templateXlsxHeader["1.site.anonymizedId"]="lokal-id_internt_1";
-    templateXlsxHeader["1.site.locationType"]="Lokaltyp_1";
+    templateXlsxHeader["1.site.locationType"]="lokaltyp_1";
     templateXlsxHeader["1.site.locationID"]="lokal-id_1";
     templateXlsxHeader["1.site.emplacement.properties.dimension"]="lokal:dimension";
     templateXlsxHeader["1.site.emplacement.geometry.point1"]="lokal:position:punkt_1"; // don't exist in the csv export, added below
-    templateXlsxHeader["1.site.emplacement.geometry.coordinates.0"]="lokal:position:punkt:koordinatNS_1";
-    templateXlsxHeader["1.site.emplacement.geometry.coordinates.1"]="lokal:position:punkt:koordinatEW_1";
-    templateXlsxHeader["1.site.emplacement.properties.horizontalCoordinateSystem"]="lokal:koordinatsystem_plan";
+    templateXlsxHeader["1.site.emplacement.geometry.coordinates.0"]="lokal:position:punkt:koordinat NS 1";
+    templateXlsxHeader["1.site.emplacement.geometry.coordinates.1"]="lokal:position:punkt:koordinat EW 1";
+    //templateXlsxHeader["1.site.emplacement.properties.horizontalCoordinateSystem"]="lokal:koordinatsystem_plan";
 
     // RE-EVENT
     templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
