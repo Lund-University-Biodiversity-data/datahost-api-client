@@ -40,9 +40,15 @@ $(document).ready(function () {
   $('#helpTaxonButton').on('click', function() {
     fadeInOutElt("#helpTaxon");
   });
-    $('#helpGeographicButton').on('click', function() {
+  $('#helpGeographicButton').on('click', function() {
     fadeInOutElt("#helpGeographic");
   });
+  // if no resultat, the button won't even appear
+  if ($('#helpResultatButton').length) {
+    $('#helpResultatButton').on('click', function() {
+      fadeInOutElt("#helpResultat");
+    });
+  }
 /* end help boxes */
 
   // set thte map
@@ -74,6 +80,43 @@ $(document).ready(function () {
     $('input[name=inputEndDate]').val(""); 
   });
 
+  $( "#selectAllTaxon").click(function() {
+    $('input[name=taxonCheckbox]').prop('checked', true); 
+  });
+
+  $( "#clearTaxon").click(function() {
+    $('input[name=taxonCheckbox]').prop('checked', false); 
+
+    $('select[name=inputTaxon]').val('').selectpicker('deselectAll'); 
+
+    $('select[name=inputTaxon]').selectpicker("refresh");;
+    $('#inputTaxon').selectpicker('destroy').selectpicker();
+  });
+
+  $('.taxonCheckbox').on('click', function() {
+    if ($(this).attr('id')!="taxonAll") {
+
+      var valSelected=[];
+
+      if ($("#taxonBirds").prop('checked')) {
+        valSelected.push(4000104);
+      }
+      if ($("#taxonMammals").prop('checked')) {
+        valSelected.push(4000107);
+      }
+      //console.log(valSelected);
+      $('select[name=inputTaxon]').val(valSelected).selectpicker("refresh");
+
+    }
+    else {
+      $('select[name=inputTaxon]').val('').selectpicker('deselectAll');
+    }
+
+    // to avoid the duplicated list when refresh ! bug from selectpicker, no official fix so far
+    $('#inputTaxon').selectpicker('destroy').selectpicker();
+
+  });
+  /*
   $( "#clearTaxon").click(function() {
     $('select[name=inputTaxon]').val('').selectpicker('deselectAll'); 
 
@@ -138,6 +181,8 @@ $(document).ready(function () {
     $('#inputTaxon').selectpicker('destroy').selectpicker();
 
   });
+  */
+
 
   $('input[name="radioGeography"]').on('click', function() {
     if ($(this).val()=="lanmun") {
@@ -175,12 +220,6 @@ $(document).ready(function () {
   });
   */
 
-  $('#buttonExportCsv').on('click', function() {
-    $('#inputSourceSubmit').val("exportCsv");
-  });
-  $('#buttonExportXlsx').on('click', function() {
-    $('#inputSourceSubmit').val("exportXlsx");
-  });
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -277,6 +316,17 @@ $(document).ready(function () {
   // check if the element exists
   if ($('#resultTable').length > 0) {
 
+    $('#buttonExportCsv').on('click', function() {
+      $('#inputSourceSubmit').val("exportCsv");
+
+      $("#mainform").submit();
+    });
+    $('#buttonExportXlsx').on('click', function() {
+      $('#inputSourceSubmit').val("exportXlsx");
+
+      $("#mainform").submit();
+    });
+
     var filtersConfig = {
         base_path: 'tablefilter/',
         paging: {
@@ -319,6 +369,11 @@ $(document).ready(function () {
 
   }
 
+
+  // start the download
+  if ($("#downloadFileLink").length) {
+    top.location.href = $("#downloadFileLink").attr('href');
+  }
 });
 
 

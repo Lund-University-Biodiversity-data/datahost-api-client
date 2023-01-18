@@ -44,6 +44,9 @@ h3 {
 	display:none;
 }
 
+.textSpace {
+	padding-bottom: 5px;
+}
 
 /* MISSING FROM STYLEGUIDE.LU.SE ?? */
 .mw-xl {

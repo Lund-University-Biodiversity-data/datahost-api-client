@@ -94,14 +94,14 @@
         <div class="form-group mb-3">
           <ul>
           <% for (var i = 0; i < availableDatasets.length; i++) { %>
-            <li><%= availableDatasets[i]['displayName'] %> <a href="<%= availableDatasets[i]['downloadPathCsv'] %>" target="_blank"><i class="fa fa-download"></i> csv (xxMb??)</a> <a href="<%= availableDatasets[i]['downloadPathXls'] %>" target="_blank"><i class="fa fa-download"></i> xlsx (xxMb??)</a></li>
+            <li class="textSpace"><%= availableDatasets[i]['displayName'] %> <a href="<%= availableDatasets[i]['downloadPathCsv'] %>" target="_blank"><i class="fa fa-download"></i> csv (xxMb??)</a> <a href="<%= availableDatasets[i]['downloadPathXls'] %>" target="_blank"><i class="fa fa-download"></i> xlsx (xxMb??)</a></li>
           <% } %>    
           </ul>      
         </div>
 
         <hr class="border-dark">
 
-        <form action="/#resultSection" method="POST" >
+        <form action="/#resultSection" method="POST" id="mainform" >
 
           <div class="form-group mb-3">
             <h2 title="Med hjälp av sökfunktionerna här nedan kan du göra ett eget urval av data. Gör du inget aktivt val för respektive sökfunktion baseras sökningen automatiskt på samtliga valmöjligheter. Observera att om du inte gör några val alls ger detta sannolikt ett resultat som är för stort för att överhuvudtaget sökas fram eller att laddas ner.">Gör ditt eget urval av data <i class="fa-regular fa-circle-info" id="helpOwnSelectionButton"></i></h2>
@@ -161,9 +161,21 @@
 Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funktionella/traditionella grupper.</p>
           <div class="form-group mb-3">
 
-            <div  class="form-clear-data" id="clearTaxon">
-              <label><i class="fa-regular fa-trash"></i> Rensa val</label>
+
+            <label>
+              <span class="all-none-button" id="selectAllTaxon"><i class="fa-regular fa-square-check"></i> Markera alla</span>
+            </label>
+            <div class="form-check">
+              <input class="form-check-input taxonCheckbox" type="checkbox" value="4000104" id="taxonBirds" name="taxonCheckbox" <%= (inputTaxon.includes(4000104) ? "checked" : "") %> >
+              <label class="form-check-label" for="taxonBirds">Fåglar</label>
             </div>
+            <div class="form-check">
+              <input class="form-check-input taxonCheckbox" type="checkbox" value="4000107" id="taxonMammals" name="taxonCheckbox" <%= (inputTaxon.includes(4000107) ? "checked" : "") %> >
+              <label class="form-check-label" for="taxonMammals">Däggdjur</label>
+            </div>
+
+            <!--
+
 
 
             <div>
@@ -172,7 +184,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
               <button type="button" class="btn  btn-outline-primary taxonListButtons" id="taxonMammals">Däggdjur</button>
             </div>
 
-            <!--
+
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="radioTaxon" id="radioTaxonAll" value="taxonAll">
               <label class="form-check-label" for="radioTaxonAll">Alla</label>
@@ -205,6 +217,10 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
               <% }); %>    
             </select>
 
+          </div>
+
+          <div  class="form-clear-data" id="clearTaxon">
+            <label><i class="fa-regular fa-trash"></i> Rensa val</label>
           </div>
 
           
@@ -295,29 +311,26 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
             <input type="hidden" id="inputSourceSubmit" name="inputSourceSubmit" value="">
             <div class="d-grid mt-3">
-              <button type="submit" class="btn btn-primary">View in a table</button>
+              <button type="submit" class="btn btn-primary">Sök och visa resultat</button>
             </div>
             <!--
             <div class="d-grid mt-3">
               <button id="downloadButton" class="btn btn-danger">Generate CSV (OLD)</button>
             </div>
           -->
-            <div class="d-grid mt-3">
-              <button id="buttonExportCsv" class="btn btn-primary">Generate CSV</button>
-            </div>
-            <div class="d-grid mt-3">
-              <button id="buttonExportXlsx" class="btn btn-primary">Generate XLSX</button>
-            </div>
+
+
+
           </div>
         </form>
       </div>
     </div>
 
-          <hr>
+    <hr>
 
     <% if (locals.downloadFile && downloadFile != "") { %>
       <div id="downloadSection">
-        <a href="<%- downloadFile %>" class="btn"><i class="fa fa-download"></i> Download</a>
+        <a href="<%- downloadFile %>" class="btn" id="downloadFileLink"><i class="fa fa-download"></i> Download</a>
       </div>
     <% } %>
     <br>
@@ -331,7 +344,9 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
         <% } else { %>
 
-          <h3 title="Här visas bara ett urval av fält från databasen, men i nedladdade filer ingår alla fält som det finns data för.">Resultat och nedladdning <i class="fa-regular fa-circle-info"></i></h3>
+          <h3 title="Här visas bara ett urval av fält från databasen, men i nedladdade filer ingår alla fält som det finns data för.">Resultat och nedladdning <i class="fa-regular fa-circle-info" id="helpResultatButton"></i></h3>
+
+          <p class="helpTextHidden" id="helpResultat">Här visas bara ett urval av fält från databasen, men i nedladdade filer ingår alla fält som det finns data för.</p>
 
           <% if (totalResults != tableData.length ) { %>
           <h3>Ditt urval ger <%- totalResults %> rad(er) men tabellvyn är begränsad till <%= maxResults %> rader.</h3>
@@ -358,6 +373,17 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
               <% } %>
             </tbody>
           </table>
+
+
+          <div class="d-grid mt-3">
+            <button id="buttonExportCsv" class="btn btn-primary"><i class="fa fa-download"></i> Ladda ner CSV</button>
+          </div>
+          <div class="d-grid mt-3">
+            <button id="buttonExportXlsx" class="btn btn-primary"><i class="fa fa-download"></i> Ladda ner XLSX</button>
+          </div>
+
+
+          <hr>
         <% }  %>
 
       </div>
