@@ -264,6 +264,7 @@ function updateToTemplateXlsx (dataInput, inputObject) {
   templateXlsxHeader["1.title"] = "datamängdnamn";
   templateXlsxHeader["1.projectID"] = "projekt-id";
   templateXlsxHeader["1.projetCode"] = "projektnamn";
+  templateXlsxHeader["1.projetType"] = "projekttyp";
   templateXlsxHeader["1.assigner.organisationCode"] = "beställare:organisationsnamn";
   templateXlsxHeader["1.assigner.organisationID"] = "beställare:organisationsnummer";
   templateXlsxHeader["1.creator.organisationCode"] = "utförare:organisationsnamn";
@@ -284,18 +285,19 @@ function updateToTemplateXlsx (dataInput, inputObject) {
   //templateXlsxHeader["1.latestDate"] = "senaste datum";
   templateXlsxHeader["1.spatial"] = "land";
   templateXlsxHeader["1.accessRights"] = "åtkomsträttigheter";
-  templateXlsxHeader["1.accessRightsDescription"] = "beskrivning-åtkomsträttigheter";
+  templateXlsxHeader["1.accessRightsDescription"] = "beskrivning åtkomsträttigheter";
+  templateXlsxHeader["1.licence"] = "användningsrättigheter";
   templateXlsxHeader["1.metadatalanguage"] = "metadataspråk";
   templateXlsxHeader["1.language"] = "datamängdspråk";
 
   if (inputObject!="Dataset") {
 
     //EVENT
-    //templateXlsxHeader["1.eventID"] = "besöks-id";
+    templateXlsxHeader["1.eventID"] = "besöks-id";
     //templateXlsxHeader["1.eventType"] = "besökstyp";
-    templateXlsxHeader["1.parentEventID"] = "grupperingsbesöks-id";
-    templateXlsxHeader["1.hierarchy1"] = "besökshierarki_1";
-    templateXlsxHeader["1.hierarchy2"] = "besökshierarki_2";
+    //templateXlsxHeader["1.parentEventID"] = "grupperingsbesöks-id";
+    templateXlsxHeader["1.hierarchy1"] = "besökshierarki 1";
+    templateXlsxHeader["1.hierarchy2"] = "besökshierarki 2";
     templateXlsxHeader["1.eventStartDate"] = "inventeringsstartdatum";
     templateXlsxHeader["1.eventStartDate_y"] = "inventeringsstartår"; // don't exist in the csv export, added below
     templateXlsxHeader["1.eventStartDate_m"] = "inventeringsstartmånad"; // don't exist in the csv export, added below
@@ -308,25 +310,34 @@ function updateToTemplateXlsx (dataInput, inputObject) {
     templateXlsxHeader["1.eventEndDate_t"] = "inventeringssluttid"; // don't exist in the csv export, added below
     templateXlsxHeader["1.locationProtected"] = "lokal skyddad";
     //SITE
-    templateXlsxHeader["1.site.locationID"]="lokal-id_1";
-    templateXlsxHeader["1.site.anonymizedId"]="lokal-id_internt_1";
-    templateXlsxHeader["1.site.locationType"]="lokaltyp_1";
-    templateXlsxHeader["1.site.locationID"]="lokal-id_1";
+    templateXlsxHeader["1.site.locationID"]="lokal-id 1";
+    templateXlsxHeader["1.site.anonymizedId"]="lokal-id_internt 1";
+    templateXlsxHeader["1.site.name"]="lokalnamn 1";
+    templateXlsxHeader["1.site.locationType"]="lokaltyp 1";
     templateXlsxHeader["1.site.emplacement.properties.dimension"]="lokal:dimension";
-    templateXlsxHeader["1.site.emplacement.geometry.point1"]="lokal:position:punkt_1"; // don't exist in the csv export, added below
+    templateXlsxHeader["1.site.emplacement.geometry.point1"]="lokal:position:punkt 1"; // don't exist in the csv export, added below
     templateXlsxHeader["1.site.emplacement.geometry.coordinates.0"]="lokal:position:punkt:koordinat NS 1";
     templateXlsxHeader["1.site.emplacement.geometry.coordinates.1"]="lokal:position:punkt:koordinat EW 1";
-    //templateXlsxHeader["1.site.emplacement.properties.horizontalCoordinateSystem"]="lokal:koordinatsystem_plan";
+    templateXlsxHeader["1.site.emplacement.properties.horizontalGeometryEstimatedAccuracy"]="lokal:absolut lägesosäkerhet plan";
+    templateXlsxHeader["1.site.emplacement.properties.verticalGeometryEstimatedAccuracy"]="lokal:absolut lägesosäkerhet höjd";    
+    templateXlsxHeader["1.site.emplacement.properties.horizontalCoordinateSystem"]="lokal:koordinatsystem plan";
+    templateXlsxHeader["1.site.emplacement.properties.verticalCoordinateSystem"]="lokal:koordinatsystem höjd";
+    templateXlsxHeader["1.site.province"]="lokal:landskap-provins";
+    templateXlsxHeader["1.site.county"]="lokal:län";
+    templateXlsxHeader["1.site.municipality"]="lokal:kommun";
+    templateXlsxHeader["1.site.parish"]="lokal:socken";
+    templateXlsxHeader["1.site.locationRemarks"]="lokal:lokalkommentar";
+
 
     // RE-EVENT
     templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
-    templateXlsxHeader["1.recorderCode"] = "inventerare_1";
-    templateXlsxHeader["1.recorderCode_2"] = "inventerare_2";
-    templateXlsxHeader["1.recorderCode_3"] = "inventerare_3";
-    templateXlsxHeader["1.recorderCode_4"] = "inventerare_4";
+    templateXlsxHeader["1.recorderCode"] = "inventerare 1";
+    templateXlsxHeader["1.recorderCode_2"] = "inventerare 2";
+    templateXlsxHeader["1.recorderCode_3"] = "inventerare 3";
+    templateXlsxHeader["1.recorderCode_4"] = "inventerare 4";
     templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
     templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
-    templateXlsxHeader["1.noObservations"] = "ingaObservationerUnderBesöket";
+    templateXlsxHeader["1.noObservations"] = "inga observationer under besöket";
 
 
   }
@@ -334,18 +345,18 @@ function updateToTemplateXlsx (dataInput, inputObject) {
   if (inputObject=="Occurrence") {
     
     // OCCURRENCE
-    templateXlsxHeader["1.occurrenceID"] = "Observations-id";
+    templateXlsxHeader["1.occurrenceID"] = "observations-id";
     templateXlsxHeader["1.basisOfRecord"] = "observationsunderlag";
     //templateXlsxHeader["1.observationTime"] = "";
     //templateXlsxHeader["1.observationPoint"] = "[]";
-    templateXlsxHeader["1.taxon.taxonID"] = "Taxon-id";
-    templateXlsxHeader["1.taxon.dyntaxaId"] = "EU-artkod";
-    templateXlsxHeader["1.taxon.vernacularName"] = "svensktNamn";
-    templateXlsxHeader["1.taxon.scientificName"] = "vetenskapligtNamn";
+    templateXlsxHeader["1.taxon.taxonID"] = "taxon-id";
+    templateXlsxHeader["1.taxon.euTaxonID"] = "EU-artkod";
+    templateXlsxHeader["1.taxon.vernacularName"] = "svenskt namn";
+    templateXlsxHeader["1.taxon.scientificName"] = "vetenskapligt namn";
     templateXlsxHeader["1.taxon.family"] = "släkte";
     templateXlsxHeader["1.taxon.species"] = "art";
     templateXlsxHeader["1.taxon.subspecies"] = "underart";
-    templateXlsxHeader["1.taxon.taxonRank"] = "taxonomiskNivå";
+    templateXlsxHeader["1.taxon.taxonRank"] = "taxonomisk nivå";
     //templateXlsxHeader["1.taxon.verbatimName"] = "";
     //templateXlsxHeader["1.taxon.verbatimTaxonID"] = "";
     templateXlsxHeader["1.occurrenceStatus"] = "förekomst";
@@ -666,7 +677,7 @@ app.post('/', encodeUrl, (req, res) => {
   // reinit
   var inputTaxon=[];
   if (typeof req.body.inputTaxon !== 'undefined' && req.body.inputTaxon!="") {
-console.log
+
     let taxonIds= [];
 
     // several items selected
