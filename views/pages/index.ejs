@@ -89,7 +89,7 @@
 
 
         <hr>
-        <h2>Färdiga datapaket <i class="fa-regular fa-circle-info" id="helpReadyPackagesButton"></i></h2>
+        <h2>Färdiga datapaket <i class="fa-regular fa-circle-info fa-sm" id="helpReadyPackagesButton"></i></h2>
         <p class="helpTextHidden" id="helpReadyPackages">Här kan du ladda ner samtliga data som samlats in och finns tillgängliga i en hel datamängd. Du kan ladda ner ett (1) färdigt datapaket åt gången. Det gör du genom att klicka på en av länkarna till höger om namnet för den datamängd du är intresserad av. </p>
         <div class="form-group mb-3">
           <ul>
@@ -104,7 +104,7 @@
         <form action="/#resultSection" method="POST" id="mainform" >
 
           <div class="form-group mb-3">
-            <h2 title="Med hjälp av sökfunktionerna här nedan kan du göra ett eget urval av data. Gör du inget aktivt val för respektive sökfunktion baseras sökningen automatiskt på samtliga valmöjligheter. Observera att om du inte gör några val alls ger detta sannolikt ett resultat som är för stort för att överhuvudtaget sökas fram eller att laddas ner.">Gör ditt eget urval av data <i class="fa-regular fa-circle-info" id="helpOwnSelectionButton"></i></h2>
+            <h2 title="Med hjälp av sökfunktionerna här nedan kan du göra ett eget urval av data. Gör du inget aktivt val för respektive sökfunktion baseras sökningen automatiskt på samtliga valmöjligheter. Observera att om du inte gör några val alls ger detta sannolikt ett resultat som är för stort för att överhuvudtaget sökas fram eller att laddas ner.">Gör ditt eget urval av data <i class="fa-regular fa-circle-info fa-sm" id="helpOwnSelectionButton"></i></h2>
             <p class="helpTextHidden" id="helpOwnSelection">Med hjälp av sökfunktionerna här nedan kan du göra ett eget urval av data. Gör du inget aktivt val för respektive sökfunktion baseras sökningen automatiskt på samtliga valmöjligheter. Observera att om du inte gör några val alls ger detta sannolikt ett resultat som är för stort för att överhuvudtaget sökas fram eller att laddas ner.</p>
           </div>
 
@@ -112,12 +112,12 @@
 
           <div class="form-group mb-3">
             <h3 title="Här väljer du vilken typ av information du vill ha.
-”Artobservationer” är det mest informationsrika utsnittet av data du kan få, från antal av arten du valt till metadata om delprogrammet som observationen gjorts i.
-”Inventeringstillfällen” ger information om vilka lokaler som inventerats, samt när de inventerats och av vem.
+”Artobservationer” är det mest informationsrika utsnittet av data du kan få: från antal av arten du valt till metadata om datamängden som observationen tillhör.
+”Inventeringstillfällen” ger information om vilka lokaler som inventerats, när de inventerats, och av vem, samt metadata om datamängden som inventeringstillfället tillhör.
 ”Metadata” ger information om själva datamängden från delprogrammet.">Typ av information <i class="fa-regular fa-circle-info" id="helpTypeInfoButton"></i></h3>
             <p class="helpTextHidden" id="helpTypeInfo">Här väljer du vilken typ av information du vill ha.<br>
-            ”Artobservationer” är det mest informationsrika utsnittet av data du kan få, från antal av arten du valt till metadata om delprogrammet som observationen gjorts i.<br>
-            ”Inventeringstillfällen” ger information om vilka lokaler som inventerats, samt när de inventerats och av vem.<br>
+            ”Artobservationer” är det mest informationsrika utsnittet av data du kan få: från antal av arten du valt till metadata om datamängden som observationen tillhör.<br>
+            ”Inventeringstillfällen” ger information om vilka lokaler som inventerats, när de inventerats, och av vem, samt metadata om datamängden som inventeringstillfället tillhör.<br>
             ”Metadata” ger information om själva datamängden från delprogrammet.</p>
 
             <div class="custom-control custom-radio">
@@ -137,10 +137,13 @@
 
           <h3 title="Välj vilket eller vilka datamängder du vill ha data data från.">Data från specifika delprogram <i class="fa-regular fa-circle-info" id="helpDataProgramButton"></i></h3>
           <p class="helpTextHidden" id="helpDataProgram">Välj vilket eller vilka datamängder du vill ha data data från.</p>
+          <p class="helpText">Om du inte gör ett val så baseras sökningen på alla datamängderna.</p>
           <div class="form-group mb-3">
+            <!--
             <label>
               <span class="all-none-button" id="selectAllDatasets"><i class="fa-regular fa-square-check"></i> Markera alla</span>
             </label>
+          -->
             <% for (var i = 0; i < availableDatasets.length; i++) { %>
               <div class="form-check">
                 <input class="form-check-input datasets-list-checkbox" type="checkbox" value="<%= availableDatasets[i]['datasetID'] %>" id="dataset<%= i %>" name="datasetCheckB" <% if (inputDatasetList.includes(availableDatasets[i]['datasetID'])) { %>checked<% } %> >
@@ -159,12 +162,16 @@
           <h3 title=" Använd kryssrutorna och rullistan var för sig eller i kombination för att välja de organismer du är intresserad av. Flera grupper respektive arter kan väljas samtidigt.">Taxon <i class="fa-regular fa-circle-info" id="helpTaxonButton"></i></h3>
           <p class="helpTextHidden" id="helpTaxon">Använd kryssrutorna och rullistan var för sig eller i kombination för att välja de organismer du är intresserad av. Flera grupper respektive arter kan väljas samtidigt.<br>
 Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funktionella/traditionella grupper.</p>
+          <p class="helpText">Om du inte gör ett val så baseras sökningen på alla organismgrupper och arter.</p>
+
+
           <div class="form-group mb-3">
 
-
+            <!--
             <label>
               <span class="all-none-button" id="selectAllTaxon"><i class="fa-regular fa-square-check"></i> Markera alla</span>
             </label>
+          -->
             <div class="form-check">
               <input class="form-check-input taxonCheckbox" type="checkbox" value="4000104" id="taxonBirds" name="taxonCheckbox" <%= (inputTaxon.includes(4000104) ? "checked" : "") %> >
               <label class="form-check-label" for="taxonBirds">Fåglar</label>
@@ -228,6 +235,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
           <h3 title="">Tidsperiod </h3>
 
+          <p class="helpText">Om du inte gör ett val så baseras sökningen på hela tidsserien i databasen.</p>
           <div class="form-group mb-3">
 
             <label>Från datum</label>
@@ -260,6 +268,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
           <h3 title="Begränsa din sökning geografiskt genom att antingen välja län i rullistan, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.">Geografiskt område <i class="fa-regular fa-circle-info" id="helpGeographicButton"></i></h3>
 
           <p class="helpTextHidden" id="helpGeographic">Begränsa din sökning geografiskt genom att antingen välja län i rullistan, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.</p>
+          <p class="helpText">Om du inte gör ett val så baseras sökningen på hela Sverige.</p>
 
           <div class="form-group mb-3">
 
@@ -330,7 +339,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
     <% if (locals.downloadFile && downloadFile != "") { %>
       <div id="downloadSection">
-        <a href="<%- downloadFile %>" class="btn" id="downloadFileLink"><i class="fa fa-download"></i> Download</a>
+        <a href="<%- downloadFile %>" class="btn" id="downloadFileLink"><i class="fa fa-download"></i> Ladda ner igen</a>
       </div>
     <% } %>
     <br>

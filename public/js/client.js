@@ -62,10 +62,11 @@ $(document).ready(function () {
     format: 'yyyy-mm-dd'
   });
 
+  /*
   $( "#selectAllDatasets").click(function() {
     $('input[name=datasetCheckB]').prop('checked', true); 
   });
-
+  */
   $( "#clearDatasets").click(function() {
     $('input[name=datasetCheckB]').prop('checked', false); 
   });
@@ -80,10 +81,12 @@ $(document).ready(function () {
     $('input[name=inputEndDate]').val(""); 
   });
 
+  /*
   $( "#selectAllTaxon").click(function() {
     $('input[name=taxonCheckbox]').prop('checked', true); 
   });
-
+  */
+  
   $( "#clearTaxon").click(function() {
     $('input[name=taxonCheckbox]').prop('checked', false); 
 
