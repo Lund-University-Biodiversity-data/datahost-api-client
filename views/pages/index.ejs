@@ -92,11 +92,15 @@
         <h2>Färdiga datapaket <i class="fa-regular fa-circle-info fa-sm" id="helpReadyPackagesButton"></i></h2>
         <p class="helpTextHidden" id="helpReadyPackages">Här kan du ladda ner samtliga data som samlats in och finns tillgängliga i en hel datamängd. Du kan ladda ner ett (1) färdigt datapaket åt gången. Det gör du genom att klicka på en av länkarna till höger om namnet för den datamängd du är intresserad av. </p>
         <div class="form-group mb-3">
-          <ul>
+          <table  class="table">
           <% for (var i = 0; i < availableDatasets.length; i++) { %>
-            <li class="textSpace"><%= availableDatasets[i]['displayName'] %> <a href="<%= availableDatasets[i]['downloadPathCsv'] %>" target="_blank"><i class="fa fa-download"></i> csv (xxMb??)</a> <a href="<%= availableDatasets[i]['downloadPathXls'] %>" target="_blank"><i class="fa fa-download"></i> xlsx (xxMb??)</a></li>
+            <tr>
+              <td><%= availableDatasets[i]['displayName'] %></td>
+              <td><a href="<%= availableDatasets[i]['downloadPathCsv'] %>" target="_blank"><i class="fa fa-download"></i> csv (xxMb??)</a></td>
+              <td><a href="<%= availableDatasets[i]['downloadPathXls'] %>" target="_blank"><i class="fa fa-download"></i> xlsx (xxMb??)</a></td>
+            </tr>
           <% } %>    
-          </ul>      
+          </table>    
         </div>
 
         <hr class="border-dark">
