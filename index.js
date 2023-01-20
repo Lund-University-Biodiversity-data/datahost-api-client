@@ -248,15 +248,23 @@ function splitDateInArray (dateToSplit) {
 
   var datetimeTemp = dateToSplit.replace("T", " T");
   var datetimeTemp = datetimeTemp.replace("Z", " Z");
+  //console.log(datetimeTemp);
   var splitDate=scanf(datetimeTemp, "%d-%d-%d T%s:%s:%s");
+  //console.log(splitDate);
 
+  // FOR SOME REASON WHEN day = 09 => it breaks !
+  //[WARN] scanf: Invalid char to Octal [9]
+  //[WARN] scanf: Invalid octal [9]
+  // WHY octal ???
+  
   return splitDate;
 }
 
 
 function updateToTemplateXlsx (dataInput, inputObject) {
 
-  var dataTemplateOk=[];
+  var dataInTemplate=[];
+  var dataInTemplateCleaned=[];
 
   var templateXlsxHeader=[];
 
@@ -312,7 +320,7 @@ function updateToTemplateXlsx (dataInput, inputObject) {
     //SITE
     templateXlsxHeader["1.site.locationID"]="lokal-id 1";
     templateXlsxHeader["1.site.anonymizedId"]="lokal-id_internt 1";
-    templateXlsxHeader["1.site.name"]="lokalnamn 1";
+    templateXlsxHeader["1.site.commonName"]="lokalnamn 1";
     templateXlsxHeader["1.site.locationType"]="lokaltyp 1";
     templateXlsxHeader["1.site.emplacement.properties.dimension"]="lokal:dimension";
     templateXlsxHeader["1.site.emplacement.geometry.point1"]="lokal:position:punkt 1"; // don't exist in the csv export, added below
@@ -328,7 +336,6 @@ function updateToTemplateXlsx (dataInput, inputObject) {
     templateXlsxHeader["1.site.parish"]="lokal:socken";
     templateXlsxHeader["1.site.locationRemarks"]="lokal:lokalkommentar";
 
-
     // RE-EVENT
     templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
     templateXlsxHeader["1.recorderCode"] = "inventerare 1";
@@ -339,6 +346,23 @@ function updateToTemplateXlsx (dataInput, inputObject) {
     templateXlsxHeader["1.samplingProtocol"] = "datainsamlingsmetod";
     templateXlsxHeader["1.noObservations"] = "inga observationer under besöket";
 
+    templateXlsxHeader["1.snowCover"] = "snötäcke";
+    templateXlsxHeader["1.sunshineWeatherMeasure"] = "solsken:vädermått";
+    templateXlsxHeader["1.sunshineUnit"] = "solsken:enhet";
+    templateXlsxHeader["1.airTemperatureWeatherMeasure"] = "lufttemperatur:vädermått";
+    templateXlsxHeader["1.airTemperatureUnit"] = "lufttemperatur:enhet";
+    templateXlsxHeader["1.windDirectionCompass"] = "vindriktning kompass";
+    templateXlsxHeader["1.windDirectionDegreesWeatherMesure"] = "vindriktning grader:vädermått";
+    templateXlsxHeader["1.windDirectionDegreesUnit"] = "vindriktning grader:enhet";
+    templateXlsxHeader["1.windSpeedWeatherMesure"] = "vindhastighet:vädermått";
+    templateXlsxHeader["1.windSpeedUnit"] = "vindhastighet:enhet";
+    templateXlsxHeader["1.windStrength"] = "vindstyrka";
+    templateXlsxHeader["1.precipitation"] = "nederbörd";
+    templateXlsxHeader["1.visibility"] = "sikt";
+    templateXlsxHeader["1.cloudiness"] = "molnighet";
+    templateXlsxHeader["1.weather"] = "väder";
+    templateXlsxHeader["1.transportMethod"] = "transportmetod";
+    templateXlsxHeader["1.eventRemarks"] = "inventeringskommentar";
 
   }
 
@@ -374,27 +398,36 @@ function updateToTemplateXlsx (dataInput, inputObject) {
 
   }
 
+  // check which columns are empty
+  // set everything to true
+  var emptyColumns=[];
+  Object.entries(templateXlsxHeader).forEach(([key, val]) => {
+    emptyColumns[val]=true;
+  });
 
-
-
-  // foor each dataset of the data
+  // for each dataset of the data
   Object.entries(dataInput).forEach(datasetI => {
 
     var oneDataset=[];
     // check the template header
     Object.entries(templateXlsxHeader).forEach(([key, val]) => {
+      // key is 1.nameofthekeyfromtheserver
+      // val is the column name in the excel file in swedish
 
       if (key in datasetI[1]) {
         oneDataset[val]=datasetI[1][key];
+        if (oneDataset[val]!="") emptyColumns[val]=false;
       }
       else if (("1.datasetData." + key) in datasetI[1]) {
         oneDataset[val]=datasetI[1][("1.datasetData." + key)];
+        if (oneDataset[val]!="") emptyColumns[val]=false;
       }
       else if (("1.eventData." + key) in datasetI[1]) {
         oneDataset[val]=datasetI[1][("1.eventData." + key)];
+        if (oneDataset[val]!="") emptyColumns[val]=false;
       }
       else if (!(val in oneDataset)) { // check if the field has not already been filled (like the detailed start/end date-time)
-        console.log("key notfound "+key);
+        //console.log("key notfound "+key);
         oneDataset[val]="";
       }
 
@@ -414,7 +447,6 @@ function updateToTemplateXlsx (dataInput, inputObject) {
 
         }
       }
-
 
       // split the endDate/time in colums
       if (key=="1.eventEndDate" && oneDataset[val]!="") {
@@ -454,11 +486,28 @@ function updateToTemplateXlsx (dataInput, inputObject) {
       }
 
     });
-    dataTemplateOk.push(oneDataset);
+    dataInTemplate.push(oneDataset);
   });
 
+  //console.log(emptyColumns);
 
-  return dataTemplateOk;
+  // remove the empty columns
+  Object.entries(dataInTemplate).forEach((datasetline, indD) => {
+
+    Object.entries(emptyColumns).forEach((emptyline, indE) => {
+      const [key, value] = emptyline;
+
+      if (value) {
+        delete datasetline[1][key];
+      }
+    });
+
+    dataInTemplateCleaned.push(datasetline[1]);
+    //exit();
+
+  });
+
+  return dataInTemplateCleaned;
 }
 
 function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccurrence) {
