@@ -52,7 +52,7 @@ $(document).ready(function () {
 /* end help boxes */
 
   // set thte map
-  var map = L.map('map').setView([62.47204526039855, 16.149376718556645], 5);
+  var map = L.map('map').setView([62.47204526039855, 16.149376718556645], 4);
 
 
   // initiate the different selectpickers
@@ -240,7 +240,27 @@ $(document).ready(function () {
         circle: false
      }
   });
+
+  // Translations
+  // to be written before adding the controls
+  L.drawLocal.draw.toolbar.buttons.polygon="Rita en polygon"; // Draw a polygon
+
+  L.drawLocal.draw.toolbar.actions.title="Avbryt" // Cancel drawing
+  L.drawLocal.draw.toolbar.actions.text="Avbryt"; // Cancel
+  L.drawLocal.draw.toolbar.undo.title="Radera senaste punkten"; // delete last point drwan
+  L.drawLocal.draw.toolbar.undo.text="Radera senaste punkten"; // Delete last point
+
+  L.drawLocal.draw.toolbar.finish.title="Avsluta"; // Finish drawing
+  L.drawLocal.draw.toolbar.finish.text="Avsluta"; // Finish
+
+  //tooltip
+  L.drawLocal.draw.handlers.polygon.tooltip.start="Klicka för att börja rita polygon."; // Click to start drawing shape.
+  L.drawLocal.draw.handlers.polygon.tooltip.cont="Klicka för att fortsätta rita polygon."; // Click to continue drawing shape. 
+  L.drawLocal.draw.handlers.polygon.tooltip.end="Klicka på Avsluta för att stänga polygonen."; // Click Finish to close this shape
+
   map.addControl(drawControl);
+
+
 
   if ($("#inputCounty").val()!="") {
     $('#radioGeographyLanmun').prop('checked', true);
@@ -365,6 +385,7 @@ $(document).ready(function () {
             name: 'sort'
         }]
     };
+
     var tf = new TableFilter('resultTable', filtersConfig);
 
 
@@ -377,6 +398,8 @@ $(document).ready(function () {
   if ($("#downloadFileLink").length) {
     top.location.href = $("#downloadFileLink").attr('href');
   }
+
+
 });
 
 

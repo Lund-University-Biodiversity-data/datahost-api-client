@@ -59,9 +59,6 @@ const availableDatasets = config.availableDatasets;
 
 const tableTaxon=[];
 
-// for html table
-var tableColumns =[];
-var tableData =[];
 
 // for xslx mapping fields
 
@@ -663,6 +660,7 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
   var inputEndDate = config.defaultEndDate;
   var inputDateType = config.defaultDateType;
 
+
   //renderIndex(res, false, "app.get");
   console.log("renderIndex from app.get");
 
@@ -912,11 +910,13 @@ app.post('/', encodeUrl, (req, res) => {
   console.log("dataInput array :");
   var_dump(dataInput);
 
+  var inputObject = req.body.inputObject;
+  //console.log("INPUT OBJECT : ");
+
+
   // CALL THE API
 
   if (dataInputLength.length>=1) {
-
-    var inputObject = req.body.inputObject;
 
     let apiInstance, opts, getResultsBySearch;
 
@@ -1014,10 +1014,8 @@ app.post('/', encodeUrl, (req, res) => {
 
         //var_dump(data);
 
-        tableColumns =[];
-        tableData =[];
-
-
+        var tableColumns =[];
+        var tableData =[];
 
         if (inputSourceSubmit=="exportCsv") {
 
@@ -1174,6 +1172,7 @@ app.post('/', encodeUrl, (req, res) => {
               dataCut = data.results;
             }
             Object.keys(dataCut[0]).forEach(key => {
+
               //console.log(key, dataCut[key]);
               // add only thr columns to be displayed
               if (inputObject=="Event" && eventColumnsTable.includes(key)) {
@@ -1194,7 +1193,6 @@ app.post('/', encodeUrl, (req, res) => {
                 }
               }
             });
-
             //var_dump(tableColumns);
 
             Object.entries(dataCut).forEach(elt => {
@@ -1241,7 +1239,7 @@ app.post('/', encodeUrl, (req, res) => {
 
             //renderIndex(res, true, "tableviewOK");
             console.log("renderIndex from tableviewOK");
-
+//console.log(tableData);
             res.render('pages/index', {
               maxResults: maxResults,                 // GLOBAL
               availableDatasets: availableDatasets,   // GLOBAL
