@@ -50,15 +50,95 @@ app.set('view engine', 'ejs');
 // variable for the whole app
 var maxResults = 1000;
 
+// just put siteDetails, the sub-fields are obtained later
+const eventColumnsTable = ["datasetName", "eventStartDate", "siteDetails", "samplingProtocol", "noObservations"];
+// just put taxonDetails, the sub-fields are obtained later
+const occurrenceColumnsTable = ["datasetName", "observationTime", "taxonDetails", "quantity"];
+// just put organisations details, the sub-fields are obtained later
+const datasetColumnsTable = ["datasetName", "assignerDetails", "creatorDetails", "purpose", "description", "startDate"];
 
-const eventColumnsTable = ["datasetID", "eventID", "eventStartDate", "eventEndDate", "occurrenceIds"];
-const datasetColumnsTable = ["identifier", "title", "startDate", "endDate", "eventIds"];
+var fieldsTranslations=[];
+fieldsTranslations["datasetName"]="Datamängdnamn";
+fieldsTranslations["observationTime"]="Datum";
+fieldsTranslations["scientificName"]="Vetenskapligt namn";
+fieldsTranslations["vernacularName"]="Svenskt namn";
+fieldsTranslations["quantity"]="Kvantitet";
+fieldsTranslations["dyntaxaId"]="DyntaxaID";
+fieldsTranslations["eventStartDate"]="Inventeringsstartdatum";
+fieldsTranslations["locationID"]="Lokal ID";
+fieldsTranslations["locationType"]="Lokaltyp";
+fieldsTranslations["county"]="Län";
+fieldsTranslations["samplingProtocol"]="Datainsamlingsmetod";
+fieldsTranslations["noObservations"]="Inga observationer under besöket";
+fieldsTranslations["assignerOrganisationCode"]="Beställare:organisationsnamn";
+fieldsTranslations["creatorOrganisationCode"]="Utförare:organisationsnamn";
+fieldsTranslations["purpose"]="Syfte";
+fieldsTranslations["description"]="Beskrivning";
+fieldsTranslations["startDate"]="Startdatum";
+/*
 const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "quantity", "unit", "event"];
+
+/*
+
+DATASETS
+datamängdnamn
+beställare:organisationsnamn
+utförare:organisationsnamn
+syfte 
+datamängdbeskrivning
+metodiknamn (kanske)
+metodiklänk (kanske)
+startdatum
+senaste datum
+BESKRIVNING AV ÅTKOMSTRÄTTIGHETER
+användningsrättigheter
+
+
+
+
+EVENTS
+d.datamängdnamn 
+d.utförare:organisationsnamn (gärna) => not in event table
+d.syfte (gärna)
+d.åtkomsträttigheter => NO not in the event table
+e.besökshierarki 1 (gärna)  
+e.besökshierarki 2 (gärna)
+e.inventeringsstartdatum
+e.lokal skyddad (kanske)
+e.lokal-id 1 +2 +3 +4
+e.lokaltyp 1
+e.lokal:position:punkt 1  => ??? which point is that ?
+e.län
+e.datainsamlingsmetod
+e.inga observationer under besöket
+
+
+RECORDS
+d.datamängdnamn 
+d.utförare:organisationsnamn (gärna)
+d.syfte (gärna)
+d.åtkomsträttigheter => NO not in the record table
+d.BESKRIVNING AV ÅTKOMSTRÄTTIGHETER (kanske)
+e.besökshierarki 1 (kanske)  
+e.besökshierarki 2 (kanske)
+e.inventeringsstartdatum => YES but we should use the observationTime stored in the record table isn't it ? and we don't have the event data
+e.lokal-id 1 (kanske) +2 +3 +4
+e.lokaltyp 1 (kanske)
+e.lokal:position:punkt 1 (kanske)
+e.län (kanske) => I think we deifinitely needs some geographic information. Either the sitename, the län, or something.
+e.datainsamlingsmetod (kanske)
+r.taxon-id
+r.svenskt namn
+r.vetenskapligt namn
+r.förekomst
+r.kvantitet
+r.observationsnoggrannhet
+r.kvalitetskontroll (kanske)
+*/
 
 const availableDatasets = config.availableDatasets;
 
 const tableTaxon=[];
-
 
 // for xslx mapping fields
 
@@ -524,7 +604,7 @@ function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccu
         datasetFinalAsIndexedArray[elt[1].identifier]=elt;
       });
 
-      // remove occurences details from events
+      // remove occurrences details from events
       dataEvent=transformEventData(dataEvent);
 
       Object.entries(dataEvent).forEach(elt => {
@@ -1171,8 +1251,88 @@ app.post('/', encodeUrl, (req, res) => {
             else {
               dataCut = data.results;
             }
-            Object.keys(dataCut[0]).forEach(key => {
 
+            var templateColumnTable;
+            if (inputObject=="Event") templateColumnTable=eventColumnsTable;
+            else if (inputObject=="Dataset") templateColumnTable=datasetColumnsTable;
+            else if (inputObject=="Occurrence") templateColumnTable=occurrenceColumnsTable;
+
+            // 1- create the tabl header with column names
+            Object.entries(templateColumnTable).forEach(([key, fieldname]) => {
+              //console.log(fieldname);
+
+              if (fieldname=="taxonDetails") {
+                //tableColumns.push("taxon");
+                tableColumns.push("dyntaxaId");
+                tableColumns.push("scientificName");
+                tableColumns.push("vernacularName");
+              }
+              else if (fieldname=="siteDetails") {
+                tableColumns.push("locationID");
+                tableColumns.push("locationType");
+                tableColumns.push("county");
+              }
+              else if (fieldname=="assignerDetails") {
+                tableColumns.push("assignerOrganisationCode");
+              }
+              else if (fieldname=="creatorDetails") {
+                tableColumns.push("creatorOrganisationCode");
+              }
+              else {
+                tableColumns.push(fieldname);
+              }
+//<%= (tableColumns[i] in fieldsTranslations ? fieldsTranslations[tableColumns[i]] : tableColumns[i]) %>
+
+            });
+
+            // 2- create the data table based on the column names
+            Object.entries(dataCut).forEach(elt => {
+              const row = [];
+//console.log(elt);exit();
+
+              Object.entries(tableColumns).forEach(([key,fieldname]) => {
+                if (fieldname=="eventIds") {
+                  row["eventIds"]=elt[1][fieldname].length;
+                }
+                else if (fieldname=="occurrenceIds") {
+                  row["occurrenceIds"]=elt[1][fieldname].length;
+                }
+                else if (fieldname=="datasetName") {
+                  if ("datasetID" in elt[1])
+                    row["datasetName"]=availableDatasets[elt[1]["datasetID"]]["displayName"];
+                  else if ("identifier" in elt[1])
+                    row["datasetName"]=availableDatasets[elt[1]["identifier"]]["displayName"];
+                }                
+                else {
+                  if (fieldname in elt[1])
+                    row[fieldname]=elt[1][fieldname];
+                  else if ("taxon" in elt[1] && fieldname in elt[1]["taxon"])
+                    row[fieldname]=elt[1]["taxon"][fieldname];
+                  else if ("site" in elt[1] && fieldname in elt[1]["site"])
+                    row[fieldname]=elt[1]["site"][fieldname];
+                  else if ("assigner" in elt[1] && "organisationCode" in elt[1]["assigner"] && fieldname=="assignerOrganisationCode")
+                    row["assignerOrganisationCode"]=elt[1]["assigner"]["organisationCode"];
+                  else if ("creator" in elt[1] && "organisationCode" in elt[1]["creator"] && fieldname=="creatorOrganisationCode")
+                    row["creatorOrganisationCode"]=elt[1]["creator"]["organisationCode"];
+                  else console.log("No data in "+fieldname);
+                }
+
+              });
+
+              tableData.push(row);
+
+            });
+
+            // 3- translate the column names
+            Object.entries(tableColumns).forEach(([key,fieldname]) => {
+              //console.log(fieldname);
+              if (fieldname in fieldsTranslations) tableColumns[key]=fieldsTranslations[fieldname];
+            });
+
+
+            /*
+            Object.keys(dataCut[0]).forEach(key => {
+//console.log(key);
               //console.log(key, dataCut[key]);
               // add only thr columns to be displayed
               if (inputObject=="Event" && eventColumnsTable.includes(key)) {
@@ -1187,6 +1347,7 @@ app.post('/', encodeUrl, (req, res) => {
                   tableColumns.push("taxon");
                   tableColumns.push("Dyntaxa ID");
                   tableColumns.push("Scientific Name");
+                  tableColumns.push("Vernacular Name");
                 }
                 else {
                   tableColumns.push(key);
@@ -1195,8 +1356,11 @@ app.post('/', encodeUrl, (req, res) => {
             });
             //var_dump(tableColumns);
 
+            */
+/*
             Object.entries(dataCut).forEach(elt => {
               const row = [];
+              //console.log(elt);exit();
               Object.entries(elt[1]).forEach(entry => {
                 const [key, value] = entry;
 
@@ -1223,6 +1387,7 @@ app.post('/', encodeUrl, (req, res) => {
                   if (key=="taxon") {
                     row["Dyntaxa ID"]=value.dyntaxaId;
                     row["Scientific Name"]=value.scientificName;
+                    row["Vernacular Name"]=value.vernacularName;
                   }
                   else {
                     row[key]=value;
@@ -1236,7 +1401,7 @@ app.post('/', encodeUrl, (req, res) => {
               tableData.push(row);
 
             });
-
+*/
             //renderIndex(res, true, "tableviewOK");
             console.log("renderIndex from tableviewOK");
 //console.log(tableData);

@@ -53,7 +53,6 @@
 
   <script src="js/client.js"></script>
 
-
 </header>
 
 
@@ -93,13 +92,13 @@
         <p class="helpTextHidden" id="helpReadyPackages">Här kan du ladda ner samtliga data som samlats in och finns tillgängliga i en hel datamängd. Du kan ladda ner ett (1) färdigt datapaket åt gången. Det gör du genom att klicka på en av länkarna till höger om namnet för den datamängd du är intresserad av. </p>
         <div class="form-group mb-3">
           <table  class="table">
-          <% for (var i = 0; i < availableDatasets.length; i++) { %>
+          <% Object.entries(availableDatasets).forEach(function([key, val]) { %>
             <tr>
-              <td><%= availableDatasets[i]['displayName'] %></td>
-              <td><a href="<%= availableDatasets[i]['downloadPathCsv'] %>" target="_blank"><i class="fa fa-download"></i> csv (xxMb??)</a></td>
-              <td><a href="<%= availableDatasets[i]['downloadPathXls'] %>" target="_blank"><i class="fa fa-download"></i> xlsx (xxMb??)</a></td>
+              <td><%= val['displayName'] %></td>
+              <td><a href="<%= val['downloadPathCsv'] %>" target="_blank"><i class="fa fa-download"></i> csv (xxMb??)</a></td>
+              <td><a href="<%= val['downloadPathXls'] %>" target="_blank"><i class="fa fa-download"></i> xlsx (xxMb??)</a></td>
             </tr>
-          <% } %>    
+          <% }); %>    
           </table>    
         </div>
 
@@ -148,14 +147,14 @@
               <span class="all-none-button" id="selectAllDatasets"><i class="fa-regular fa-square-check"></i> Markera alla</span>
             </label>
           -->
-            <% for (var i = 0; i < availableDatasets.length; i++) { %>
+            <% Object.entries(availableDatasets).forEach(function([key, val]) { %>
               <div class="form-check">
-                <input class="form-check-input datasets-list-checkbox" type="checkbox" value="<%= availableDatasets[i]['datasetID'] %>" id="dataset<%= i %>" name="datasetCheckB" <% if (inputDatasetList.includes(availableDatasets[i]['datasetID'])) { %>checked<% } %> >
+                <input class="form-check-input datasets-list-checkbox" type="checkbox" value="<%= val['datasetID'] %>" id="dataset<%= i %>" name="datasetCheckB" <% if (inputDatasetList.includes(val['datasetID'])) { %>checked<% } %> >
                 <label class="form-check-label" for="dataset<%= i %>">
-                  <%= availableDatasets[i]['displayName'] %>
+                  <%= val['displayName'] %>
                 </label>
               </div>
-            <% } %>
+            <% }); %>
             <div  class="form-clear-data" id="clearDatasets">
               <label><i class="fa-regular fa-trash"></i> Rensa val</label>
             </div>
@@ -370,7 +369,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
             <thead>
                 <tr>
                   <% for (var i = 0; i < tableColumns.length; i++) { 
-                    if (tableColumns[i] != "taxon") { %>
+                    if (tableColumns[i] != "taxonDetails" && tableColumns[i] != "siteDetails") { %>
                     <th><%= tableColumns[i] %></th>
                   <% }} %>
                 </tr>
@@ -379,7 +378,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
               <% for (var i = 0; i < tableData.length; i++) { %>
                 <tr>
                   <% Object.keys(tableData[i]).forEach(function(key) {  
-                    if (key != "taxon") { %>
+                    if (key != "taxon" && key != "site") { %>
                    <td><%= tableData[i][key] %></td>
                   <% }}); %>    
                 </tr>

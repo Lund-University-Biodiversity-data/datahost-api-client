@@ -17,14 +17,16 @@ config.defaultDateType = "BetweenStartDateAndEndDate";
 
 config.availableDatasets = [
 	{
-		"displayName": "super dataset",
-		"datasetID": "crazy-id-here",
-		"downloadPath" :""
+		"displayName": "Svensk Fågeltaxering: Standardrutter",
+		"datasetID": "lu_sft_std",
+		"downloadPathCsv" :"https://www.gbif.se/ipt/resource?r=lu_sft_std",
+		"downloadPathXls" :"https://www.gbif.se/ipt/resource?r=lu_sft_std"
 	},
 	{
 		"displayName": "super dataset 2",
 		"datasetID": "crazy-id-here",
-		"downloadPath" :""
+		"downloadPathCsv" :"",
+		"downloadPathXls" :""
 	},
 ];
 
