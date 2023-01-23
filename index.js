@@ -53,9 +53,9 @@ var maxResults = 1000;
 // just put siteDetails, the sub-fields are obtained later
 const eventColumnsTable = ["datasetName", "eventStartDate", "siteDetails", "samplingProtocol", "noObservations"];
 // just put taxonDetails, the sub-fields are obtained later
-const occurrenceColumnsTable = ["datasetName", "observationTime", "taxonDetails", "quantity"];
+const occurrenceColumnsTable = ["datasetName", "observationTime", "taxonDetails", "quantity", "occurrenceStatus"];
 // just put organisations details, the sub-fields are obtained later
-const datasetColumnsTable = ["datasetName", "assignerDetails", "creatorDetails", "purpose", "description", "startDate"];
+const datasetColumnsTable = ["datasetName", "assignerDetails", "creatorDetails", "purpose", "description", "startDate", "accessRights"];
 
 var fieldsTranslations=[];
 fieldsTranslations["datasetName"]="Datamängdnamn";
@@ -63,6 +63,7 @@ fieldsTranslations["observationTime"]="Datum";
 fieldsTranslations["scientificName"]="Vetenskapligt namn";
 fieldsTranslations["vernacularName"]="Svenskt namn";
 fieldsTranslations["quantity"]="Kvantitet";
+fieldsTranslations["occurrenceStatus"]="Förekomst";
 fieldsTranslations["dyntaxaId"]="DyntaxaID";
 fieldsTranslations["eventStartDate"]="Inventeringsstartdatum";
 fieldsTranslations["locationID"]="Lokal ID";
@@ -75,6 +76,7 @@ fieldsTranslations["creatorOrganisationCode"]="Utförare:organisationsnamn";
 fieldsTranslations["purpose"]="Syfte";
 fieldsTranslations["description"]="Beskrivning";
 fieldsTranslations["startDate"]="Startdatum";
+fieldsTranslations["accessRights"]="Åtkomsträttigheter";
 /*
 const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "quantity", "unit", "event"];
 
@@ -82,6 +84,7 @@ const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "qua
 
 DATASETS
 datamängdnamn
+projektnamn // takes too much space for no new information ("Svensk Fågeltaxering" already contained in the datasetName)
 beställare:organisationsnamn
 utförare:organisationsnamn
 syfte 
@@ -89,9 +92,9 @@ datamängdbeskrivning
 metodiknamn (kanske)
 metodiklänk (kanske)
 startdatum
-senaste datum
-BESKRIVNING AV ÅTKOMSTRÄTTIGHETER
-användningsrättigheter
+åtkomsträttigheter
+beskrivning åtkomsträttigheter // no more space ?
+användningsrättigheter // no more space ?
 
 
 
@@ -132,7 +135,7 @@ r.svenskt namn
 r.vetenskapligt namn
 r.förekomst
 r.kvantitet
-r.observationsnoggrannhet
+r.observationsnoggrannhet // no more space ?
 r.kvalitetskontroll (kanske)
 */
 
