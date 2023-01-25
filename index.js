@@ -43,6 +43,13 @@ const { convertCsvToXlsx } = pkgCsvToXlsx;
 const app = express();              //Instantiate an express app, the main work horse of this server
 const port = 8089;                  //Save the port number where your server will be listening
 
+
+//import pkgCors from 'cors';
+//var cors = pkgCors;
+//var cors = require('cors');
+
+
+
 const speciesListUrl= config.speciesListUrl;
 
 app.set('view engine', 'ejs');
@@ -1164,11 +1171,11 @@ app.post('/', encodeUrl, (req, res) => {
             case "Dataset":
 
               dataDataset=transformDatasetData(data.results);
-              
+
               downloadFile = writeXlsxFlattened(req.get('host'), inputObject, dataDataset, null, null);
 
               //renderIndex(res, false, "xlsxdataset");
-              console.log("renderIndex from error xlsxdataset");
+              console.log("renderIndex from xlsx dataset");
               res.render('pages/index', {
                 maxResults: maxResults,                 // GLOBAL
                 availableDatasets: availableDatasets,   // GLOBAL
@@ -1185,7 +1192,7 @@ app.post('/', encodeUrl, (req, res) => {
                 inputEndDate: inputEndDate,             // session, default
                 inputDateType: inputDateType,           // session, default
                 isDataTable: false,               // session, false
-                downloadFile: ""               // optional
+                downloadFile: downloadFile               // optional
               });
 
               break;
@@ -1504,6 +1511,13 @@ const __dirname = dirname(__filename);
 
 // start only when species List is ready
 function startApp () {
+
+/*
+  app.use(cors({
+    origin: "*"
+  }));
+console.log("cors enabled");
+*/
 
   app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
       console.log(`Now listening on port ${port} => http://localhost:${port}`); 
