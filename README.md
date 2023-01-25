@@ -50,7 +50,7 @@ npm install objects-to-csv
 
 npm install bootstrap-datepicker
 
-npm install cors (for cross origin import. like browsealoud)
+//npm install cors (for cross origin import. like browsealoud)
 
 ## for xlsx
 npm install fs
