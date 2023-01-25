@@ -352,6 +352,7 @@ $(document).ready(function () {
 
     var filtersConfig = {
         base_path: 'tablefilter/',
+        responsive: true,
         paging: {
           results_per_page: ['Records: ', [10, 25, 50, 100]]
         },
