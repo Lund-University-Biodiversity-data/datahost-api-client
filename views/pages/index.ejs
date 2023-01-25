@@ -89,12 +89,13 @@
         Behöver du stora mängder data måste du använda dig av de färdiga datapaketen, alternativt göra flera utsök eftersom sökkapaciteten är begränsad.<br>
         Oavsett hur du väljer att hitta data så kan resultatet laddas ner som en kommaseparerad csv-fil eller en xlsx-fil.</p>
 
-
         <hr>
-        <h2>Färdiga datapaket <i class="fa-regular fa-circle-info fa-2xs" id="helpReadyPackagesButton"></i></h2>
+
+        <h3>Färdiga datapaket <i class="fa-regular fa-circle-info fa-2xs" id="helpReadyPackagesButton"></i></h3>
+
         <p class="helpTextHidden" id="helpReadyPackages">Här kan du ladda ner samtliga data som samlats in och finns tillgängliga i en hel datamängd. Du kan ladda ner ett (1) färdigt datapaket åt gången. Det gör du genom att klicka på en av länkarna till höger om namnet för den datamängd du är intresserad av. </p>
         <div class="form-group mb-3">
-          <table  class="table">
+          <table  class="table" id="listAvailableDatasets">
           <% Object.entries(availableDatasets).forEach(function([key, val]) { %>
             <tr>
               <td><%= val['displayName'] %></td>
@@ -143,7 +144,7 @@
 
           <h3 title="Välj vilket eller vilka datamängder du vill ha data data från.">Data från specifika delprogram <i class="fa-regular fa-circle-info fa-xs" id="helpDataProgramButton"></i></h3>
           <p class="helpTextHidden" id="helpDataProgram">Välj vilket eller vilka datamängder du vill ha data data från.</p>
-          <p class="helpText">Om du inte gör ett val så baseras sökningen på alla datamängderna.</p>
+          <p class="helpText">Vill du söka i alla datamängderna så behöver du inte göra något val.</p>
           <div class="form-group mb-3">
             <!--
             <label>
@@ -168,7 +169,7 @@
           <h3 title=" Använd kryssrutorna och rullistan var för sig eller i kombination för att välja de organismer du är intresserad av. Flera grupper respektive arter kan väljas samtidigt.">Taxon <i class="fa-regular fa-circle-info fa-xs" id="helpTaxonButton"></i></h3>
           <p class="helpTextHidden" id="helpTaxon">Använd kryssrutorna och rullistan var för sig eller i kombination för att välja de organismer du är intresserad av. Flera grupper respektive arter kan väljas samtidigt.<br>
 Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funktionella/traditionella grupper.</p>
-          <p class="helpText">Om du inte gör ett val så baseras sökningen på alla organismgrupper och arter.</p>
+          <p class="helpText">Vill du söka på alla organismgrupper och arter så behöver du inte göra något val.</p>
 
 
           <div class="form-group mb-3">
@@ -241,7 +242,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
           <h3 title="">Tidsperiod </h3>
 
-          <p class="helpText">Om du inte gör ett val så baseras sökningen på hela tidsserien i databasen.</p>
+          <p class="helpText">Vill du söka på hela tidsserien i databasen så behöver du inte göra något val.</p>
           <div class="form-group mb-3">
 
             <label>Från datum</label>
@@ -274,7 +275,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
           <h3 title="Begränsa din sökning geografiskt genom att antingen välja län i rullistan, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.">Geografiskt område <i class="fa-regular fa-circle-info fa-xs" id="helpGeographicButton"></i></h3>
 
           <p class="helpTextHidden" id="helpGeographic">Begränsa din sökning geografiskt genom att antingen välja län i rullistan, eller genom att markera ett område i kartan. Observera: framsökt data kommer inte att visas i kartan.</p>
-          <p class="helpText">Om du inte gör ett val så baseras sökningen på hela Sverige.</p>
+          <p class="helpText">Vill du söka på hela Sverige så behöver du inte göra något val.</p>
 
           <div class="form-group mb-3">
 
@@ -313,7 +314,6 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
           </div>
           <hr>
 
-          <hr>
 
           <div id="resultSection">
 
@@ -348,7 +348,6 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
         <a href="<%- downloadFile %>" class="btn" id="downloadFileLink"><i class="fa fa-download"></i> Ladda ner igen</a>
       </div>
     <% } %>
-    <br>
 
     <% if (isDataTable) { %>
       <div class="divTable">
@@ -397,6 +396,12 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
             <button id="buttonExportXlsx" class="btn btn-primary"><i class="fa fa-download"></i> Ladda ner XLSX</button>
           </div>
 
+          <h3 title="Begränsningar i data">Begränsningar i data</h3>
+          <p class="helpText">Data om arter som är placerade i Artdatabankens skyddsklass 3 eller högre är inte tillgängliga här.<br>
+          I vissa inventeringsprogram är den exakta platsen för en lokal skyddad och anges då med diffuserade koordinater.</p>
+
+          <h3 title="Villkor för användning">Villkor för användning</h3>
+          <p class="helpText">Alla data som finns inom datavärdskapet och publiceras på denna webbplats är fria att vidareutnyttja enligt Creative Commons 0-licens. Användare av data får gärna (men måste inte) ange vem som samlat in data och att data hämtats från datavärdskapet</p>
 
           <br>
         <% }  %>

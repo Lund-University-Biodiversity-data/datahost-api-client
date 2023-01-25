@@ -48,6 +48,13 @@ h3 {
 	padding-bottom: 5px;
 }
 
+#listAvailableDatasets {
+	max-width: 860px;
+}
+#listAvailableDatasets td {
+	border-top: none;
+}
+
 /* MISSING FROM STYLEGUIDE.LU.SE ?? */
 .mw-xl {
 	max-width: 1320px;
