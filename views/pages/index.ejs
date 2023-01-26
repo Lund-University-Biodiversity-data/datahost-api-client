@@ -380,9 +380,14 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
               <% for (var i = 0; i < tableData.length; i++) { %>
                 <tr>
                   <% Object.keys(tableData[i]).forEach(function(key) {  
-                    if (key != "taxon" && key != "site") { %>
-                   <td><%= tableData[i][key] %></td>
-                  <% }}); %>    
+                    if (key != "taxon" && key != "site") { 
+                      // check if there is some sliced data
+                      if (Array.isArray(tableData[i][key]) && "sliceddata" in tableData[i][key]) {%>
+                        <td title="<%= tableData[i][key]['fulldata'] %>"><%= tableData[i][key]['sliceddata'] %><i class="fa-regular fa-circle-plus"></i></td>
+                      <% } else { %>
+                        <td><%= tableData[i][key] %></td>
+                      <% }
+                     }}); %>    
                 </tr>
               <% } %>
             </tbody>

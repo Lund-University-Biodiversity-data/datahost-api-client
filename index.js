@@ -64,10 +64,10 @@ const eventColumnsTable = ["datasetName", "eventStartDate", "siteDetails", "samp
 // just put taxonDetails, the sub-fields are obtained later
 const occurrenceColumnsTable = ["datasetName", "observationTime", "taxonDetails", "quantity", "occurrenceStatus"];
 // just put organisations details, the sub-fields are obtained later
-const datasetColumnsTable = ["datasetName", "assignerDetails", "creatorDetails", "purpose", "description", "startDate", "accessRights"];
+const datasetColumnsTable = ["datasetName", "assignerDetails", "creatorDetails", "purpose", "description", "startDate", "accessRights", "descriptionAccessRights", "license"];
 
 var fieldsTranslations=[];
-fieldsTranslations["datasetName"]="Datamängdnamn";
+fieldsTranslations["datasetName"]="datamängdnamn";
 fieldsTranslations["observationTime"]="Datum";
 fieldsTranslations["scientificName"]="Vetenskapligt namn";
 fieldsTranslations["vernacularName"]="Svenskt namn";
@@ -80,12 +80,14 @@ fieldsTranslations["locationType"]="Lokaltyp";
 fieldsTranslations["county"]="Län";
 fieldsTranslations["samplingProtocol"]="Datainsamlingsmetod";
 fieldsTranslations["noObservations"]="Inga observationer under besöket";
-fieldsTranslations["assignerOrganisationCode"]="Beställare:organisationsnamn";
-fieldsTranslations["creatorOrganisationCode"]="Utförare:organisationsnamn";
-fieldsTranslations["purpose"]="Syfte";
-fieldsTranslations["description"]="Beskrivning";
-fieldsTranslations["startDate"]="Startdatum";
-fieldsTranslations["accessRights"]="Åtkomsträttigheter";
+fieldsTranslations["assignerOrganisationCode"]="beställare";
+fieldsTranslations["creatorOrganisationCode"]="utförare";
+fieldsTranslations["purpose"]="syfte";
+fieldsTranslations["description"]="beskrivning";
+fieldsTranslations["startDate"]="startdatum";
+fieldsTranslations["accessRights"]="åtkomst";
+fieldsTranslations["descriptionAccessRights"]="åtkomst beskrivning";
+fieldsTranslations["license"]="användningsrätt";
 /*
 const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "quantity", "unit", "event"];
 
@@ -1186,8 +1188,16 @@ app.post('/', encodeUrl, (req, res) => {
                     row["datasetName"]=availableDatasets[elt[1]["identifier"]]["displayName"];
                 }                
                 else {
-                  if (fieldname in elt[1])
-                    row[fieldname]=elt[1][fieldname];
+                  if (fieldname in elt[1]) {
+                    // check if field needs to be truncated
+                    if (elt[1][fieldname].length > config.maximumSizeForLongFields) {
+                      row[fieldname]=[];
+                      // fill in 2 fields, one with the whole data (title/tooltip), one with the sliced data (to be displayed)
+                      row[fieldname]["fulldata"]=elt[1][fieldname];
+                      row[fieldname]["sliceddata"]=elt[1][fieldname].slice(0, config.maximumSizeForLongFields) + '...';
+                    }
+                    else row[fieldname]=elt[1][fieldname];
+                  }
                   else if ("taxon" in elt[1] && fieldname in elt[1]["taxon"])
                     row[fieldname]=elt[1]["taxon"][fieldname];
                   else if ("site" in elt[1] && fieldname in elt[1]["site"])
