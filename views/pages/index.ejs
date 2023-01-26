@@ -91,7 +91,7 @@
 
         <hr>
 
-        <h3>Färdiga datapaket <i class="fa-regular fa-circle-info fa-2xs" id="helpReadyPackagesButton"></i></h3>
+        <h2>Färdiga datapaket <i class="fa-regular fa-circle-info fa-2xs" id="helpReadyPackagesButton"></i></h2>
 
         <p class="helpTextHidden" id="helpReadyPackages">Här kan du ladda ner samtliga data som samlats in och finns tillgängliga i en hel datamängd. Du kan ladda ner ett (1) färdigt datapaket åt gången. Det gör du genom att klicka på en av länkarna till höger om namnet för den datamängd du är intresserad av. </p>
         <div class="form-group mb-3">
@@ -358,9 +358,9 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
 
         <% } else { %>
 
-          <h3 title="Här visas bara ett urval av fält från databasen, men i nedladdade filer ingår alla fält som det finns data för.">Resultat och nedladdning <i class="fa-regular fa-circle-info fa-xs" id="helpResultatButton"></i></h3>
+          <h3 title="Här visas bara ett urval av fält från databasen, men i nedladdade filer ingår alla fält som det finns data för.">Resultat och nedladdning</i></h3>
 
-          <p class="helpTextHidden" id="helpResultat">Här visas bara ett urval av fält från databasen, men i nedladdade filer ingår alla fält som det finns data för.</p>
+          <p class="helpText">Här visas bara ett urval av fält från databasen, men i nedladdade filer ingår alla fält som det finns data för.</p>
 
           <% if (totalResults != tableData.length ) { %>
           <h3>Ditt urval ger <%- totalResults %> rad(er) men tabellvyn är begränsad till <%= maxResults %> rader.</h3>
@@ -401,7 +401,7 @@ Grupper följer Dyntaxas regelrätta taxonomiska indelningar samt ett antal funk
           I vissa inventeringsprogram är den exakta platsen för en lokal skyddad och anges då med diffuserade koordinater.</p>
 
           <h3 title="Villkor för användning">Villkor för användning</h3>
-          <p class="helpText">Alla data som finns inom datavärdskapet och publiceras på denna webbplats är fria att vidareutnyttja enligt Creative Commons 0-licens. Användare av data får gärna (men måste inte) ange vem som samlat in data och att data hämtats från datavärdskapet</p>
+          <p class="helpText">Alla data som finns inom datavärdskapet och publiceras på denna webbplats är fria att vidareutnyttja enligt Creative Commons 0-licens. Användare av data får gärna (men måste inte) ange vem som samlat in data och att data hämtats från datavärdskapet.</p>
 
           <br>
         <% }  %>

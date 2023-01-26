@@ -44,11 +44,13 @@ $(document).ready(function () {
     fadeInOutElt("#helpGeographic");
   });
   // if no resultat, the button won't even appear
+  /*
   if ($('#helpResultatButton').length) {
     $('#helpResultatButton').on('click', function() {
       fadeInOutElt("#helpResultat");
     });
   }
+  */
 /* end help boxes */
 
   // set thte map
