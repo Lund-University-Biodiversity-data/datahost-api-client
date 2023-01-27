@@ -59,27 +59,27 @@ app.set('view engine', 'ejs');
 // variable for the whole app
 var maxResults = 1000;
 
-// just put siteDetails, the sub-fields are obtained later
-const eventColumnsTable = ["datasetName", "eventStartDate", "siteDetails", "samplingProtocol", "noObservations"];
-// just put taxonDetails, the sub-fields are obtained later
-const occurrenceColumnsTable = ["datasetName", "observationTime", "taxonDetails", "quantity", "occurrenceStatus"];
 // just put organisations details, the sub-fields are obtained later
 const datasetColumnsTable = ["datasetName", "assignerDetails", "creatorDetails", "purpose", "description", "startDate", "accessRights", "descriptionAccessRights", "license"];
+// just put siteDetails, the sub-fields are obtained later
+const eventColumnsTable = ["datasetName", "eventStartDate", "locationProtected", "siteDetails", "samplingProtocol", "noObservations"];
+// just put taxonDetails, the sub-fields are obtained later
+const occurrenceColumnsTable = ["datasetName", "taxonDetails", "occurrenceStatus", "quantity", "occurrenceRemarks", "observationCertainty"];
 
 var fieldsTranslations=[];
-fieldsTranslations["datasetName"]="datamängdnamn";
-fieldsTranslations["observationTime"]="Datum";
-fieldsTranslations["scientificName"]="Vetenskapligt namn";
-fieldsTranslations["vernacularName"]="Svenskt namn";
-fieldsTranslations["quantity"]="Kvantitet";
-fieldsTranslations["occurrenceStatus"]="Förekomst";
-fieldsTranslations["dyntaxaId"]="DyntaxaID";
-fieldsTranslations["eventStartDate"]="Inventeringsstartdatum";
-fieldsTranslations["locationID"]="Lokal ID";
-fieldsTranslations["locationType"]="Lokaltyp";
-fieldsTranslations["county"]="Län";
-fieldsTranslations["samplingProtocol"]="Datainsamlingsmetod";
-fieldsTranslations["noObservations"]="Inga observationer under besöket";
+fieldsTranslations["datasetName"]="datamängd";
+//fieldsTranslations["observationTime"]="Datum";
+fieldsTranslations["scientificName"]="vet. namn";
+fieldsTranslations["vernacularName"]="sv. namn";
+fieldsTranslations["quantity"]="kvantitet";
+fieldsTranslations["occurrenceStatus"]="förekomst";
+fieldsTranslations["dyntaxaId"]="taxon-id";
+fieldsTranslations["eventStartDate"]="inv.datum";
+fieldsTranslations["locationID"]="lokal ID";
+fieldsTranslations["locationType"]="lokaltyp";
+fieldsTranslations["county"]="län";
+fieldsTranslations["samplingProtocol"]="metod";
+fieldsTranslations["noObservations"]="nollbesök";
 fieldsTranslations["assignerOrganisationCode"]="beställare";
 fieldsTranslations["creatorOrganisationCode"]="utförare";
 fieldsTranslations["purpose"]="syfte";
@@ -88,6 +88,12 @@ fieldsTranslations["startDate"]="startdatum";
 fieldsTranslations["accessRights"]="åtkomst";
 fieldsTranslations["descriptionAccessRights"]="åtkomst beskrivning";
 fieldsTranslations["license"]="användningsrätt";
+fieldsTranslations["locationProtected"]="lokal skyddad";
+fieldsTranslations["coordinates1Point"]="koordinater";
+fieldsTranslations["occurrenceRemarks"]="obs.kommentar";
+fieldsTranslations["observationCertainty"]="obs.noggrannhet";
+
+
 /*
 const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "quantity", "unit", "event"];
 
@@ -1154,6 +1160,7 @@ app.post('/', encodeUrl, (req, res) => {
               else if (fieldname=="siteDetails") {
                 tableColumns.push("locationID");
                 tableColumns.push("locationType");
+                tableColumns.push("coordinates1Point");
                 tableColumns.push("county");
               }
               else if (fieldname=="assignerDetails") {
@@ -1177,6 +1184,24 @@ app.post('/', encodeUrl, (req, res) => {
               Object.entries(tableColumns).forEach(([key,fieldname]) => {
                 if (fieldname=="eventIds") {
                   row["eventIds"]=elt[1][fieldname].length;
+                }
+                else if (fieldname=="coordinates1Point") {
+
+                  if ("site" in elt[1] 
+                    && "emplacement" in elt[1]["site"] 
+                    && "geometry" in elt[1]["site"]["emplacement"] 
+                    && "coordinates" in elt[1]["site"]["emplacement"]["geometry"] 
+                    && 0 in elt[1]["site"]["emplacement"]["geometry"]["coordinates"]
+                    && 1 in elt[1]["site"]["emplacement"]["geometry"]["coordinates"]
+                    ) {
+                    var coordX=elt[1]["site"]["emplacement"]["geometry"]["coordinates"][0];
+                    var coordY=elt[1]["site"]["emplacement"]["geometry"]["coordinates"][1];
+                    row["coordinates1Point"]=coordX + ", " + coordY;
+                  }
+                  else {
+                    console.log("no coordinates for site")
+                  }
+
                 }
                 else if (fieldname=="occurrenceIds") {
                   row["occurrenceIds"]=elt[1][fieldname].length;
