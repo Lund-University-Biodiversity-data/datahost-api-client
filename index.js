@@ -408,10 +408,14 @@ function updateToTemplateXlsx (dataInput, inputObject) {
           oneDataset["inventeringsstartmånad"]=splitDate[1];
           oneDataset["inventeringsstartdag"]=splitDate[2];
 
+          emptyColumns["inventeringsstartår"]=false;
+          emptyColumns["inventeringsstartmånad"]=false;
+          emptyColumns["inventeringsstartdag"]=false;
+
           if (splitDate.length==6) {
             oneDataset["inventeringsstarttid"]=splitDate[3]+":"+splitDate[4]+":"+splitDate[5];
+            emptyColumns["inventeringsstarttid"]=false;
           }
-
         }
       }
 
@@ -426,8 +430,13 @@ function updateToTemplateXlsx (dataInput, inputObject) {
           oneDataset["inventeringsslutmånad"]=splitDate[1];
           oneDataset["inventeringsslutdag"]=splitDate[2];
 
+          emptyColumns["inventeringsslutår"]=false;
+          emptyColumns["inventeringsslutmånad"]=false;
+          emptyColumns["inventeringsslutdag"]=false;
+
           if (splitDate.length==6) {
             oneDataset["inventeringssluttid"]=splitDate[3]+":"+splitDate[4]+":"+splitDate[5];
+            emptyColumns["inventeringssluttid"]=false;
           }
 
         }
@@ -448,10 +457,25 @@ function updateToTemplateXlsx (dataInput, inputObject) {
           coordY=datasetI[1]["1.eventData.1.site.emplacement.geometry.coordinates.1"];
 
         if (coordX!="" && coordY!="") {
-          oneDataset["lokal:position:punkt_1"]=coordX + ", " + coordY;
+          oneDataset["lokal:position:punkt 1"]=coordX + ", " + coordY;
         }
       }
 
+      if (key=="1.taxon.scientificName") {
+
+        // specific check for the scientificName
+        var splitSN = scanf(oneDataset["vetenskapligt namn"], "%s %s %s");
+        oneDataset["släkte"]=splitSN[0];
+        emptyColumns["släkte"]=false;
+        if (1 in splitSN) {
+          oneDataset["art"]=splitSN[1];
+          if (oneDataset["art"]!="") emptyColumns["art"]=false;
+        }
+        if (2 in splitSN) {
+          oneDataset["underart"]=splitSN[2];
+          if (oneDataset["underart"]!="") emptyColumns["underart"]=false;
+        }
+      }
     });
     dataInTemplate.push(oneDataset);
   });
@@ -466,6 +490,7 @@ function updateToTemplateXlsx (dataInput, inputObject) {
 
       if (value) {
         delete datasetline[1][key];
+        //console.log("key ca degage" + key);
       }
     });
 
@@ -1223,8 +1248,9 @@ app.post('/', encodeUrl, (req, res) => {
                     }
                     else row[fieldname]=elt[1][fieldname];
                   }
-                  else if ("taxon" in elt[1] && fieldname in elt[1]["taxon"])
+                  else if ("taxon" in elt[1] && fieldname in elt[1]["taxon"]) {
                     row[fieldname]=elt[1]["taxon"][fieldname];
+                  }
                   else if ("site" in elt[1] && fieldname in elt[1]["site"])
                     row[fieldname]=elt[1]["site"][fieldname];
                   else if ("assigner" in elt[1] && "organisationCode" in elt[1]["assigner"] && fieldname=="assignerOrganisationCode")
