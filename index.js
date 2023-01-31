@@ -460,6 +460,7 @@ function updateToTemplateXlsx (dataInput, inputObject) {
 
         if (coordX!="" && coordY!="") {
           oneDataset["lokal:position:punkt 1"]=coordX + ", " + coordY;
+          emptyColumns["lokal:position:punkt 1"]=false;
         }
       }
 
