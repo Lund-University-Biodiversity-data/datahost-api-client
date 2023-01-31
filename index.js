@@ -346,7 +346,7 @@ function splitDateInArray (dateToSplit) {
   //var datetimeTemp = dateToSplit.replace("T", " T");
   //var datetimeTemp = datetimeTemp.replace("Z", " Z");
   var datetimeTemp = dateToSplit.replace("T", " ");
-  var datetimeTemp = datetimeTemp.replace("Z", "");
+  datetimeTemp = datetimeTemp.replace("Z", "");
   //console.log(datetimeTemp);
   var splitDate=scanf(datetimeTemp, "%s-%s-%s %s:%s:%s");
   //console.log(splitDate);
