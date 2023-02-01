@@ -2,8 +2,8 @@
 import configImp  from './config/config.js';
 const config = configImp;
 
-import templateXlsxImp  from './lib/functions/templateXlsx.js';
-var templateXlsx = templateXlsxImp;
+import templateHeadersImp  from './lib/functions/templateHeaders.js';
+var templateHeaders = templateHeadersImp;
 
 import pkgVD from 'var_dump';
 const var_dump = pkgVD;
@@ -39,18 +39,9 @@ var scanf = pkgScanf;
 import pkgCsvToXlsx from '@aternus/csv-to-xlsx';
 const { convertCsvToXlsx } = pkgCsvToXlsx;
 
-
-
 //const express = require('express'); //Import the express dependency
 const app = express();              //Instantiate an express app, the main work horse of this server
 const port = 8089;                  //Save the port number where your server will be listening
-
-
-//import pkgCors from 'cors';
-//var cors = pkgCors;
-//var cors = require('cors');
-
-
 
 const speciesListUrl= config.speciesListUrl;
 
@@ -66,95 +57,8 @@ const eventColumnsTable = ["datasetName", "eventStartDate", "locationProtected",
 // just put taxonDetails, the sub-fields are obtained later
 const occurrenceColumnsTable = ["datasetName", "taxonDetails", "occurrenceStatus", "quantity", "occurrenceRemarks", "observationCertainty"];
 
-var fieldsTranslations=[];
-fieldsTranslations["datasetName"]="datamängd";
-//fieldsTranslations["observationTime"]="Datum";
-fieldsTranslations["scientificName"]="vet. namn";
-fieldsTranslations["vernacularName"]="sv. namn";
-fieldsTranslations["quantity"]="kvantitet";
-fieldsTranslations["occurrenceStatus"]="förekomst";
-fieldsTranslations["dyntaxaId"]="taxon-id";
-fieldsTranslations["eventStartDate"]="inv.datum";
-fieldsTranslations["locationID"]="lokal-id 1";
-fieldsTranslations["locationType"]="lokaltyp 1";
-fieldsTranslations["county"]="län";
-fieldsTranslations["samplingProtocol"]="metod";
-fieldsTranslations["noObservations"]="nollbesök";
-fieldsTranslations["assignerOrganisationCode"]="beställare";
-fieldsTranslations["creatorOrganisationCode"]="utförare";
-fieldsTranslations["purpose"]="syfte";
-fieldsTranslations["description"]="beskrivning";
-fieldsTranslations["startDate"]="startdatum";
-fieldsTranslations["accessRights"]="åtkomst";
-fieldsTranslations["descriptionAccessRights"]="åtkomst beskrivning";
-fieldsTranslations["license"]="användningsrätt";
-fieldsTranslations["locationProtected"]="lokal skyddad";
-fieldsTranslations["coordinates1Point"]="koordinater";
-fieldsTranslations["occurrenceRemarks"]="obs.kommentar";
-fieldsTranslations["observationCertainty"]="obs.noggrannhet";
+var fieldsTranslations=templateHeaders.getHeadersHtmlView();
 
-
-/*
-const occurrenceColumnsTable = ["occurrenceID", "observationTime", "taxon", "quantity", "unit", "event"];
-
-/*
-
-DATASETS
-datamängdnamn
-projektnamn // takes too much space for no new information ("Svensk Fågeltaxering" already contained in the datasetName)
-beställare:organisationsnamn
-utförare:organisationsnamn
-syfte 
-datamängdbeskrivning
-metodiknamn (kanske)
-metodiklänk (kanske)
-startdatum
-åtkomsträttigheter
-beskrivning åtkomsträttigheter // no more space ?
-användningsrättigheter // no more space ?
-
-
-
-
-EVENTS
-d.datamängdnamn 
-d.utförare:organisationsnamn (gärna) => not in event table
-d.syfte (gärna)
-d.åtkomsträttigheter => NO not in the event table
-e.besökshierarki 1 (gärna)  
-e.besökshierarki 2 (gärna)
-e.inventeringsstartdatum
-e.lokal skyddad (kanske)
-e.lokal-id 1 +2 +3 +4
-e.lokaltyp 1
-e.lokal:position:punkt 1  => ??? which point is that ?
-e.län
-e.datainsamlingsmetod
-e.inga observationer under besöket
-
-
-RECORDS
-d.datamängdnamn 
-d.utförare:organisationsnamn (gärna)
-d.syfte (gärna)
-d.åtkomsträttigheter => NO not in the record table
-d.BESKRIVNING AV ÅTKOMSTRÄTTIGHETER (kanske)
-e.besökshierarki 1 (kanske)  
-e.besökshierarki 2 (kanske)
-e.inventeringsstartdatum => YES but we should use the observationTime stored in the record table isn't it ? and we don't have the event data
-e.lokal-id 1 (kanske) +2 +3 +4
-e.lokaltyp 1 (kanske)
-e.lokal:position:punkt 1 (kanske)
-e.län (kanske) => I think we deifinitely needs some geographic information. Either the sitename, the län, or something.
-e.datainsamlingsmetod (kanske)
-r.taxon-id
-r.svenskt namn
-r.vetenskapligt namn
-r.förekomst
-r.kvantitet
-r.observationsnoggrannhet // no more space ?
-r.kvalitetskontroll (kanske)
-*/
 
 const availableDatasets = config.availableDatasets;
 
@@ -169,38 +73,6 @@ tableCounty.sort(); // alphaebetical sort
 
 var downloadFile = "";
 
-
-/*
-// render the index page with all the global variable
-function renderIndex(res, isDataTable, source) {
-
-  console.log("renderIndex from "+source);
-
-  res.render('pages/index', {
-    maxResults: maxResults,                 // GLOBAL
-    availableDatasets: availableDatasets,   // GLOBAL
-    tableCounty: tableCounty,               // GLOBAL
-    tableTaxon: tableTaxon,                 // GLOBAL
-    errorMsg: errorMsg,                     // session
-    inputObject: inputObject,               // session, default
-    inputDatasetList: inputDatasetList,     // session, default
-    inputSourceSubmit: inputSourceSubmit,   // session, default
-    inputTaxon: inputTaxon,                 // session, default
-    inputCounty: inputCounty,               // session, default
-    inputArea: inputArea,                   // session, default
-    inputStartDate: inputStartDate,         // session, default
-    inputEndDate: inputEndDate,             // session, default
-    inputDateType: inputDateType,           // session, default
-    isDataTable: isDataTable,               // session, false
-    tableColumns: tableColumns,             // optional
-    tableData: tableData,                   // optional
-    totalResults: totalResults,             // optional
-    downloadFile: downloadFile               // optional
-  });
-
-
-}
-*/
 
 function capitalizeFirstLetter(string){
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -365,7 +237,7 @@ function updateToTemplateXlsx (dataInput, inputObject) {
   var dataInTemplate=[];
   var dataInTemplateCleaned=[];
 
-  var templateXlsxHeader=templateXlsx.getTemplateXlsxHeader(inputObject);
+  var templateXlsxHeader=templateHeaders.getTemplateXlsxHeader(inputObject);
 
   // check which columns are empty
   // set everything to true
@@ -1276,78 +1148,6 @@ app.post('/', encodeUrl, (req, res) => {
             });
 
 
-            /*
-            Object.keys(dataCut[0]).forEach(key => {
-//console.log(key);
-              //console.log(key, dataCut[key]);
-              // add only thr columns to be displayed
-              if (inputObject=="Event" && eventColumnsTable.includes(key)) {
-                tableColumns.push(key);
-              }
-              else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
-                tableColumns.push(key);
-              }
-              else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
-
-                if (key=="taxon") {
-                  tableColumns.push("taxon");
-                  tableColumns.push("Dyntaxa ID");
-                  tableColumns.push("Scientific Name");
-                  tableColumns.push("Vernacular Name");
-                }
-                else {
-                  tableColumns.push(key);
-                }
-              }
-            });
-            //var_dump(tableColumns);
-
-            */
-/*
-            Object.entries(dataCut).forEach(elt => {
-              const row = [];
-              //console.log(elt);exit();
-              Object.entries(elt[1]).forEach(entry => {
-                const [key, value] = entry;
-
-                if (inputObject=="Event" && eventColumnsTable.includes(key)) {
-
-                  if (key=="occurrenceIds") {
-                    row["occurrenceIds"]=value.length;
-                  }
-                  else {
-                    row[key]=value;
-                  }
-                }
-                else if (inputObject=="Dataset" && datasetColumnsTable.includes(key)) {
-
-                  if (key=="eventIds") {
-                    row["eventIds"]=value.length;
-                  }
-                  else {
-                    row[key]=value;
-                  }
-                }
-                else if (inputObject=="Occurrence" && occurrenceColumnsTable.includes(key)) {
-
-                  if (key=="taxon") {
-                    row["Dyntaxa ID"]=value.dyntaxaId;
-                    row["Scientific Name"]=value.scientificName;
-                    row["Vernacular Name"]=value.vernacularName;
-                  }
-                  else {
-                    row[key]=value;
-                  }
-
-                  row[key]=value;
-            
-                }
-              });
-
-              tableData.push(row);
-
-            });
-*/
             //renderIndex(res, true, "tableviewOK");
             console.log("renderIndex from tableviewOK");
 //console.log(tableData);
