@@ -78,6 +78,47 @@ function capitalizeFirstLetter(string){
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function throwErrorToClient(res, error, inputObject, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType) {
+
+  var errorMsg="";
+
+  console.error(error);
+  console.error(error.code);
+
+  if (error.code=="ETOOLARGE") {
+    // Maximum response size reached 
+    errorMsg="[Maximum response size reached] Förfina din sökning för att minska urvalet. För hjälp med stora datauttag kontakta datavärden på naturdatavardskap@biol.lu.se.";
+  }
+  else if (error.code=="ECONNABORTED") {
+    // Timeout as specified in luApiDocumentationTemplate, src/ApiClient.js
+    errorMsg="[Timeout] Förfina din sökning för att minska urvalet. För hjälp med stora datauttag kontakta datavärden på naturdatavardskap@biol.lu.se.";
+  }
+  else {
+    errorMsg="Error received from the server";
+  }
+
+  //renderIndex(res, false, "error apiInstance");
+  console.log("renderIndex from error apiInstance");
+  res.render('pages/index', {
+    maxResults: maxResults,                 // GLOBAL
+    availableDatasets: availableDatasets,   // GLOBAL
+    tableCounty: tableCounty,               // GLOBAL
+    tableTaxon: tableTaxon,                 // GLOBAL
+    errorMsg: errorMsg,                     // session
+    inputObject: inputObject,               // session, default
+    inputDatasetList: inputDatasetList,     // session, default
+    inputSourceSubmit: inputSourceSubmit,   // session, default
+    inputTaxon: inputTaxon,                 // session, default
+    inputCounty: inputCounty,               // session, default
+    inputArea: inputArea,                   // session, default
+    inputStartDate: inputStartDate,         // session, default
+    inputEndDate: inputEndDate,             // session, default
+    inputDateType: inputDateType,           // session, default
+    isDataTable: false,               // session, false
+    downloadFile: ""               // optional
+  });
+
+}
 
 
 function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType){
@@ -112,7 +153,8 @@ function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence
 
     apiInstance[getResultsBySearch](opts, (error, data, response) => {
       if (error) {
-        console.error(error);
+        throwErrorToClient(res, error, inputObject, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType);
+        //console.error(error);
 
       } else {
         //console.log('API POST called successfully. Returned data: ' + data);
@@ -838,6 +880,10 @@ app.post('/', encodeUrl, (req, res) => {
     // dynamic method name called
     apiInstance[getResultsBySearch](opts, (error, data, response) => {
       if (error) {
+
+        throwErrorToClient(res, error, inputObject, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType);
+
+        /*
         console.error(error);
         console.error(error.code);
 
@@ -873,6 +919,7 @@ app.post('/', encodeUrl, (req, res) => {
           isDataTable: false,               // session, false
           downloadFile: ""               // optional
         });
+        */
 
       } else {
 
@@ -1001,7 +1048,8 @@ app.post('/', encodeUrl, (req, res) => {
 
               apiInstance[getResultsBySearch](opts, (error, data, response) => {
                 if (error) {
-                  console.error(error);
+                  //console.error(error);
+                  throwErrorToClient(res, error, inputObject, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType);
 
                 } else {
                   //console.log('API POST called successfully. Returned data: ' + data);
