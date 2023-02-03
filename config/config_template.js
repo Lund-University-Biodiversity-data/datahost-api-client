@@ -21,14 +21,18 @@ config.availableDatasets = [
 	{
 		"displayName": "Svensk Fågeltaxering: Standardrutter",
 		"datasetID": "lu_sft_std",
-		"downloadPathCsv" :"https://www.gbif.se/ipt/resource?r=lu_sft_std",
-		"downloadPathXls" :"https://www.gbif.se/ipt/resource?r=lu_sft_std"
+		"downloadPathCsv" :"http://canmove-app.ekol.lu.se/datahostPublicArchives/a.zip",
+		"downloadPathXls" :"http://canmove-app.ekol.lu.se/datahostPublicArchives/b.zip",
+		"archiveSizeCsv" : "11.8Mb",
+		"archiveSizeXlsx" : "48.8Mb"
 	},
 	{
-		"displayName": "super dataset 2",
-		"datasetID": "crazy-id-here",
-		"downloadPathCsv" :"",
-		"downloadPathXls" :""
+		"displayName": "Super dataset 2",
+		"datasetID": "id_dataset",
+		"downloadPathCsv" :"https://www.gbif.se/ipt/resource?r=lu_sft_std",
+		"downloadPathXls" :"https://www.gbif.se/ipt/resource?r=lu_sft_std",
+		"archiveSizeCsv" : "11.8Mb",
+		"archiveSizeXlsx" : "48.8Mb"
 	},
 ];
 
