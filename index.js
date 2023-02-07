@@ -412,7 +412,6 @@ function updateToTemplateXlsx (dataInput, inputObject) {
     });
 
     dataInTemplateCleaned.push(datasetline[1]);
-    //exit();
 
   });
 
@@ -532,6 +531,7 @@ function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccu
     var csvPath=config.downloadFolderUrl+filenameCsv;
 
     try {
+
       fs.writeFileSync(csvPath, csv);
 
       var filenameXlsx=filenameBase+".xlsx";
@@ -883,43 +883,6 @@ app.post('/', encodeUrl, (req, res) => {
 
         throwErrorToClient(res, error, inputObject, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType);
 
-        /*
-        console.error(error);
-        console.error(error.code);
-
-        if (error.code=="ETOOLARGE") {
-          // Maximum response size reached 
-          errorMsg="[Maximum response size reached] Förfina din sökning för att minska urvalet. För hjälp med stora datauttag kontakta datavärden på naturdatavardskap@biol.lu.se.";
-        }
-        else if (error.code=="ECONNABORTED") {
-          // Timeout as specified in luApiDocumentationTemplate, src/ApiClient.js
-          errorMsg="[Timeout] Förfina din sökning för att minska urvalet. För hjälp med stora datauttag kontakta datavärden på naturdatavardskap@biol.lu.se.";
-        }
-        else {
-          errorMsg="Error received from the server";
-        }
-
-        //renderIndex(res, false, "error apiInstance");
-        console.log("renderIndex from error apiInstance");
-        res.render('pages/index', {
-          maxResults: maxResults,                 // GLOBAL
-          availableDatasets: availableDatasets,   // GLOBAL
-          tableCounty: tableCounty,               // GLOBAL
-          tableTaxon: tableTaxon,                 // GLOBAL
-          errorMsg: errorMsg,                     // session
-          inputObject: inputObject,               // session, default
-          inputDatasetList: inputDatasetList,     // session, default
-          inputSourceSubmit: inputSourceSubmit,   // session, default
-          inputTaxon: inputTaxon,                 // session, default
-          inputCounty: inputCounty,               // session, default
-          inputArea: inputArea,                   // session, default
-          inputStartDate: inputStartDate,         // session, default
-          inputEndDate: inputEndDate,             // session, default
-          inputDateType: inputDateType,           // session, default
-          isDataTable: false,               // session, false
-          downloadFile: ""               // optional
-        });
-        */
 
       } else {
 
@@ -948,7 +911,25 @@ app.post('/', encodeUrl, (req, res) => {
           // async create csv file
           (async () => {
 
-            fs.writeFileSync(csvPath, data);
+            // split the csv data in an array
+            var allCsvAsRows = data.split(/\r\n|\n/);
+            // get only the headers
+            var headersCsv = allCsvAsRows[0].split(',');
+            var headersCsvTranslated=[];
+            Object.entries(headersCsv).forEach(([key, fieldname]) => {
+              // removes the quotes
+              fieldname=fieldname.replace(/['"]+/g, '');
+              //console.log(  fieldname);
+              if (fieldname in fieldsTranslations) headersCsvTranslated.push(fieldsTranslations[fieldname]);
+              else headersCsvTranslated.push(fieldname);
+            });
+            //console.log(headersCsvTranslated);
+            //replace the first line by the translated headers
+            allCsvAsRows[0]=headersCsvTranslated;
+            // recreate a csv file
+            var dataCsv=allCsvAsRows.join("\n");
+
+            fs.writeFileSync(csvPath, dataCsv);
 
             downloadFile = "http://" + req.get('host') + "/" + filenameCsv;
 
@@ -1127,7 +1108,6 @@ app.post('/', encodeUrl, (req, res) => {
             // 2- create the data table based on the column names
             Object.entries(dataCut).forEach(elt => {
               const row = [];
-//console.log(elt);exit();
 
               Object.entries(tableColumns).forEach(([key,fieldname]) => {
                 if (fieldname=="eventIds") {
