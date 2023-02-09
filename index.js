@@ -539,6 +539,9 @@ function writeXlsxFlattened (host, inputObject, dataDataset, dataEvent, dataOccu
 
       convertCsvToXlsx(csvPath, xlsxPath);
 
+      // delete the csv file once the xlsx is created
+      fs.unlinkSync(csvPath);
+
       downloadFile = "http://" + host + "/" + filenameXlsx;      
 
       console.log("Data saved in "+xlsxPath+" ("+dataFinal.length+" row(s))");
