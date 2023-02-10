@@ -39,6 +39,9 @@ var scanf = pkgScanf;
 import pkgCsvToXlsx from '@aternus/csv-to-xlsx';
 const { convertCsvToXlsx } = pkgCsvToXlsx;
 
+import pkgStats from './lib/statistics.js';
+var stats = pkgStats;
+
 //const express = require('express'); //Import the express dependency
 const app = express();              //Instantiate an express app, the main work horse of this server
 const port = 8089;                  //Save the port number where your server will be listening
@@ -165,6 +168,9 @@ function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence
 
         downloadFile = writeXlsxFlattened(host, inputObject, dataDataset, dataEvent, dataOccurrence);
 
+        // stats
+        stats.addStat("xlsx", inputObject);
+            
         //renderIndex(res, false, "getDatasetDataForXlsx"+inputObject);
         console.log("renderIndex from getDatasetDataForXlsx"+inputObject);
 
@@ -940,6 +946,9 @@ app.post('/', encodeUrl, (req, res) => {
             //console.log(await csv.toString());
             console.log("Data saved in "+csvPath+" ("+totalResults+" row(s))");
 
+            // stats
+            stats.addStat("csv", inputObject);
+            
             //renderIndex(res, false, "exportCsv");
             console.log("renderIndex from exportCsv");
             res.render('pages/index', {
@@ -985,6 +994,9 @@ app.post('/', encodeUrl, (req, res) => {
 
               downloadFile = writeXlsxFlattened(req.get('host'), inputObject, dataDataset, null, null);
 
+              // stats
+              stats.addStat("xlsx", inputObject);
+            
               //renderIndex(res, false, "xlsxdataset");
               console.log("renderIndex from xlsx dataset");
               res.render('pages/index', {
@@ -1178,6 +1190,8 @@ app.post('/', encodeUrl, (req, res) => {
               if (fieldname in fieldsTranslations) tableColumns[key]=fieldsTranslations[fieldname];
             });
 
+            // stats
+            stats.addStat("html", inputObject);
 
             //renderIndex(res, true, "tableviewOK");
             console.log("renderIndex from tableviewOK");

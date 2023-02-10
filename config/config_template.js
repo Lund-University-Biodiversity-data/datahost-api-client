@@ -36,4 +36,10 @@ config.availableDatasets = [
 	},
 ];
 
+
+// STATISTICS
+config.databaseStatisticsUrl = "mongodb://localhost:27017";
+config.databaseStatisticsName = "statsDB";
+config.databaseStatisticsTable = "statsClient";
+
 export default config;
