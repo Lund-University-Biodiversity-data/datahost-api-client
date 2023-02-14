@@ -15,6 +15,8 @@ config.defaultCounty = ["None selected"];
 //config.defaultCounty = ["Skåne län"];
 config.defaultDateType = "BetweenStartDateAndEndDate";
 
+config.maximumNumberRowsTake = 10000;
+
 config.maximumSizeForLongFields = 100;
 
 config.availableDatasets = [
