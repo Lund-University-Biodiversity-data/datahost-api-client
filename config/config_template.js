@@ -1,5 +1,8 @@
 var config = {};
 
+config.clientPort=1234;
+config.clientUrl="http://localhost:"+config.clientPort;
+
 config.speciesListUrl = "URL/speciesList";
 config.downloadFolderUrl = "folder/"; // folder with access rights
 

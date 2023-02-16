@@ -47,7 +47,6 @@ var stats = pkgStats;
 
 //const express = require('express'); //Import the express dependency
 const app = express();              //Instantiate an express app, the main work horse of this server
-const port = 8089;                  //Save the port number where your server will be listening
 
 const speciesListUrl= config.speciesListUrl;
 
@@ -1284,8 +1283,8 @@ function startApp () {
 console.log("cors enabled");
 */
 
-  app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
-      console.log(`Now listening on port ${port} => http://localhost:${port}`); 
+  app.listen(config.clientPort, () => {            //server starts listening for any attempts from a client to connect at port: {config.clientPort}
+      console.log(`Now listening on port ${config.clientPort} => ${config.clientUrl}`); 
   });
 
   app.use(express.static(__dirname + '/downloads'));
