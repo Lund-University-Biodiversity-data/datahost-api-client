@@ -79,7 +79,6 @@ tableCounty.sort(); // alphaebetical sort
 var downloadFile = "";
 
 
-
 function throwErrorToClient(res, error, inputObject, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType) {
 
   var errorMsg="";
@@ -1276,13 +1275,6 @@ const __dirname = dirname(__filename);
 // start only when species List is ready
 function startApp () {
 
-/*
-  app.use(cors({
-    origin: "*"
-  }));
-console.log("cors enabled");
-*/
-
   app.listen(config.clientPort, () => {            //server starts listening for any attempts from a client to connect at port: {config.clientPort}
       console.log(`Now listening on port ${config.clientPort} => ${config.clientUrl}`); 
   });
@@ -1314,13 +1306,6 @@ http.get(speciesListUrl,(res) => {
       let speciesList = JSON.parse(body);
 
       Object.entries(speciesList).forEach(([key, val]) => {
-          /*
-          var dataChain=val.dyntaxaId + " - " + val.scientificName;
-
-          if (val.swedishName != null && val.swedishName!="null") {
-            dataChain= dataChain + " - " + val.swedishName;
-          }
-          */
 
         if (!isNaN(parseInt(val.dyntaxaId))) {
 
@@ -1364,11 +1349,7 @@ http.get(speciesListUrl,(res) => {
           return 0;
       });
 
-
-
       console.log(tableTaxon.length+ " element(s) in tableTaxon");
-//console.log(tableTaxon);
-      //resolve(1);
 
       startApp();
 
