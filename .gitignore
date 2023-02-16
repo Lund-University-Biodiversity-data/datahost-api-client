@@ -1,3 +1,7 @@
+# custom folders
+downloads/
+old/
+
 # Logs
 logs
 *.log
