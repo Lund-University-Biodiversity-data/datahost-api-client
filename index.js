@@ -5,6 +5,9 @@ const config = configImp;
 import templateHeadersImp  from './lib/functions/templateHeaders.js';
 var templateHeaders = templateHeadersImp;
 
+import utilsImp  from './lib/functions/utils.js';
+var utils = utilsImp;
+
 import pkgVD from 'var_dump';
 const var_dump = pkgVD;
 
@@ -77,9 +80,6 @@ tableCounty.sort(); // alphaebetical sort
 var downloadFile = "";
 
 
-function capitalizeFirstLetter(string){
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
 
 function throwErrorToClient(res, error, inputObject, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType) {
 
@@ -259,25 +259,7 @@ function transformEventData (data) {
   return dataDataset;
 }
 
-// input : date as yyyy-mm-ddThh:ii:ssZ
-// returns an array with 3 (if no time) or 6 elements
-function splitDateInArray (dateToSplit) {
 
-  //var datetimeTemp = dateToSplit.replace("T", " T");
-  //var datetimeTemp = datetimeTemp.replace("Z", " Z");
-  var datetimeTemp = dateToSplit.replace("T", " ");
-  datetimeTemp = datetimeTemp.replace("Z", "");
-  //console.log(datetimeTemp);
-  var splitDate=scanf(datetimeTemp, "%s-%s-%s %s:%s:%s");
-  //console.log(splitDate);
-
-  // FOR SOME REASON WHEN day = 09 => it breaks ! when using %d => %s
-  //[WARN] scanf: Invalid char to Octal [9]
-  //[WARN] scanf: Invalid octal [9]
-  // WHY octal ???
-  
-  return splitDate;
-}
 
 
 function updateToTemplateXlsx (dataInput, inputObject) {
@@ -323,7 +305,7 @@ function updateToTemplateXlsx (dataInput, inputObject) {
       // split the startDate/time in colums
       if (key=="1.eventStartDate" && oneDataset[val]!="") {
 
-        var splitDate=splitDateInArray(oneDataset[val]);
+        var splitDate=utils.splitDateInArray(oneDataset[val]);
 
         if (splitDate.length>=3) {
           oneDataset["inventeringsstartår"]=splitDate[0];
@@ -344,7 +326,7 @@ function updateToTemplateXlsx (dataInput, inputObject) {
       // split the endDate/time in colums
       if (key=="1.eventEndDate" && oneDataset[val]!="") {
 
-        var splitDate=splitDateInArray(oneDataset[val]);
+        var splitDate=utils.splitDateInArray(oneDataset[val]);
 
         if (splitDate.length>=3) {
 
@@ -606,10 +588,12 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
 });
 
 
+/*
 // get /about
 app.get('/about', function(req, res) {
   res.render('pages/about');
 });
+*/
 
 let encodeUrl = parseUrl.urlencoded({ extended: false });
 
@@ -1344,10 +1328,10 @@ http.get(speciesListUrl,(res) => {
           var dataChain="";
 
           if (val.swedishName!= null) {
-            dataChain=dataChain + capitalizeFirstLetter(val.swedishName) + " - ";
+            dataChain=dataChain + utils.capitalizeFirstLetter(val.swedishName) + " - ";
           }
           if (val.scientificName!= null) {
-            dataChain=dataChain + capitalizeFirstLetter(val.scientificName) + " - ";
+            dataChain=dataChain + utils.capitalizeFirstLetter(val.scientificName) + " - ";
           }
 
           dataChain = dataChain + val.dyntaxaId + " " ;
