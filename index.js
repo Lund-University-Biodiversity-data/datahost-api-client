@@ -97,6 +97,8 @@ function throwErrorToClient(res, errorCode, inputObject, inputDatasetList, input
     errorMsg="Error received from the server";
   }
 
+  stats.addStat("error-"+errorCode, inputObject);
+
   //renderIndex(res, false, "error apiInstance");
   console.log("renderIndex from error apiInstance");
   res.render('pages/index', {
@@ -1221,6 +1223,8 @@ app.post('/', encodeUrl, (req, res) => {
             }     
             else {
 
+              stats.addStat("html-nodata", inputObject);
+
               //renderIndex(res, true, "tableviewERROR");
               console.log("renderIndex from tableviewERROR-nodata");
 
@@ -1257,6 +1261,9 @@ app.post('/', encodeUrl, (req, res) => {
   }
 
   else { // empty request, dataInput.length = 0
+
+    stats.addStat("html-length0", inputObject);
+
     //renderIndex(res, true, "tableviewERROR");
     console.log("renderIndex from tableviewERROR-dataInput.length 0");
 
