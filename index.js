@@ -323,10 +323,14 @@ function updateToTemplateXlsx (dataInput, inputObject) {
           emptyColumns["inventeringsstartmånad"]=false;
           emptyColumns["inventeringsstartdag"]=false;
 
+
+          /*
+          OLD WHEN time was included in date field
           if (splitDate.length==6) {
             oneDataset["inventeringsstarttid"]=splitDate[3]+":"+splitDate[4]+":"+splitDate[5];
             emptyColumns["inventeringsstarttid"]=false;
-          }
+          }*/
+
         }
       }
 
@@ -345,10 +349,12 @@ function updateToTemplateXlsx (dataInput, inputObject) {
           emptyColumns["inventeringsslutmånad"]=false;
           emptyColumns["inventeringsslutdag"]=false;
 
+          /*
+          OLD WHEN time was included in date field
           if (splitDate.length==6) {
             oneDataset["inventeringssluttid"]=splitDate[3]+":"+splitDate[4]+":"+splitDate[5];
             emptyColumns["inventeringssluttid"]=false;
-          }
+          }*/
 
         }
       }
