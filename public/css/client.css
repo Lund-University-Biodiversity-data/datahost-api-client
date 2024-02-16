@@ -50,7 +50,7 @@ h3 {
 }
 
 #listAvailableDatasets {
-	max-width: 860px;
+	width: auto;
 }
 #listAvailableDatasets td {
 	border-top: none;
