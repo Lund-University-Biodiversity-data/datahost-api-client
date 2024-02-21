@@ -359,7 +359,7 @@ function updateToTemplateXlsx (dataInput, inputObject) {
         }
       }
 
-      // gather the coordinates
+      // gather the coordinates - POINT 1
       if (key=="1.site.emplacement.geometry.point1" || key=="1.eventData.1.site.emplacement.geometry.point1") {
 
         var coordX="";
@@ -376,6 +376,46 @@ function updateToTemplateXlsx (dataInput, inputObject) {
         if (coordX!="" && coordY!="") {
           oneDataset["lokal:position:punkt 1"]=coordX + ", " + coordY;
           emptyColumns["lokal:position:punkt 1"]=false;
+        }
+      }
+
+      // gather the coordinates - POINT 2
+      if (key=="1.site.emplacement2.geometry.point2" || key=="1.eventData.1.site.emplacement2.geometry.point2") {
+
+        var coordX="";
+        var coordY="";
+        if ("1.site.emplacement2.geometry.coordinates.0" in datasetI[1] && datasetI[1]["1.site.emplacement2.geometry.coordinates.0"]!="")
+          coordX=datasetI[1]["1.site.emplacement2.geometry.coordinates.0"];
+        if ("1.eventData.1.site.emplacement2.geometry.coordinates.0" in datasetI[1] && datasetI[1]["1.eventData.1.site.emplacement2.geometry.coordinates.0"]!="")
+          coordX=datasetI[1]["1.eventData.1.site.emplacement2.geometry.coordinates.0"];
+        if ("1.site.emplacement2.geometry.coordinates.1" in datasetI[1] && datasetI[1]["1.site.emplacement2.geometry.coordinates.1"]!="")
+          coordY=datasetI[1]["1.site.emplacement2.geometry.coordinates.1"];
+        if ("1.eventData.1.site.emplacement2.geometry.coordinates.1" in datasetI[1] && datasetI[1]["1.eventData.1.site.emplacement2.geometry.coordinates.01"]!="")
+          coordY=datasetI[1]["1.eventData.1.site.emplacement2.geometry.coordinates.1"];
+
+        if (coordX!="" && coordY!="") {
+          oneDataset["lokal:position:punkt 2"]=coordX + ", " + coordY;
+          emptyColumns["lokal:position:punkt 2"]=false;
+        }
+      }
+
+      // gather the coordinates - POINT 3
+      if (key=="1.site.emplacement3.geometry.point3" || key=="1.eventData.1.site.emplacement3.geometry.point3") {
+
+        var coordX="";
+        var coordY="";
+        if ("1.site.emplacement3.geometry.coordinates.0" in datasetI[1] && datasetI[1]["1.site.emplacement3.geometry.coordinates.0"]!="")
+          coordX=datasetI[1]["1.site.emplacement3.geometry.coordinates.0"];
+        if ("1.eventData.1.site.emplacement3.geometry.coordinates.0" in datasetI[1] && datasetI[1]["1.eventData.1.site.emplacement3.geometry.coordinates.0"]!="")
+          coordX=datasetI[1]["1.eventData.1.site.emplacement3.geometry.coordinates.0"];
+        if ("1.site.emplacement3.geometry.coordinates.1" in datasetI[1] && datasetI[1]["1.site.emplacement3.geometry.coordinates.1"]!="")
+          coordY=datasetI[1]["1.site.emplacement3.geometry.coordinates.1"];
+        if ("1.eventData.1.site.emplacement3.geometry.coordinates.1" in datasetI[1] && datasetI[1]["1.eventData.1.site.emplacement3.geometry.coordinates.01"]!="")
+          coordY=datasetI[1]["1.eventData.1.site.emplacement3.geometry.coordinates.1"];
+
+        if (coordX!="" && coordY!="") {
+          oneDataset["lokal:position:punkt 3"]=coordX + ", " + coordY;
+          emptyColumns["lokal:position:punkt 3"]=false;
         }
       }
 
