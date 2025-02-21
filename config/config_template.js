@@ -4,6 +4,7 @@ config.clientPort=1234;
 config.clientUrl="http://localhost:"+config.clientPort;
 
 config.speciesListUrl = "URL/speciesList";
+config.downloadUrl = "localhost"; // specific url for download
 config.downloadFolderUrl = "folder/"; // folder with access rights
 
 config.defaultStartDate="1975-01-01";

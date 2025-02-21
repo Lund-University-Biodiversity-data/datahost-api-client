@@ -983,7 +983,7 @@ app.post('/', encodeUrl, (req, res) => {
 
               fs.writeFileSync(csvPath, dataCsv);
 
-              downloadFile = "http://" + req.get('host') + "/" + filenameCsv;
+              downloadFile = "http://" + config.downloadUrl + "/" + filenameCsv;
 
               // Return the CSV file as string:
               //console.log(await csv.toString());
@@ -1035,7 +1035,7 @@ app.post('/', encodeUrl, (req, res) => {
 
                 dataDataset=transformDatasetData(data.results);
 
-                downloadFile = writeXlsxFlattened(req.get('host'), inputObject, dataDataset, null, null);
+                downloadFile = writeXlsxFlattened(config.downloadUrl, inputObject, dataDataset, null, null);
 
                 // stats
                 stats.addStat("xlsx", inputObject);
@@ -1066,7 +1066,7 @@ app.post('/', encodeUrl, (req, res) => {
               case "Event":
                 var dataEvent=data.results;
 
-                downloadFile = getDatasetDataForXlsx(res, req.get('host'), inputObject, dataEvent, null, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType);
+                downloadFile = getDatasetDataForXlsx(res, config.downloadUrl, inputObject, dataEvent, null, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType);
 
                 break;
               case "Occurrence":
@@ -1105,7 +1105,7 @@ app.post('/', encodeUrl, (req, res) => {
 
                       //console.log("data event obtained !");
 
-                      getDatasetDataForXlsx(res, req.get('host'), inputObject, dataEvent, dataOccurrence, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType);
+                      getDatasetDataForXlsx(res, config.downloadUrl, inputObject, dataEvent, dataOccurrence, inputDatasetList, inputSourceSubmit, inputTaxon, inputCounty, inputArea, inputStartDate, inputEndDate, inputDateType);
                     }
                   }
                 });
