@@ -103,6 +103,9 @@ $(document).ready(function () {
 
       var valSelected=[];
 
+      if ($("#taxonButterflies").prop('checked')) {
+        valSelected.push(3000188);
+      }
       if ($("#taxonBirds").prop('checked')) {
         valSelected.push(4000104);
       }

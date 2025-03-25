@@ -1172,7 +1172,7 @@ app.post('/', encodeUrl, (req, res) => {
               // 2- create the data table based on the column names
               Object.entries(dataCut).forEach(elt => {
                 const row = [];
-
+console.log(elt);
                 Object.entries(tableColumns).forEach(([key,fieldname]) => {
                   if (fieldname=="eventIds") {
                     row["eventIds"]=elt[1][fieldname].length;
