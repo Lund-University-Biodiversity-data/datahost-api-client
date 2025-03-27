@@ -48,4 +48,7 @@ config.databaseStatisticsUrl = "mongodb://localhost:27017";
 config.databaseStatisticsName = "statsDB";
 config.databaseStatisticsTable = "statsClient";
 
+config.apiAppId = "a-nice-id";
+
+
 export default config;

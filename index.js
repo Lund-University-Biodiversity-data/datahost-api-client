@@ -129,6 +129,11 @@ function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence
 
   let apiInstance, opts, getResultsBySearch;
 
+  let defaultClient = LuApiDocumentationTemplate.ApiClient.instance;
+  // Configure API key authorization: appId
+  let appId = defaultClient.authentications['appId'];
+  appId.apiKey = config.apiAppId;
+    
   var datasetIDsExtra=[];
 
   Object.entries(dataEvent).forEach(elt => {
@@ -877,6 +882,11 @@ app.post('/', encodeUrl, (req, res) => {
   if (dataInputLength.length>=1) {
 
     let apiInstance, opts, getResultsBySearch;
+
+    let defaultClient = LuApiDocumentationTemplate.ApiClient.instance;
+    // Configure API key authorization: appId
+    let appId = defaultClient.authentications['appId'];
+    appId.apiKey = config.apiAppId;
 
     switch(inputObject) {
       case "Dataset":
