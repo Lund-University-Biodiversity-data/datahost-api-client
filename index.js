@@ -89,6 +89,11 @@ function throwErrorToClient(res, errorCode, inputObject, inputDatasetList, input
     // Maximum response size reached 
     errorMsg="[Maximum response size reached] Förfina din sökning för att minska urvalet. För hjälp med stora datauttag kontakta datavärden på naturdatavardskap@biol.lu.se.";
   }
+  else if (errorCode=="ECONNRESET") {
+    //MongoServerError: BSONObj size: 22523795 (0x157AF93) is invalid. Size must be between 0 and 16793600(16MB) First element: code: 10334
+    // Error 
+    errorMsg="[Oversized] Förfina din sökning för att minska urvalet. För hjälp med stora datauttag kontakta datavärden på naturdatavardskap@biol.lu.se.";
+  }
   else if (errorCode=="ECONNABORTED") {
     // Timeout as specified in luApiDocumentationTemplate, src/ApiClient.js
     errorMsg="[Timeout] Förfina din sökning för att minska urvalet. För hjälp med stora datauttag kontakta datavärden på naturdatavardskap@biol.lu.se.";
@@ -133,7 +138,7 @@ function getDatasetDataForXlsx(res, host, inputObject, dataEvent, dataOccurrence
   // Configure API key authorization: appId
   let appId = defaultClient.authentications['appId'];
   appId.apiKey = config.apiAppId;
-    
+
   var datasetIDsExtra=[];
 
   Object.entries(dataEvent).forEach(elt => {
