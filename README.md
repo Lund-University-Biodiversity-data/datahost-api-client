@@ -61,3 +61,14 @@ npm i @aternus/csv-to-xlsx
 
 ## for statistics
 npm install mongodb
+
+
+
+## LU Styleguide
+
+historicaly it was possible to use these links :
+<!-- <link rel="stylesheet" href="https://styleguide.lu.se/styles/main.css"> -->
+<!-- (headerLU.ejs) https://styleguide.lu.se/images/logo/logo_lu_small@1x.png -->
+now styleguide.lu.se is redirected to some zeroheight.com website...
+I obtained a bundle from LU to save locally this main.css into public/css/styleguide_lu_20250408.css
+and the logos
